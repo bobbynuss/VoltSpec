@@ -1,0 +1,58 @@
+import type { Job } from "../../types";
+import { diagram } from "../diagrams/new-320a-service";
+import { SA_SUPPLIERS } from "../suppliers";
+import { SA_OFFICIAL_DOCS } from "../official-docs";
+
+export const job: Job = {
+  id: "new-320a-service",
+  label: "New 320A Service (Class 320)",
+  requirements: [
+    "NEC 2026 Art. 230: 320A Class service uses a single 320A rated meter socket (same socket used for 400A service)",
+    "Service entrance conductors: 4/0 AWG aluminum XHHW-2 minimum per NEC 310.16 for 320A",
+    "CPS Energy Customer Engineering approval may be required for services over 200A - call (210) 353-4050",
+    "Single 200A main breaker panel downstream of 320A meter - panel is rated 200A, service is rated 320A",
+    "Load calculation (NEC 220) must be submitted with CPS Energy Load Sheet showing demand exceeds 200A",
+    "2 in. rigid metal conduit minimum from weatherhead to meter base",
+    "Ground electrode system: 2 AWG bare copper GEC per NEC 250.66 Table for 4/0 AL service conductors",
+    "Ground rod system: two 5/8 x 8 ft copper-bonded rods, 6 ft apart minimum, plus Ufer (concrete-encased electrode)",
+    "AFCI protection on all bedroom and living area circuits (NEC 210.12)",
+    "GFCI protection on all kitchen, bath, outdoor, garage, basement, and crawl space circuits (NEC 210.8)",
+    "City of San Antonio electrical permit required + CPS Energy Residential Service Application with load calc",
+  ],
+  materials: [
+    { item: "320A Ringless Meter Socket", quantity: "1", spec: "Milbank U2448-X - 320A ringless lever-bypass meter socket, OH/UG, 4-jaw, single-phase - CPS Energy approved Class 320. Vendor: MIB (Elliott Electric)", unitPrice: 285.00 },
+    { item: "200A BR Main Breaker Panel", quantity: "1", spec: "Eaton BRP40B200R - BR PON loadcenter 200A main breaker 40 space NEMA 3R, indoor/outdoor", unitPrice: 343.97 },
+    { item: "Surge Protective Device", quantity: "1", spec: "Eaton BRNSURGE10 - Type BR 2-pole surge arrester", unitPrice: 136.51 },
+    { item: "4/0 AWG AL XHHW-2 (black)", quantity: "30 ft", spec: "ALU XHHW4001000 - 4/0 AWG AL XHHW-2 600V black, service entrance conductors, sold per ft", unitPrice: 3.45 },
+    { item: "4/0 AWG AL XHHW-2 (red)", quantity: "30 ft", spec: "ALU XHHW400R1000 - 4/0 AWG AL XHHW-2 600V red, service entrance conductors, sold per ft", unitPrice: 3.45 },
+    { item: "2/0 AWG AL XHHW-2 (neutral)", quantity: "30 ft", spec: "ALU XHHW2001000 - 2/0 AWG AL XHHW-2 600V white, neutral conductor, sold per ft", unitPrice: 2.25 },
+    { item: "4/0-4/0-2/0 AL SER Cable", quantity: "15 ft", spec: "ALU SER400200 - 4/0-4/0-2/0 AL SER 600V, meter to panel run, sold per ft", unitPrice: 5.85 },
+    { item: "2 in. Rigid Metal Conduit", quantity: "10 ft", spec: "CON GAL2 - 2 in. galvanized rigid metal conduit 10 ft stick, weatherhead to meter run", unitPrice: 10.44 },
+    { item: "2 in. RMC Weatherhead", quantity: "1", spec: "Bridgeport 1256 - 2 in. service entrance weatherhead, 10 ft AFF min", unitPrice: 20.82 },
+    { item: "2 in. Grounding Bushing", quantity: "2", spec: "Bridgeport 388DC - 2 in. insulated grounding bushing, AL/CU rated", unitPrice: 16.50 },
+    { item: "2 AWG Bare Copper GEC", quantity: "20 ft", spec: "COP BARE2SOL500 - 2 AWG solid bare copper GEC, sold per ft, per NEC 250.66 for 4/0 AL conductors", unitPrice: 3.25 },
+    { item: "5/8 x 8 ft Ground Rod", quantity: "2", spec: "Erico 615880 - 5/8 in. x 8 ft copper-bonded ground rod, 6 ft spacing minimum", unitPrice: 29.81 },
+    { item: "Ground Rod Clamp", quantity: "2", spec: "Thomas & Betts G5 - 1/2 in. x 5/8 in. ground rod clamp", unitPrice: 4.50 },
+    { item: "Ufer Ground Clamp", quantity: "1", spec: "NSI GLC140DB - concrete encased electrode clamp, rebar tie-in per NEC 250.52", unitPrice: 31.90 },
+    { item: "Dual Function Breaker 20A", quantity: "10", spec: "Eaton BRP120DF - BR dual function AF/GF 1-pole 20A plug-on neutral breaker", unitPrice: 75.60 },
+    { item: "GFCI Breaker 20A", quantity: "4", spec: "Eaton BRN120GF - BR 1-pole 20A GFCI breaker, kitchen/bath/garage/exterior", unitPrice: 79.50 },
+    { item: "2-Pole 50A Breaker", quantity: "1", spec: "Eaton BR250 - Type BR breaker 50A/2-pole 120/240V 10K, range circuit", unitPrice: 26.40 },
+    { item: "2-Pole 50A Breaker (EV)", quantity: "1", spec: "Eaton BR250 - Type BR breaker 50A/2-pole 120/240V 10K, EV charger circuit", unitPrice: 26.40 },
+    { item: "2-Pole 30A Breaker", quantity: "1", spec: "Eaton BR230 - Type BR breaker 30A/2-pole 120/240V 10K, dryer circuit", unitPrice: 22.00 },
+    { item: "2-Pole 40A Breaker", quantity: "1", spec: "Eaton BR240 - Type BR breaker 40A/2-pole 120/240V 10K, HVAC circuit", unitPrice: 24.20 },
+    { item: "Duct Seal", quantity: "1", spec: "PECO DS1 - duct seal compound, 1 lb, seal conduit entries at building per NEC 230.8", unitPrice: 8.55 },
+  ],
+  blueprintNotes: [
+    "320A Class service: single 320A meter socket feeding one 200A main breaker panel",
+    "Fills the gap between standard 200A and full 400A (dual panel) service",
+    "Common use case: 200A panel is full but load calc doesn't justify 400A, or home with EV + large HVAC",
+    "4/0 AL XHHW-2 service conductors - sized per NEC 310.16 Table for 320A",
+    "GEC: 2 AWG bare copper per NEC 250.66 Table for 4/0 AL service conductors",
+    "Meter socket is the same Milbank U2448-X used for 400A service",
+    "Panel: Eaton BRP40B200R (BR series) with BRNSURGE10 surge protector",
+    "CPS Energy Customer Engineering may require review for services over 200A",
+  ],
+  svgDiagram: diagram,
+  suppliers: SA_SUPPLIERS,
+  officialDocs: SA_OFFICIAL_DOCS,
+};

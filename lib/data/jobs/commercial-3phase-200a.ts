@@ -1,0 +1,55 @@
+import type { Job } from "../types";
+import { diagram } from "../diagrams/commercial-3phase-200a";
+import { AUSTIN_SUPPLIERS } from "../suppliers";
+import { AUSTIN_OFFICIAL_DOCS } from "../official-docs";
+
+export const job: Job = {
+  id: "commercial-3phase-200a",
+  label: "200A 3-Phase Commercial Service",
+  requirements: [
+    "NEC 2026 Art. 230: Commercial service entrance requirements",
+    "Austin Energy: commercial services require service application + load study",
+    "3-phase 4-wire service: 120/208V wye (verify with AE for voltage class)",
+    "Meter base: AE-approved CT metering for 200A+ commercial services",
+    "Main distribution panelboard (MDP) — Eaton Pow-R-Xpress PRL1X series, 42-circuit, 225A copper bus",
+    "225A main circuit breaker kit (BKD2G225) — 65 kAIC interrupting capacity at 240V",
+    "Equipment ground and system bonding per NEC 250",
+    "Arc flash hazard analysis and labeling required (NEC 110.16)",
+    "Permit: commercial electrical permit + AE commercial service application",
+  ],
+  materials: [
+    { item: "PRL1X Interior (225A Cu, 42-ckt)", quantity: "1", spec: "Eaton PRL1X3225X42C - Pow-R-Xpress interior, 208Y/120V 3P 4W, 225A copper bus, 42 circuit, with TFL provisions", unitPrice: 416.46 },
+    { item: "EZB Enclosure (20×60 NEMA 1)", quantity: "1", spec: "Eaton EZB2060RBS - EZ Box stocking enclosure, 20 in. wide × 60 in. high, NEMA 1 indoor, accepts PRL1X interior", unitPrice: 17.58 },
+    { item: "EZT Surface Trim (20×60)", quantity: "1", spec: "Eaton EZT2060S - EZ Trim surface mount, unvented, for 20×60 box, WEM2 keylock, matches EZB2060RBS", unitPrice: 139.79 },
+    { item: "225A Main Breaker Kit (65 kAIC)", quantity: "1", spec: "Eaton BKD2G225 - Pow-R-Xpress MCB kit, PDD23G 225A 240V 65 kAIC convertible, 3-pole, top/bottom entry", unitPrice: 686.27 },
+    { item: "Copper Ground Bus Assembly", quantity: "1", spec: "Eaton CUGROUND - PRL1A/2A 42-48 circuit copper ground bus assembly, mounts inside panelboard", unitPrice: 73.00 },
+    { item: "AE CT Meter Cabinet", quantity: "1", spec: "AE-approved commercial CT meter cabinet, 200A class — Austin Energy supplies meter, contractor provides cabinet per AE specs", unitPrice: 285 },
+    { item: "3-Phase 200A Fusible Disconnect", quantity: "1", spec: "Eaton DH365FGK - 400A frame 200A 3-phase fusible disconnect, NEMA 1, 600V, service entrance main disconnect", unitPrice: 245 },
+    { item: "350 kcmil AL XHHW-2", quantity: "150 ft", spec: "ALU XHHW3501000 - 350 kcmil AL XHHW-2 600V black, 3 phases + neutral + ground service entrance conductors, sold per ft (30 ft × 5 conductors)", unitPrice: 4.75 },
+    { item: "2 in. Rigid Metal Conduit", quantity: "15 ft", spec: "CON GAL2 - 2 in. galvanized rigid metal conduit 10 ft stick, weatherhead to CT cabinet", unitPrice: 10.44 },
+    { item: "2 in. RMC Weatherhead", quantity: "1", spec: "Bridgeport 1256 - 2 in. service entrance weatherhead, 10 ft AFF min", unitPrice: 18.46 },
+    { item: "2 in. EMT Set-Screw Connectors", quantity: "4", spec: "Bridgeport 235 - 2 in. EMT set-screw connector, panel and cabinet entries", unitPrice: 3.5 },
+    { item: "3/0 AWG Bare Copper GEC", quantity: "20 ft", spec: "COP BARE3SOL500 - 3/0 AWG solid bare copper GEC, 500 ft spool, sold per ft, per NEC 250.66 for 200A 3-phase service", unitPrice: 3.85 },
+    { item: "5/8 x 8 ft Ground Rod", quantity: "2", spec: "Erico 615880 - 5/8 in. x 8 ft copper-bonded ground rods, 6 ft spacing minimum", unitPrice: 26.43 },
+    { item: "Ground Rod Clamp", quantity: "2", spec: "NSI GRC58 - 5/8 in. bronze ground rod clamp, UL listed", unitPrice: 4.21 },
+    { item: "Ufer Ground Clamp", quantity: "1", spec: "NSI GLC140DB - concrete encased electrode clamp per NEC 250.52", unitPrice: 28.28 },
+    { item: "3-Pole 20A Branch Breaker (QBH)", quantity: "8", spec: "Eaton QBH320 - QBH 3-pole 20A 240V 22 kAIC bolt-on breaker for PRL1X panelboard, lighting and receptacle circuits", unitPrice: 72 },
+    { item: "3-Pole 30A Branch Breaker (QBH)", quantity: "4", spec: "Eaton QBH330 - QBH 3-pole 30A 240V 22 kAIC bolt-on breaker for PRL1X panelboard, HVAC and mechanical circuits", unitPrice: 78 },
+    { item: "Arc Flash Label Kit", quantity: "1", spec: "Brady 66127 - arc flash hazard label per NEC 110.16 — incident energy analysis required by licensed engineer", unitPrice: 18 },
+    { item: "AL-CU Multi-Tap Connectors", quantity: "6", spec: "NSI IPLD104 - Polaris multi-tap connectors, AL-CU rated for all 350 kcmil terminations at MDP and disconnect", unitPrice: 30.06 },
+    { item: "Duct Seal", quantity: "1", spec: "PECO DS1 - duct seal compound, 1 lb, seal all conduit entries at CT cabinet and MDP per NEC 230.8", unitPrice: 6.36 },
+  ],
+  blueprintNotes: [
+    "Confirm voltage class with AE before ordering — 120/208V wye standard for small commercial",
+    "Panelboard assembly: PRL1X3225X42C interior + EZB2060RBS box + EZT2060S trim + BKD2G225 main breaker kit",
+    "All components from same Pow-R-Xpress stocking row — verified compatible assembly",
+    "CT cabinet installs outside — AE seals metering compartment",
+    "Branch breakers: QBH series bolt-on for PRL1X interiors — do NOT use CH or BR breakers",
+    "Include one-line diagram on permit set — required for commercial",
+    "Arc flash label must show incident energy level (requires study by engineer)",
+    "65 kAIC main breaker provides adequate interrupting capacity for most commercial available fault currents",
+  ],
+  svgDiagram: diagram,
+  suppliers: AUSTIN_SUPPLIERS,
+  officialDocs: AUSTIN_OFFICIAL_DOCS,
+};

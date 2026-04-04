@@ -1,0 +1,56 @@
+import type { Job } from "../types";
+import { diagram } from "../diagrams/whole-house-battery-solar";
+import { AUSTIN_SUPPLIERS } from "../suppliers";
+import { AUSTIN_OFFICIAL_DOCS } from "../official-docs";
+
+export const job: Job = {
+  id: "whole-house-battery-solar",
+  label: "Whole-House Battery Storage with Solar Interconnect",
+  requirements: [
+    "NEC 2026 Art. 706: Energy storage systems — UL 9540 listed equipment required",
+    "NEC 2026 Art. 690: Solar photovoltaic systems — rapid shutdown per NEC 690.12",
+    "Austin Energy interconnect agreement required for solar PV + battery storage systems",
+    "ESS and solar inverter must be on AE approved equipment list",
+    "Battery system must include automatic transfer switch for backup operation",
+    "Critical loads subpanel required — separate backed-up circuits from non-backed-up",
+    "Solar backfeed breaker sizing per NEC 705.12 — 120% bus rating rule applies",
+    "Production meter may be required by AE for solar generation monitoring",
+    "Permit: City of Austin electrical permit + AE solar/storage interconnect application",
+    "Fire marshal notification required for battery systems >20 kWh in enclosed spaces",
+  ],
+  materials: [
+    { item: "Battery Energy Storage System", quantity: "1", spec: "Tesla Powerwall 3 - 13.5kWh usable, 11.5kW continuous output, integrated inverter, UL 9540 listed, indoor/outdoor rated", unitPrice: 9800 },
+    { item: "Tesla Gateway 3", quantity: "1", spec: "Tesla Gateway 3 - system controller and automatic transfer relay, manages grid/battery/solar transitions, whole-home backup capable", unitPrice: 1950 },
+    { item: "Solar PV Inverter", quantity: "1", spec: "Enphase IQ8A-72-M-US - microinverter, 366W rated, UL 1741 SA listed with rapid shutdown compliance — qty varies by array size, priced per unit", unitPrice: 185 },
+    { item: "Critical Loads Subpanel", quantity: "1", spec: "Eaton CHP24L125X2 - 100/125A 24-space CH MLO indoor subpanel, plug-on neutral, for backed-up critical load circuits", unitPrice: 28 },
+    { item: "2-Pole 60A Battery Breaker", quantity: "1", spec: "Eaton CHF260 - CH 2-pole 60A breaker in main panel, Powerwall AC connection circuit", unitPrice: 24.50 },
+    { item: "2-Pole 40A Solar Backfeed Breaker", quantity: "1", spec: "Eaton CHF240 - CH 2-pole 40A breaker in main panel, solar PV backfeed circuit — verify 120% bus rule", unitPrice: 22.75 },
+    { item: "100A 2-Pole Feeder Breaker", quantity: "1", spec: "Eaton CH2100 - CH 2-pole 100A feeder breaker in main panel feeding critical loads subpanel", unitPrice: 28 },
+    { item: "6 AWG THHN Black", quantity: "60 ft", spec: "COP THHN6STBK500 - 6 AWG THHN stranded black, battery/gateway/solar wiring runs, sold per ft" },
+    { item: "6 AWG THHN Red", quantity: "60 ft", spec: "COP THHN6STRD500 - 6 AWG THHN stranded red, second hot conductor, sold per ft" },
+    { item: "6 AWG THHN White", quantity: "60 ft", spec: "COP THHN6STWH500 - 6 AWG THHN stranded white, neutral conductor, sold per ft" },
+    { item: "10 AWG THHN Green", quantity: "60 ft", spec: "COP THHN10STGN500 - 10 AWG THHN stranded green, equipment grounding conductor, sold per ft" },
+    { item: "3/4 in. EMT Conduit", quantity: "40 ft", spec: "CON EMT34 - 3/4 in. EMT 10 ft stick, battery to gateway and panel conduit runs", unitPrice: 4.25 },
+    { item: "3/4 in. EMT Set-Screw Connectors", quantity: "8", spec: "Bridgeport 231 - 3/4 in. EMT set-screw connector", unitPrice: 1.25 },
+    { item: "3/4 in. EMT Set-Screw Couplings", quantity: "6", spec: "Bridgeport 241 - 3/4 in. EMT set-screw coupling", unitPrice: 0.95 },
+    { item: "Rapid Shutdown Initiator", quantity: "1", spec: "Tigo TS4-R-S - rapid shutdown transmitter, roof-mount, NEC 690.12 compliant, pairs with module-level electronics", unitPrice: 65 },
+    { item: "DC Disconnect (Solar)", quantity: "1", spec: "Eaton DPF222R - 60A 600VDC non-fusible disconnect, NEMA 3R, solar array DC disconnect at inverter", unitPrice: 72 },
+    { item: "Production Meter Socket", quantity: "1", spec: "Milbank U4497-XL - 200A meter socket for production metering, if required by AE for solar generation monitoring", unitPrice: 95 },
+    { item: "Whole-Home Surge Protector", quantity: "1", spec: "Eaton CHSPT2ULTRA - CH series whole-home surge protection device, protect solar/battery electronics", unitPrice: 48 },
+    { item: "ESS / Solar Warning Labels Kit", quantity: "1", spec: "Brady ESS-NEC2026 - energy storage system + solar PV warning label kit per NEC 690 and NEC 706", unitPrice: 22 },
+    { item: "Duct Seal", quantity: "2", spec: "PECO DS1 - duct seal compound, 1 lb each, seal all conduit penetrations", unitPrice: 6.36 },
+  ],
+  blueprintNotes: [
+    "Battery: mount on garage wall or exterior — follow Tesla clearance specs (no closets with HVAC)",
+    "Gateway: install between meter and main panel for whole-home backup capability",
+    "Critical loads subpanel: move essential circuits (fridge, lights, network, security) to CHP24L125X2",
+    "Solar backfeed breaker: size per NEC 705.12 — 120% bus rule (200A bus × 1.2 = 240A max)",
+    "Rapid shutdown: Tigo TS4-R-S at array, initiator at main disconnect — NEC 690.12 compliant",
+    "Submit AE solar/storage interconnect application before beginning installation",
+    "Production meter: AE may require separate meter for solar generation — confirm before ordering",
+    "All battery/solar circuits labeled per NEC 706 and NEC 690 — use Brady ESS-NEC2026 kit",
+  ],
+  svgDiagram: diagram,
+  suppliers: [...AUSTIN_SUPPLIERS, { name: "CED Greentech Austin", address: "8111 Burnet Rd, Austin, TX 78757", phone: "(512) 454-7400", notes: "Tesla Powerwall, Enphase, solar BOS components" }],
+  officialDocs: AUSTIN_OFFICIAL_DOCS,
+};

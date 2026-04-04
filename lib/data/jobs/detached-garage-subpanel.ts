@@ -1,0 +1,56 @@
+import type { Job } from "../types";
+import { diagram } from "../diagrams/detached-garage-subpanel";
+import { AUSTIN_SUPPLIERS } from "../suppliers";
+import { AUSTIN_OFFICIAL_DOCS } from "../official-docs";
+
+export const job: Job = {
+  id: "detached-garage-subpanel",
+  label: "Detached Garage / Carport Subpanel Addition",
+  requirements: [
+    "NEC 2026 Art. 225/408: Subpanel feeder must be sized for calculated load, minimum 100A for garage/workshop",
+    "4-wire feeder required to detached structure (two hots, neutral, separate ground) per NEC 250.32",
+    "Subpanel must have separate neutral and ground bus bars — no N-G bonding at subpanel",
+    "AFCI/GFCI protection required on applicable branch circuits from subpanel",
+    "Feeder breaker in main panel must match subpanel amperage rating",
+    "Grounding electrode required at detached structure per NEC 250.32",
+    "Underground feeder conduit: min 24 in. burial for Sch 40 PVC, 18 in. for RMC per NEC 300.5",
+    "Austin permit required: City of Austin electrical permit for new subpanel installation",
+    "EV charger rough-in: 50A 240V dedicated circuit if EV charging anticipated",
+  ],
+  materials: [
+    { item: "125A CH MLO Subpanel", quantity: "1", spec: "Eaton CHP24L125X2 - 100/125A 24-space CH MLO indoor subpanel, plug-on neutral, isolated neutral bar included", unitPrice: 185 },
+    { item: "100A 2-Pole Feeder Breaker", quantity: "1", spec: "Eaton CH2100 - CH 2-pole 100A breaker, feeder protection in main panel", unitPrice: 28 },
+    { item: "Surge Protective Device", quantity: "1", spec: "Eaton CHSURGE2 - CH 2-pole whole-panel surge arrester, subpanel protection per NEC 242", unitPrice: 48 },
+    { item: "2 AWG AL SER Cable", quantity: "80 ft", spec: "ALU SER21000 - 2-2-2-4 AL SER 600V cable, 4-wire feeder to subpanel, sold per ft", unitPrice: 3.20 },
+    { item: "1-1/4 in. Schedule 40 PVC Conduit", quantity: "80 ft", spec: "PVC PVC114 - 1-1/4 in. Sch 40 PVC, 10 ft sticks, underground feeder run", unitPrice: 0.776 },
+    { item: "1-1/4 in. PVC 90° Sweep Ell", quantity: "4", spec: "PVF 114ELL90 - 1-1/4 in. PVC 90° sweep ell, underground conduit bends", unitPrice: 3.42 },
+    { item: "1-1/4 in. PVC Male Adapter", quantity: "4", spec: "PVF TA114 - 1-1/4 in. PVC terminal adapter (male)", unitPrice: 0.93 },
+    { item: "6 AWG Bare Copper GEC", quantity: "20 ft", spec: "COP BARE6SOL500 - 6 AWG solid bare copper GEC, sold per ft, subpanel grounding per NEC 250", unitPrice: 1.45 },
+    { item: "5/8 x 8 ft Ground Rod", quantity: "2", spec: "Erico 615880 - 5/8 in. x 8 ft copper-bonded ground rod, detached structure grounding", unitPrice: 26.43 },
+    { item: "Ground Rod Clamp", quantity: "2", spec: "NSI GRC58 - 5/8 in. bronze ground rod clamp, UL listed", unitPrice: 4.21 },
+    { item: "Dual Function Breaker 20A", quantity: "6", spec: "Eaton CHFP120DF - CH dual function AF/GF 1-pole 20A plug-on neutral breaker", unitPrice: 77.17 },
+    { item: "GFCI Breaker 20A", quantity: "4", spec: "Eaton CHFP120GF - CH GFCI 1-pole 20A plug-on neutral breaker, garage/exterior circuits", unitPrice: 85.19 },
+    { item: "2-Pole 50A Breaker", quantity: "1", spec: "Eaton CHF250 - CH 2-pole 50A for EV charger rough-in or welder circuit", unitPrice: 23.73 },
+    { item: "2-Pole 30A Breaker", quantity: "1", spec: "Eaton CHF230 - CH 2-pole 30A for air compressor or sub-feed", unitPrice: 18.50 },
+    { item: "AL-CU Multi-Tap Connector", quantity: "1 set", spec: "NSI IPLD104 - Polaris multi-tap connector, AL-CU rated for feeder terminations", unitPrice: 30.06 },
+    { item: "20A Outdoor GFCI Receptacle", quantity: "4", spec: "Eaton TWRGF20W - 20A 125V TR GFCI receptacle, weather-resistant", unitPrice: 28.34 },
+    { item: "4-Square Box Deep", quantity: "6", spec: "Crouse-Hinds TP403 - 4 in. square 2-1/8 in. deep steel outlet box", unitPrice: 4.44 },
+    { item: "4-Square Cover Duplex Recep.", quantity: "6", spec: "Crouse-Hinds TP516 - 4 in. square raised cover for duplex receptacle", unitPrice: 3.68 },
+    { item: "Outdoor In-Use Cover", quantity: "4", spec: "Taymac MM420C - extra-duty while-in-use weatherproof cover, single-gang", unitPrice: 11.47 },
+    { item: "Duct Seal", quantity: "1", spec: "PECO DS1 - duct seal compound, 1 lb, seal conduit wall penetrations", unitPrice: 6.36 },
+    { item: "Panel Directory Label Kit", quantity: "1", spec: "Brady 95543 - adhesive panel directory label kit", unitPrice: 12 },
+  ],
+  blueprintNotes: [
+    "Feeder route: underground 1-1/4 in. Sch 40 PVC, min 24 in. burial depth per NEC 300.5",
+    "SER cable: 2-2-2-4 AL SER from main panel to subpanel (80 ft typical for detached garage)",
+    "Subpanel: CHP24L125X2 (CH 24-space MLO) in garage — do NOT bond neutral to ground",
+    "Install surge arrester in subpanel per NEC 242",
+    "Two ground rods at detached structure, 6 ft apart minimum, per NEC 250.32",
+    "Label all circuits in both main panel and subpanel directories",
+    "If EV charger planned: install 50A 240V dedicated circuit with NEMA 14-50R receptacle",
+    "Underground warning tape above conduit run recommended",
+  ],
+  svgDiagram: diagram,
+  suppliers: AUSTIN_SUPPLIERS,
+  officialDocs: AUSTIN_OFFICIAL_DOCS,
+};

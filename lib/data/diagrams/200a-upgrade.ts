@@ -24,7 +24,7 @@ export const diagram = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 340
 
   <line x1="170" y1="244" x2="170" y2="254" stroke="#facc15" stroke-width="2"/>
   <rect x="78" y="254" width="184" height="18" rx="2" fill="#1e293b" stroke="#334155" stroke-width="1"/>
-  <text x="170" y="267" text-anchor="middle" fill="#64748b" font-size="9">2/0-2/0-1/0 AL SER cable to new panel</text>
+  <text x="170" y="267" text-anchor="middle" fill="#64748b" font-size="9">4/0-4/0-2/0 AL SER cable to new panel</text>
   <line x1="170" y1="272" x2="170" y2="284" stroke="#facc15" stroke-width="2"/>
 
   <rect x="28" y="284" width="284" height="188" rx="4" fill="#1e293b" stroke="#facc15" stroke-width="2"/>

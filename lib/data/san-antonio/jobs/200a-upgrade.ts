@@ -21,7 +21,7 @@ export const job: Job = {
     { item: "200A BR Main Breaker Panel", quantity: "1", spec: "Eaton BRP20B200R - BR PON loadcenter 200A main breaker 20 space NEMA 3R, plug-on neutral", unitPrice: 343.97 },
     { item: "200A Ringless Meter Socket", quantity: "1", spec: "Eaton 1009874ACH - 200A single-phase ringless meter socket, CPS Energy approved - replace only if upgrading meter base", unitPrice: 206.32 },
     { item: "40-Space MLO Panel (optional)", quantity: "1", spec: "Eaton BRP40L200G - BR PON loadcenter 200A MLO 40 space with ground bar, for additional circuits", unitPrice: 235.17 },
-    { item: "2/0-2/0-1/0 AL SER Cable", quantity: "10 ft", spec: "ALU SER201000 - 2/0-2/0-1/0 AL SER 600V service entrance cable, sold per ft", unitPrice: 3.85 },
+    { item: "4/0-4/0-2/0 AL SER Cable", quantity: "10 ft", spec: "ALU SER401000 - 4/0-4/0-2/0 AL SER 600V service entrance cable, sold per ft", unitPrice: 5.85 },
     { item: "Surge Protective Device", quantity: "1", spec: "Eaton BRNSURGE10 - Type BR 2-pole surge arrester, whole-panel SPD per NEC 242", unitPrice: 136.51 },
     { item: "Dual Function AFCI+GFCI Breaker 20A", quantity: "8", spec: "Eaton BRP120DF - BR dual function AF/GF 1-pole 20A plug-on neutral breaker, bedroom/living circuits", unitPrice: 75.6 },
     { item: "Dual Function AFCI+GFCI Breaker 15A", quantity: "4", spec: "Eaton BRP115DF - BR dual function AF/GF 1-pole 15A plug-on neutral breaker", unitPrice: 75.6 },

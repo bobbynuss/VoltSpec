@@ -23,7 +23,7 @@ export const job: Job = {
     { item: "2 in. Rigid Metal Conduit", quantity: "10 ft", spec: "CON GAL2 - 2 in. galvanized rigid metal conduit 10 ft stick, mast and weatherhead riser", unitPrice: 10.44 },
     { item: "2 in. RMC Weatherhead", quantity: "1", spec: "Bridgeport 1256 - 2 in. service entrance weatherhead, 10 ft AFF minimum", unitPrice: 18.46 },
     { item: "2 in. RMC Hub", quantity: "2", spec: "Bridgeport 310 - 2 in. rigid conduit hub, meter socket and disconnect entries", unitPrice: 6.75 },
-    { item: "2/0 AWG AL SER Cable", quantity: "15 ft", spec: "ALU SER20300 - 2/0-2/0-1/0 AL SER cable 3-conductor + bare neutral, 200A service entrance rated, sold per ft" },
+    { item: "4/0 AWG AL SER Cable", quantity: "15 ft", spec: "ALU SER40200 - 4/0-4/0-2/0 AL SER cable 3-conductor + bare neutral, 200A service entrance rated, sold per ft" },
     { item: "4 AWG Bare Copper GEC", quantity: "15 ft", spec: "COP BARE4SOL500 - 4 AWG solid bare copper ground electrode conductor, sold per ft, per NEC 250.66 for 200A service" },
     { item: "5/8 x 8 ft Ground Rod", quantity: "2", spec: "Erico 615880 - 5/8 in. x 8 ft copper-bonded ground rod, 6 ft spacing minimum per NEC 250.53", unitPrice: 26.43 },
     { item: "Ground Rod Clamp", quantity: "2", spec: "NSI GRC58 - 5/8 in. ground rod bronze clamp, UL listed", unitPrice: 4.21 },
@@ -33,7 +33,7 @@ export const job: Job = {
   ],
   blueprintNotes: [
     "Coordinate AE meter release FIRST — no work until meter is pulled by utility",
-    "Inspect existing SE conductors: if 2/0 AL or larger and undamaged, re-use; otherwise replace",
+    "Inspect existing SE conductors: if 4/0 AL or larger and undamaged, re-use; otherwise replace",
     "If no emergency disconnect exists, install DPF222R between meter and panel per NEC 230.85",
     "Weatherhead height: 10 ft AFF minimum, 12 ft preferred for AE clearance",
     "Apply NOALOX to all aluminum terminations — required by AE Design Criteria",

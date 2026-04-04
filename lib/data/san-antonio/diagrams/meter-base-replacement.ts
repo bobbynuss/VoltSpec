@@ -26,7 +26,7 @@ export const diagram = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 340
 
   <!-- SE conductors -->
   <line x1="170" y1="190" x2="170" y2="216" stroke="#facc15" stroke-width="2"/>
-  <text x="200" y="206" fill="#64748b" font-size="7">2/0 AL SER or XHHW-2</text>
+  <text x="200" y="206" fill="#64748b" font-size="7">4/0 AL SER or XHHW-2</text>
 
   <!-- Main disconnect -->
   <rect x="90" y="216" width="160" height="56" rx="3" fill="#1e293b" stroke="#facc15" stroke-width="1.5"/>

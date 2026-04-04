@@ -551,7 +551,7 @@ export default function LoadCalcPage() {
                     </Badge>
                   </div>
                   <div className="mt-4">
-                    <Link href={`/?job=${result.recommendedService <= 100 ? "100a-subpanel" : result.recommendedService <= 200 ? "new-200a-residential" : result.recommendedService <= 320 ? "new-320a-service" : "new-400a-service"}`}>
+                    <Link href={`/app?job=${result.recommendedService <= 100 ? "100a-subpanel" : result.recommendedService <= 200 ? "new-200a-residential" : result.recommendedService <= 320 ? "new-320a-service" : "new-400a-service"}`}>
                       <Button
                         size="sm"
                         className="bg-yellow-400 text-gray-900 hover:bg-yellow-300 active:bg-yellow-500 font-semibold text-xs transition-colors"

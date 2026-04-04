@@ -46,7 +46,7 @@ export default function LandingPage() {
         </h1>
         <p className="mt-6 text-lg sm:text-xl text-gray-400 max-w-2xl leading-relaxed">
           Instantly generate accurate materials lists, realistic SVG blueprints,
-          and ready-to-submit PDF packages — with real Elliott Electric pricing
+          and ready-to-submit PDF packages — with real Elliott Electric Supply pricing
           and NEC&nbsp;2026 code compliance.
         </p>
         <div className="mt-10 flex flex-col sm:flex-row gap-4">
@@ -81,7 +81,7 @@ export default function LandingPage() {
             />
             <FeatureCard
               icon={<DollarSign className="w-7 h-7" />}
-              title="Real Elliott Pricing"
+              title="Real EES Pricing"
               description="Actual part numbers and pricing from Elliott Electric Supply with direct links and Bulk Entry support."
             />
             <FeatureCard

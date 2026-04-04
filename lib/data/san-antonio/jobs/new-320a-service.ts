@@ -20,7 +20,7 @@ export const job: Job = {
     "City of San Antonio electrical permit required + CPS Energy Residential Service Application with load calc",
   ],
   materials: [
-    { item: "320A Ringless Meter Socket", quantity: "1", spec: "Milbank U2448-X - 320A ringless lever-bypass meter socket, OH/UG, 4-jaw, single-phase - CPS Energy approved Class 320. Vendor: MIB (Elliott Electric)", unitPrice: 285.00 },
+    { item: "320A Ringless Meter Socket", quantity: "1", spec: "Milbank U2448-X - 320A ringless lever-bypass meter socket, OH/UG, 4-jaw, single-phase - CPS Energy approved Class 320. Vendor: MIB (Elliott Electric Supply)", unitPrice: 285.00 },
     { item: "200A BR Main Breaker Panel", quantity: "1", spec: "Eaton BRP40B200R - BR PON loadcenter 200A main breaker 40 space NEMA 3R, indoor/outdoor", unitPrice: 343.97 },
     { item: "Surge Protective Device", quantity: "1", spec: "Eaton BRNSURGE10 - Type BR 2-pole surge arrester", unitPrice: 136.51 },
     { item: "4/0 AWG AL XHHW-2 (black)", quantity: "30 ft", spec: "ALU XHHW4001000 - 4/0 AWG AL XHHW-2 600V black, service entrance conductors, sold per ft", unitPrice: 3.45 },

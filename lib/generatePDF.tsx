@@ -715,7 +715,7 @@ function VoltSpecDocument({ result, diagramPng }: DocProps) {
             "Materials List with Part Numbers",
             "Blueprint Notes",
             ...(job.svgDiagram ? ["Schematic Diagram"] : []),
-            "Preferred Supplier - Elliott Electric",
+            "Preferred Supplier - Elliott Electric Supply",
             "Official Reference Documents",
           ].map((label, i) => (
             <View key={label} style={styles.tocRow}>
@@ -811,7 +811,7 @@ function VoltSpecDocument({ result, diagramPng }: DocProps) {
                 </View>
                 <View style={styles.pricingDisclaimer} wrap={false}>
                   <Text style={styles.pricingDisclaimerText}>
-                    Rough cash-sale house-account pricing estimate only. Prices are approximate and will vary by location, timing, and your specific account discounts. Wire pricing excluded — speak to sales. Always verify current pricing with Elliott Electric.
+                    Rough cash-sale house-account pricing estimate only. Prices are approximate and will vary by location, timing, and your specific account discounts. Wire pricing excluded — speak to sales. Always verify current pricing with Elliott Electric Supply.
                   </Text>
                 </View>
               </>

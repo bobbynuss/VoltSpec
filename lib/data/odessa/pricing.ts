@@ -1,5 +1,5 @@
 /**
- * Odessa / Oncor Electric Delivery pricing derived from Elliott Electric
+ * Odessa / Oncor Electric Delivery pricing derived from Elliott Electric Supply
  * Permian Basin cash-sale invoices.
  *
  * Source invoices (Midland 62, Odessa 66, Pecos 117, Hobbs 76):

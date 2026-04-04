@@ -20,7 +20,7 @@ export const job: Job = {
     "Austin permit required: City of Austin Building Permit + Austin Energy ESPA with load calc",
   ],
   materials: [
-    { item: "320A Ringless Meter Socket", quantity: "1", spec: "Milbank U2448-X - 320A ringless lever-bypass meter socket, OH/UG, 4-jaw, single-phase - Austin Energy approved Class 320. Vendor: MIB (Elliott Electric)", unitPrice: 285.00 },
+    { item: "320A Ringless Meter Socket", quantity: "1", spec: "Milbank U2448-X - 320A ringless lever-bypass meter socket, OH/UG, 4-jaw, single-phase - Austin Energy approved Class 320. Vendor: MIB (Elliott Electric Supply)", unitPrice: 285.00 },
     { item: "200A CH Main Breaker Panel", quantity: "1", spec: "Eaton CHP42B200R - CH series 42-space 200A main breaker panel, plug-on neutral, indoor/outdoor", unitPrice: 351.80 },
     { item: "4/0 AWG AL XHHW-2 (black)", quantity: "30 ft", spec: "ALU XHHW4001000 - 4/0 AWG AL XHHW-2 600V black, service entrance conductors, sold per ft", unitPrice: 3.45 },
     { item: "4/0 AWG AL XHHW-2 (red)", quantity: "30 ft", spec: "ALU XHHW400R1000 - 4/0 AWG AL XHHW-2 600V red, service entrance conductors, sold per ft", unitPrice: 3.45 },

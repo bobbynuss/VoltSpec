@@ -1,5 +1,5 @@
 /**
- * Houston / CenterPoint pricing derived from Elliott Electric Houston-area
+ * Houston / CenterPoint pricing derived from Elliott Electric Supply Houston-area
  * cash-sale invoices.
  *
  * Source invoices (Stafford Branch 65 / Deer Park Branch 130):

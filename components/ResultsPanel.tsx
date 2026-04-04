@@ -59,7 +59,7 @@ function ElliottLinks({
           href={direct}
           target="_blank"
           rel="noopener noreferrer"
-          title="Direct product page on Elliott Electric"
+          title="Direct product page on Elliott Electric Supply"
           className="inline-flex items-center gap-1 text-xs text-yellow-400 hover:text-yellow-300 transition-colors duration-150 font-semibold"
         >
           <Zap className="w-3 h-3 fill-current" />
@@ -71,7 +71,7 @@ function ElliottLinks({
         href={search}
         target="_blank"
         rel="noopener noreferrer"
-        title="Search on Elliott Electric"
+        title="Search on Elliott Electric Supply"
         className={`inline-flex items-center gap-1 text-xs transition-colors duration-150 font-medium ${
           direct ? "text-gray-500 hover:text-gray-300" : "text-yellow-400/70 hover:text-yellow-400"
         }`}
@@ -346,7 +346,7 @@ export function ResultsPanel({ result }: ResultsPanelProps) {
       // Open Elliott Bulk Entry / Rapid Order in a new tab
       window.open("https://www.elliottelectric.com/P/Rapid", "_blank", "noopener,noreferrer");
       // Show toast
-      setToast("List copied to clipboard and Elliott Bulk Entry opened in new tab. Paste into the Bulk Pad.");
+      setToast("List copied to clipboard and EES Bulk Entry opened in new tab. Paste into the Bulk Pad.");
       setTimeout(() => setToast(null), 5000);
     });
   };
@@ -485,7 +485,7 @@ export function ResultsPanel({ result }: ResultsPanelProps) {
                 <Button size="sm" onClick={handleCopyMaterials} className="bg-yellow-400 hover:bg-yellow-300 active:bg-yellow-500 text-gray-900 font-semibold text-xs transition-colors duration-150 no-print">
                   {copied
                     ? <><ClipboardCheck className="w-3.5 h-3.5 mr-1.5" />Copied — paste into Bulk Pad!</>
-                    : <><Zap className="w-3.5 h-3.5 mr-1.5 fill-gray-900" />Order on Elliott — Copy &amp; Open</>}
+                    : <><Zap className="w-3.5 h-3.5 mr-1.5 fill-gray-900" />Order on EES — Copy &amp; Open</>}
                 </Button>
               </div>
               {hasPricing && (
@@ -503,7 +503,7 @@ export function ResultsPanel({ result }: ResultsPanelProps) {
               )}
               <div className="mt-2 flex items-center gap-3 p-2.5 rounded-lg bg-yellow-400/8 border border-yellow-400/20">
                 <Zap className="w-4 h-4 text-yellow-400 fill-yellow-400 shrink-0" />
-                <span className="text-xs text-gray-400 flex-1">Click <span className="text-yellow-400 font-semibold">Order on Elliott</span> to copy the list and open the Bulk Pad in one click. Each row also has direct Product and Search links.</span>
+                <span className="text-xs text-gray-400 flex-1">Click <span className="text-yellow-400 font-semibold">Order on EES</span> to copy the list and open the Bulk Pad in one click. Each row also has direct Product and Search links.</span>
                 <a href="https://www.elliottelectric.com/P/Rapid" target="_blank" rel="noopener noreferrer" className="text-xs text-yellow-400 hover:text-yellow-300 font-semibold whitespace-nowrap flex items-center gap-1 transition-colors">Bulk Entry ↗<ExternalLink className="w-3 h-3" /></a>
               </div>
               {/* Point of Attachment dropdown for meter jobs */}
@@ -541,7 +541,7 @@ export function ResultsPanel({ result }: ResultsPanelProps) {
                       {hasPricing && showPricing && (
                         <th className="pb-2 text-gray-500 font-medium text-xs uppercase tracking-wider text-right pr-4 whitespace-nowrap">Est. Cost</th>
                       )}
-                      <th className="pb-2 text-gray-500 font-medium text-xs uppercase tracking-wider text-right no-print">Elliott</th>
+                      <th className="pb-2 text-gray-500 font-medium text-xs uppercase tracking-wider text-right no-print">EES</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-[hsl(217,33%,16%)]">
@@ -580,13 +580,13 @@ export function ResultsPanel({ result }: ResultsPanelProps) {
                   </div>
                   <p className="text-xs text-gray-500 leading-relaxed bg-gray-800/40 rounded-lg p-3 border border-gray-700/50">
                     <span className="text-yellow-400 font-semibold">⚠️ Rough estimate only.</span>{" "}
-                    Rough cash-sale house-account pricing estimate only. Prices are approximate and will vary by location, timing, and your specific account discounts. Wire pricing excluded — speak to sales. Always verify current pricing with Elliott Electric.
+                    Rough cash-sale house-account pricing estimate only. Prices are approximate and will vary by location, timing, and your specific account discounts. Wire pricing excluded — speak to sales. Always verify current pricing with Elliott Electric Supply.
                   </p>
                 </div>
               )}
               <div className="mt-4 pt-4 border-t border-[hsl(217,33%,18%)] flex flex-col sm:flex-row items-start sm:items-center gap-3 no-print">
                 <p className="flex-1 text-xs text-gray-500">
-                  <span className="text-yellow-400 font-semibold">One-click workflow:</span> Hit the button → list is on your clipboard → Elliott&apos;s Bulk Pad opens → paste &amp; submit.
+                  <span className="text-yellow-400 font-semibold">One-click workflow:</span> Hit the button → list is on your clipboard → EES Bulk Pad opens → paste &amp; submit.
                 </p>
                 <div className="flex gap-2 shrink-0">
                   <Button
@@ -596,7 +596,7 @@ export function ResultsPanel({ result }: ResultsPanelProps) {
                   >
                     {copied
                       ? <><ClipboardCheck className="w-3.5 h-3.5 mr-1.5" />Paste into Bulk Pad</>
-                      : <><Zap className="w-3.5 h-3.5 mr-1.5 fill-gray-900" />Order on Elliott<ExternalLink className="w-3 h-3 ml-1.5" /></>}
+                      : <><Zap className="w-3.5 h-3.5 mr-1.5 fill-gray-900" />Order on EES<ExternalLink className="w-3 h-3 ml-1.5" /></>}
                   </Button>
                 </div>
               </div>
@@ -648,7 +648,7 @@ export function ResultsPanel({ result }: ResultsPanelProps) {
         {/* Suppliers Tab */}
         <TabsContent value="suppliers">
           <div className="space-y-4">
-            {/* Elliott Electric - featured */}
+            {/* Elliott Electric Supply - featured */}
             {suppliers[0] && (
               <Card className="bg-[hsl(222,47%,10%)] border-yellow-400/40 ring-1 ring-yellow-400/20">
                 <CardHeader className="pb-2">
@@ -694,9 +694,9 @@ export function ResultsPanel({ result }: ResultsPanelProps) {
                     className="mt-1 bg-yellow-400/10 text-yellow-400 border border-yellow-400/30 hover:bg-yellow-400/20 active:bg-yellow-400/30 text-xs transition-colors duration-150"
                   >
                     {copied ? (
-                      <><ClipboardCheck className="w-3.5 h-3.5 mr-1.5" />Paste into Elliott Bulk Pad</>
+                      <><ClipboardCheck className="w-3.5 h-3.5 mr-1.5" />Paste into EES Bulk Pad</>
                     ) : (
-                      <><Zap className="w-3.5 h-3.5 mr-1.5 fill-current" />Order on Elliott — Copy &amp; Open Bulk Pad</>
+                      <><Zap className="w-3.5 h-3.5 mr-1.5 fill-current" />Order on EES — Copy &amp; Open Bulk Pad</>
                     )}
                   </Button>
                 </CardContent>

@@ -1,5 +1,5 @@
 /**
- * Amarillo / Xcel Energy (SPS) pricing derived from Elliott Electric Amarillo
+ * Amarillo / Xcel Energy (SPS) pricing derived from Elliott Electric Supply Amarillo
  * cash-sale invoices.
  *
  * Source invoices (all from Elliott Amarillo, Branch 81):

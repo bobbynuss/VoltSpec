@@ -1,5 +1,5 @@
 /**
- * DFW / Oncor pricing derived from Elliott Electric Ft. Worth cash-sale invoices.
+ * DFW / Oncor pricing derived from Elliott Electric Supply Ft. Worth cash-sale invoices.
  *
  * Source invoices (all from Elliott Ft. Worth, Branch 25):
  *   25-76368-01 (03/28/2026) — Fastrac Installation Svcs

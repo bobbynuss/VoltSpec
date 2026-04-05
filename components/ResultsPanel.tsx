@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -24,6 +24,8 @@ import {
   ExternalLink,
   ClipboardCopy,
   ClipboardCheck,
+  Save,
+  Check,
 } from "lucide-react";
 import type { Job } from "@/lib/data";
 import { JURISDICTIONS } from "@/lib/data";
@@ -49,6 +51,7 @@ interface GenerateResult {
 
 interface ResultsPanelProps {
   result: GenerateResult;
+  onSave?: (name: string) => void;
 }
 
 function ElliottLinks({
@@ -92,7 +95,7 @@ function ElliottLinks({
   );
 }
 
-export function ResultsPanel({ result }: ResultsPanelProps) {
+export function ResultsPanel({ result, onSave }: ResultsPanelProps) {
   const { job, jurisdiction, city, generatedAt, disclaimer } = result;
   const jurisdictionData = JURISDICTIONS.find((j) => j.id === city);
   const utilityName = jurisdictionData?.utility ?? "Austin Energy";
@@ -375,6 +378,35 @@ export function ResultsPanel({ result }: ResultsPanelProps) {
     });
   };
 
+  // ── Save project inline UI state ──────────────────────────────────
+  const [saveMode, setSaveMode] = useState(false);
+  const [saveNameInput, setSaveNameInput] = useState("");
+  const [justSaved, setJustSaved] = useState(false);
+  const saveInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (saveMode && saveInputRef.current) {
+      saveInputRef.current.focus();
+    }
+  }, [saveMode]);
+
+  const defaultSaveName = `${job.label} — ${jurisdiction.split("(")[0].trim()}`;
+
+  const handleSaveClick = () => {
+    if (saveMode) {
+      // Commit save
+      const name = saveNameInput.trim() || defaultSaveName;
+      onSave?.(name);
+      setSaveMode(false);
+      setSaveNameInput("");
+      setJustSaved(true);
+      setTimeout(() => setJustSaved(false), 2500);
+    } else {
+      setSaveMode(true);
+      setSaveNameInput("");
+    }
+  };
+
   const handlePrint = () => window.print();
 
   const handleDownloadPDF = async () => {
@@ -414,35 +446,82 @@ export function ResultsPanel({ result }: ResultsPanelProps) {
             </span>
           </div>
         </div>
-        <div className="grid grid-cols-3 sm:flex gap-2 no-print">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={handlePrint}
-            className="border-gray-700 text-gray-300 hover:text-white hover:border-gray-500 active:bg-gray-700 transition-colors duration-150 h-11 sm:h-9 text-xs sm:text-sm"
-          >
-            <Printer className="w-4 h-4 sm:mr-1.5" />
-            <span className="hidden sm:inline">Print</span>
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={handleDownloadJobSheet}
-            className="border-yellow-400/40 text-yellow-400 hover:text-yellow-300 hover:border-yellow-400 active:bg-yellow-400/10 transition-colors duration-150 font-semibold h-11 sm:h-9 text-xs sm:text-sm whitespace-nowrap"
-          >
-            <FileText className="w-4 h-4 sm:mr-1.5" />
-            <span className="sm:hidden ml-1">Sheet</span>
-            <span className="hidden sm:inline">Job Sheet</span>
-          </Button>
-          <Button
-            size="sm"
-            onClick={handleDownloadPDF}
-            className="bg-yellow-400 text-gray-900 hover:bg-yellow-300 active:bg-yellow-500 font-semibold transition-colors duration-150 h-11 sm:h-9 text-xs sm:text-sm whitespace-nowrap"
-          >
-            <Download className="w-4 h-4 sm:mr-1.5" />
-            <span className="sm:hidden ml-1">PDF</span>
-            <span className="hidden sm:inline">PDF Package</span>
-          </Button>
+        <div className="flex flex-col gap-2 no-print">
+          <div className="grid grid-cols-4 sm:flex gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handlePrint}
+              className="border-gray-700 text-gray-300 hover:text-white hover:border-gray-500 active:bg-gray-700 transition-colors duration-150 h-11 sm:h-9 text-xs sm:text-sm"
+            >
+              <Printer className="w-4 h-4 sm:mr-1.5" />
+              <span className="hidden sm:inline">Print</span>
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleDownloadJobSheet}
+              className="border-yellow-400/40 text-yellow-400 hover:text-yellow-300 hover:border-yellow-400 active:bg-yellow-400/10 transition-colors duration-150 font-semibold h-11 sm:h-9 text-xs sm:text-sm whitespace-nowrap"
+            >
+              <FileText className="w-4 h-4 sm:mr-1.5" />
+              <span className="sm:hidden ml-1">Sheet</span>
+              <span className="hidden sm:inline">Job Sheet</span>
+            </Button>
+            <Button
+              size="sm"
+              onClick={handleDownloadPDF}
+              className="bg-yellow-400 text-gray-900 hover:bg-yellow-300 active:bg-yellow-500 font-semibold transition-colors duration-150 h-11 sm:h-9 text-xs sm:text-sm whitespace-nowrap"
+            >
+              <Download className="w-4 h-4 sm:mr-1.5" />
+              <span className="sm:hidden ml-1">PDF</span>
+              <span className="hidden sm:inline">PDF Package</span>
+            </Button>
+            {onSave && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleSaveClick}
+                className={`transition-colors duration-150 h-11 sm:h-9 text-xs sm:text-sm whitespace-nowrap ${
+                  justSaved
+                    ? "border-emerald-500/50 text-emerald-400 hover:text-emerald-300"
+                    : saveMode
+                      ? "border-yellow-400 text-yellow-400 bg-yellow-400/10 hover:bg-yellow-400/20"
+                      : "border-cyan-500/40 text-cyan-400 hover:text-cyan-300 hover:border-cyan-400"
+                }`}
+              >
+                {justSaved ? (
+                  <><Check className="w-4 h-4 sm:mr-1.5" /><span className="hidden sm:inline">Saved!</span></>
+                ) : saveMode ? (
+                  <><Save className="w-4 h-4 sm:mr-1.5" /><span className="hidden sm:inline">Confirm</span></>
+                ) : (
+                  <><Save className="w-4 h-4 sm:mr-1.5" /><span className="hidden sm:inline">Save Job</span></>
+                )}
+              </Button>
+            )}
+          </div>
+          {/* Inline save name input */}
+          {saveMode && onSave && (
+            <div className="flex gap-2 items-center animate-in fade-in slide-in-from-top-1 duration-150">
+              <input
+                ref={saveInputRef}
+                type="text"
+                value={saveNameInput}
+                onChange={(e) => setSaveNameInput(e.target.value)}
+                placeholder={defaultSaveName}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") handleSaveClick();
+                  if (e.key === "Escape") { setSaveMode(false); setSaveNameInput(""); }
+                }}
+                className="flex-1 px-3 py-1.5 rounded-md text-xs bg-[hsl(217,33%,13%)] border border-[hsl(217,33%,22%)] text-white placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-cyan-400 focus:border-cyan-400 h-8"
+              />
+              <button
+                onClick={() => { setSaveMode(false); setSaveNameInput(""); }}
+                className="text-xs text-gray-500 hover:text-gray-300 px-2 py-1"
+              >
+                Cancel
+              </button>
+            </div>
+          )}
         </div>
       </div>
 

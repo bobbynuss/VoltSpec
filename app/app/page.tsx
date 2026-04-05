@@ -10,7 +10,9 @@ import { ProjectsPanel } from "@/components/ProjectsPanel";
 import { Zap, Menu, X, Calculator, FolderOpen } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { Job } from "@/lib/data";
+import { saveProject } from "@/lib/projects";
 import type { SavedProject } from "@/lib/projects";
+import { JOB_TYPES, JURISDICTIONS } from "@/lib/data";
 
 interface GenerateResult {
   job: Job;
@@ -51,6 +53,21 @@ function HomeContent() {
       setLoading(false);
       setSidebarOpen(false);
     }
+  };
+
+  const handleSaveJob = (name: string) => {
+    const state = sidebarRef.current?.getState();
+    if (!state?.jobId) return;
+    const jobLabel = JOB_TYPES.find((j) => j.id === state.jobId)?.label ?? state.jobId;
+    const cityLabel = JURISDICTIONS.find((j) => j.id === state.city)?.shortLabel ?? state.city;
+    saveProject({
+      name,
+      city: state.city,
+      zip: state.zip,
+      jobId: state.jobId,
+      jobLabel,
+      cityLabel,
+    });
   };
 
   const handleLoadProject = (project: SavedProject) => {
@@ -156,7 +173,7 @@ function HomeContent() {
         {/* Main */}
         <main className="flex-1 overflow-y-auto p-3 sm:p-4 lg:p-6">
           {result ? (
-            <ResultsPanel result={result} />
+            <ResultsPanel result={result} onSave={handleSaveJob} />
           ) : (
             <div className="flex flex-col items-center justify-center h-full min-h-[60vh] text-center px-4">
               <Zap className="w-16 h-16 text-yellow-400 fill-yellow-400 mb-4 opacity-20" />

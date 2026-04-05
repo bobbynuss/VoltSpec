@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useImperativeHandle, forwardRef } from "react";
 import Link from "next/link";
-import { Zap, MapPin, Briefcase, Building2, Calculator } from "lucide-react";
+import { Zap, MapPin, Briefcase, Building2, Calculator, FolderOpen } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -14,16 +14,34 @@ import {
 import { JOB_TYPES, JURISDICTIONS } from "@/lib/data";
 import { ChatWidget } from "@/components/ChatWidget";
 
+export interface SidebarHandle {
+  getState: () => { city: string; zip: string; jobId: string };
+  setState: (state: { city: string; zip: string; jobId: string }) => void;
+}
+
 interface SidebarProps {
   onGenerate: (jobId: string, zip: string, city: string) => void;
+  onOpenProjects: () => void;
   loading: boolean;
   jobContext?: string;
 }
 
-export function Sidebar({ onGenerate, loading, jobContext }: SidebarProps) {
+export const Sidebar = forwardRef<SidebarHandle, SidebarProps>(function Sidebar(
+  { onGenerate, onOpenProjects, loading, jobContext },
+  ref,
+) {
   const [city, setCity] = useState("austin");
   const [zip, setZip] = useState("78744");
   const [jobId, setJobId] = useState("");
+
+  useImperativeHandle(ref, () => ({
+    getState: () => ({ city, zip, jobId }),
+    setState: ({ city: c, zip: z, jobId: j }) => {
+      setCity(c);
+      setZip(z);
+      setJobId(j);
+    },
+  }));
 
   const selectedJurisdiction = JURISDICTIONS.find((j) => j.id === city);
 
@@ -34,8 +52,6 @@ export function Sidebar({ onGenerate, loading, jobContext }: SidebarProps) {
     if (jur) {
       setZip(jur.defaultZip);
     }
-    // Reset job selection when switching cities (same job types available)
-    // Job IDs are the same across jurisdictions, so no reset needed
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -47,9 +63,19 @@ export function Sidebar({ onGenerate, loading, jobContext }: SidebarProps) {
   return (
     <div className="p-5 h-full flex flex-col gap-6">
       {/* Header */}
-      <div className="hidden lg:flex items-center gap-2 pb-2 border-b border-[hsl(217,33%,18%)]">
-        <Zap className="w-5 h-5 text-yellow-400 fill-yellow-400" />
-        <span className="text-sm font-semibold text-gray-300">Job Setup</span>
+      <div className="hidden lg:flex items-center justify-between pb-2 border-b border-[hsl(217,33%,18%)]">
+        <div className="flex items-center gap-2">
+          <Zap className="w-5 h-5 text-yellow-400 fill-yellow-400" />
+          <span className="text-sm font-semibold text-gray-300">Job Setup</span>
+        </div>
+        <button
+          onClick={onOpenProjects}
+          className="flex items-center gap-1.5 text-xs text-gray-500 hover:text-yellow-400 transition-colors cursor-pointer"
+          title="Saved Projects"
+        >
+          <FolderOpen className="w-3.5 h-3.5" />
+          <span>Projects</span>
+        </button>
       </div>
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-5">
@@ -158,6 +184,15 @@ export function Sidebar({ onGenerate, loading, jobContext }: SidebarProps) {
         </Button>
       </form>
 
+      {/* Saved Projects button (mobile-visible) */}
+      <button
+        onClick={onOpenProjects}
+        className="lg:hidden flex items-center gap-2 px-3 py-3 rounded-lg border border-[hsl(217,33%,22%)] text-gray-400 hover:text-yellow-400 hover:border-yellow-400/40 transition-colors text-sm font-medium touch-manipulation"
+      >
+        <FolderOpen className="w-4 h-4 text-yellow-400" />
+        Saved Projects
+      </button>
+
       {/* Load Calculator link */}
       <Link
         href="/load-calc"
@@ -180,4 +215,4 @@ export function Sidebar({ onGenerate, loading, jobContext }: SidebarProps) {
       </div>
     </div>
   );
-}
+});

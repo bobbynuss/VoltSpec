@@ -1,13 +1,16 @@
 "use client";
 
-import { useState, useEffect, Suspense } from "react";
+import { useState, useEffect, useRef, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Sidebar } from "@/components/Sidebar";
+import type { SidebarHandle } from "@/components/Sidebar";
 import { ResultsPanel } from "@/components/ResultsPanel";
-import { Zap, Menu, X, Calculator } from "lucide-react";
+import { ProjectsPanel } from "@/components/ProjectsPanel";
+import { Zap, Menu, X, Calculator, FolderOpen } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { Job } from "@/lib/data";
+import type { SavedProject } from "@/lib/projects";
 
 interface GenerateResult {
   job: Job;
@@ -29,6 +32,8 @@ function HomeContent() {
   const [result, setResult] = useState<GenerateResult | null>(null);
   const [loading, setLoading] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [projectsOpen, setProjectsOpen] = useState(false);
+  const sidebarRef = useRef<SidebarHandle>(null);
 
   const handleGenerate = async (jobId: string, zip: string, city?: string) => {
     setLoading(true);
@@ -48,6 +53,17 @@ function HomeContent() {
     }
   };
 
+  const handleLoadProject = (project: SavedProject) => {
+    // Set sidebar state
+    sidebarRef.current?.setState({
+      city: project.city,
+      zip: project.zip,
+      jobId: project.jobId,
+    });
+    // Auto-generate
+    handleGenerate(project.jobId, project.zip, project.city);
+  };
+
   // Auto-generate when ?job= query param is present (e.g. from Load Calculator)
   useEffect(() => {
     const jobParam = searchParams.get("job");
@@ -58,6 +74,13 @@ function HomeContent() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams]);
+
+  // Get current sidebar state for ProjectsPanel
+  const sidebarState = sidebarRef.current?.getState() ?? {
+    city: "austin",
+    zip: "78744",
+    jobId: "",
+  };
 
   return (
     <div className="min-h-screen flex flex-col bg-[hsl(222,47%,7%)]">
@@ -79,6 +102,14 @@ function HomeContent() {
           NEC 2026 · {result?.jurisdiction ?? "Texas"}
         </span>
         <div className="ml-auto flex items-center gap-3 sm:gap-4">
+          <button
+            onClick={() => setProjectsOpen(true)}
+            className="flex items-center gap-1.5 text-xs text-gray-400 hover:text-yellow-400 transition-colors font-medium min-h-[44px] px-2 cursor-pointer"
+            title="Saved Projects"
+          >
+            <FolderOpen className="w-4 h-4 sm:w-3.5 sm:h-3.5" />
+            <span className="hidden sm:inline">Projects</span>
+          </button>
           <Link
             href="/load-calc"
             className="flex items-center gap-1.5 text-xs text-gray-400 hover:text-yellow-400 transition-colors font-medium min-h-[44px] px-2"
@@ -113,7 +144,13 @@ function HomeContent() {
             overflow-y-auto pt-16 lg:pt-0
           `}
         >
-          <Sidebar onGenerate={handleGenerate} loading={loading} jobContext={result?.job?.label} />
+          <Sidebar
+            ref={sidebarRef}
+            onGenerate={handleGenerate}
+            onOpenProjects={() => setProjectsOpen(true)}
+            loading={loading}
+            jobContext={result?.job?.label}
+          />
         </aside>
 
         {/* Main */}
@@ -138,7 +175,15 @@ function HomeContent() {
         </main>
       </div>
 
-
+      {/* Projects slide-out panel */}
+      <ProjectsPanel
+        open={projectsOpen}
+        onClose={() => setProjectsOpen(false)}
+        onLoad={handleLoadProject}
+        currentCity={sidebarState.city}
+        currentZip={sidebarState.zip}
+        currentJobId={sidebarState.jobId}
+      />
     </div>
   );
 }

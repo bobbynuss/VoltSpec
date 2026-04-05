@@ -18,6 +18,8 @@ import { job as new_320a_service } from "./jobs/new-320a-service";
 import { job as meter_base_replacement } from "./jobs/meter-base-replacement";
 import { job as commercial_400a_3phase } from "./jobs/commercial-400a-3phase";
 import { job as whole_house_battery_solar } from "./jobs/whole-house-battery-solar";
+import { job as span_panel_upgrade } from "./jobs/span-panel-upgrade";
+import { job as span_subpanel } from "./jobs/span-subpanel";
 
 export const SA_JOBS: Job[] = [
   new_200a_residential,
@@ -39,4 +41,6 @@ export const SA_JOBS: Job[] = [
   commercial_3phase_200a,
   commercial_400a_3phase,
   landscape_lighting,
+  span_panel_upgrade,
+  span_subpanel,
 ];

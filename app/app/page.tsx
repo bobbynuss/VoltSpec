@@ -30,13 +30,13 @@ function HomeContent() {
   const [loading, setLoading] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  const handleGenerate = async (jobId: string, zip: string, city?: string) => {
+  const handleGenerate = async (jobId: string, zip: string, city?: string, panelType?: string) => {
     setLoading(true);
     try {
       const res = await fetch("/api/generate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ jobId, zip, city }),
+        body: JSON.stringify({ jobId, zip, city, panelType }),
       });
       const data = await res.json();
       setResult(data);

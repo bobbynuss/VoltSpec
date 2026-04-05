@@ -13,3 +13,6 @@ export {
   getJurisdictionByZip,
   getJobForJurisdiction,
 } from "./jurisdictions";
+
+// SPAN panel overrides
+export { SPAN_ELIGIBLE_JOBS, applySpanOverride } from "./span-overrides";

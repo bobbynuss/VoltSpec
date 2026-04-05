@@ -5,10 +5,11 @@ import {
   getJurisdictionById,
   getJurisdictionByZip,
 } from "@/lib/data";
+import { applySpanOverride, SPAN_ELIGIBLE_JOBS } from "@/lib/data/span-overrides";
 
 export async function POST(req: NextRequest) {
   try {
-    const { jobId, zip, city } = await req.json();
+    const { jobId, zip, city, panelType } = await req.json();
     if (!jobId) {
       return NextResponse.json({ error: "jobId required" }, { status: 400 });
     }
@@ -32,6 +33,11 @@ export async function POST(req: NextRequest) {
 
     if (!job) {
       return NextResponse.json({ error: "Job type not found" }, { status: 404 });
+    }
+
+    // Apply SPAN panel override if requested
+    if (panelType === "span" && SPAN_ELIGIBLE_JOBS.has(job.id)) {
+      job = applySpanOverride(job);
     }
 
     const jurisdictionLabel = jurisdiction?.label ?? "Austin, TX (Travis County)";

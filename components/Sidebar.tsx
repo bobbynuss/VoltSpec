@@ -12,10 +12,11 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { JOB_TYPES, JURISDICTIONS } from "@/lib/data";
+import { SPAN_ELIGIBLE_JOBS } from "@/lib/data/span-overrides";
 import { ChatWidget } from "@/components/ChatWidget";
 
 interface SidebarProps {
-  onGenerate: (jobId: string, zip: string, city: string) => void;
+  onGenerate: (jobId: string, zip: string, city: string, panelType?: string) => void;
   loading: boolean;
   jobContext?: string;
 }
@@ -24,6 +25,9 @@ export function Sidebar({ onGenerate, loading, jobContext }: SidebarProps) {
   const [city, setCity] = useState("austin");
   const [zip, setZip] = useState("78744");
   const [jobId, setJobId] = useState("");
+  const [panelType, setPanelType] = useState("standard");
+
+  const showPanelTypeSelector = SPAN_ELIGIBLE_JOBS.has(jobId);
 
   const selectedJurisdiction = JURISDICTIONS.find((j) => j.id === city);
 
@@ -41,7 +45,7 @@ export function Sidebar({ onGenerate, loading, jobContext }: SidebarProps) {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!jobId) return;
-    onGenerate(jobId, zip, city);
+    onGenerate(jobId, zip, city, showPanelTypeSelector ? panelType : undefined);
   };
 
   return (
@@ -129,6 +133,40 @@ export function Sidebar({ onGenerate, loading, jobContext }: SidebarProps) {
             </SelectContent>
           </Select>
         </div>
+
+        {/* Panel Type (SPAN option) - only for applicable jobs */}
+        {showPanelTypeSelector && (
+          <div className="flex flex-col gap-2">
+            <label className="flex items-center gap-1.5 text-xs font-semibold text-gray-400 uppercase tracking-wider">
+              <Zap className="w-3.5 h-3.5 text-cyan-400" />
+              Panel Type
+            </label>
+            <Select onValueChange={(v) => setPanelType(v ?? "standard")} value={panelType}>
+              <SelectTrigger className="bg-[hsl(217,33%,13%)] border-[hsl(217,33%,22%)] text-white focus:ring-cyan-400 !h-11 sm:!h-9">
+                <SelectValue placeholder="Select panel type…" />
+              </SelectTrigger>
+              <SelectContent className="bg-[hsl(222,47%,10%)] border-[hsl(217,33%,22%)] text-white">
+                <SelectItem
+                  value="standard"
+                  className="focus:bg-yellow-400/10 focus:text-yellow-300 cursor-pointer"
+                >
+                  Standard (Eaton)
+                </SelectItem>
+                <SelectItem
+                  value="span"
+                  className="focus:bg-cyan-400/10 focus:text-cyan-300 cursor-pointer"
+                >
+                  ⚡ SPAN Smart Panel
+                </SelectItem>
+              </SelectContent>
+            </Select>
+            {panelType === "span" && (
+              <p className="text-xs text-cyan-600">
+                Wi-Fi required · Per-circuit monitoring & control
+              </p>
+            )}
+          </div>
+        )}
 
         {/* Generate Button */}
         <Button

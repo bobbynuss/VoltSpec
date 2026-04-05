@@ -1,0 +1,14 @@
+{
+  "name": "VoltSpec — Electrical Estimating Tool",
+  "short_name": "VoltSpec",
+  "description": "Professional NEC 2026 electrical job specs, materials lists, and estimating for Texas electricians.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#facc15",
+  "icons": [
+    { "src": "/icon-192x192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/icon-384x384.png", "sizes": "384x384", "type": "image/png" },
+    { "src": "/icon-512x512.png", "sizes": "512x512", "type": "image/png" }
+  ]
+}

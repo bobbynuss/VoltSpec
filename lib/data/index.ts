@@ -14,5 +14,18 @@ export {
   getJobForJurisdiction,
 } from "./jurisdictions";
 
-// SPAN panel overrides
+// Panel type overrides (4-option: CH, BR, PRL, SPAN)
+export type { PanelTypeId, PanelTypeOption } from "./panel-overrides";
+export {
+  PANEL_TYPE_OPTIONS,
+  PANEL_ELIGIBLE_JOBS,
+  getDefaultPanelType,
+  applyPanelOverride,
+} from "./panel-overrides";
+
+// Material grouping
+export type { MaterialGroupId, MaterialGroup } from "./material-groups";
+export { groupMaterials } from "./material-groups";
+
+// Legacy SPAN overrides (kept for backward compat)
 export { SPAN_ELIGIBLE_JOBS, applySpanOverride } from "./span-overrides";

@@ -29,6 +29,15 @@ import type { Job } from "@/lib/data";
 import { JURISDICTIONS } from "@/lib/data";
 import { POA_OPTIONS, DEFAULT_POA_ID, isMeterJob } from "@/lib/data/pointOfAttachment";
 import type { POAOption } from "@/lib/data/pointOfAttachment";
+import {
+  PANEL_TYPE_OPTIONS,
+  PANEL_ELIGIBLE_JOBS,
+  getDefaultPanelType,
+  applyPanelOverride,
+} from "@/lib/data/panel-overrides";
+import type { PanelTypeId } from "@/lib/data/panel-overrides";
+import { groupMaterials } from "@/lib/data/material-groups";
+import type { MaterialGroup } from "@/lib/data/material-groups";
 
 interface GenerateResult {
   job: Job;
@@ -107,22 +116,37 @@ export function ResultsPanel({ result }: ResultsPanelProps) {
   const [poaId, setPoaId] = useState(DEFAULT_POA_ID);
   const poaOption = POA_OPTIONS.find((o) => o.id === poaId) ?? POA_OPTIONS[0];
 
+  // --- Panel Type selector state ---
+  const showPanelSelector = PANEL_ELIGIBLE_JOBS.has(job.id);
+  const defaultPanelType = getDefaultPanelType(city ?? "austin");
+  const [panelType, setPanelType] = useState<PanelTypeId>(defaultPanelType);
+
+  // Reset panel type when city/job changes
+  useEffect(() => {
+    setPanelType(getDefaultPanelType(city ?? "austin"));
+  }, [city, job.id]);
+
+  // Apply panel override to get effective job
+  const panelJob = showPanelSelector
+    ? applyPanelOverride(job, panelType)
+    : job;
+
   // Build effective materials / blueprintNotes / svgDiagram with POA injected
   const effectiveMaterials = showPOA
-    ? [...job.materials, ...poaOption.materials]
-    : job.materials;
+    ? [...panelJob.materials, ...poaOption.materials]
+    : panelJob.materials;
 
-  const effectiveBlueprintNotes = showPOA && job.blueprintNotes
-    ? [...job.blueprintNotes, poaOption.blueprintNote]
-    : job.blueprintNotes;
+  const effectiveBlueprintNotes = showPOA && panelJob.blueprintNotes
+    ? [...panelJob.blueprintNotes, poaOption.blueprintNote]
+    : panelJob.blueprintNotes;
 
-  const effectiveSvgDiagram = showPOA && job.svgDiagram
-    ? job.svgDiagram.replace(
+  const effectiveSvgDiagram = showPOA && panelJob.svgDiagram
+    ? panelJob.svgDiagram.replace(
         // Inject POA label just before the closing </svg> tag
         /<\/svg>\s*$/,
         `<text x="170" y="38" text-anchor="middle" fill="#a78bfa" font-size="8" font-style="italic">${poaOption.svgLabel}</text>\n</svg>`
       )
-    : job.svgDiagram;
+    : panelJob.svgDiagram;
 
   // Extract part number from spec string
   const extractPartNumber = (spec: string): string | null => {
@@ -461,7 +485,7 @@ export function ResultsPanel({ result }: ResultsPanelProps) {
             </CardHeader>
             <CardContent>
               <ul className="space-y-3">
-                {job.requirements.map((req, i) => (
+                {panelJob.requirements.map((req, i) => (
                   <li key={i} className="flex gap-3 text-sm">
                     <span className="text-yellow-400 font-bold shrink-0 w-5 mt-0.5">{i + 1}.</span>
                     <span className="text-gray-300 leading-relaxed">{req}</span>
@@ -506,6 +530,30 @@ export function ResultsPanel({ result }: ResultsPanelProps) {
                 <span className="text-xs text-gray-400 flex-1">Click <span className="text-yellow-400 font-semibold">Order on EES</span> to copy the list and open the Bulk Pad in one click. Each row also has direct Product and Search links.</span>
                 <a href="https://www.elliottelectric.com/P/Rapid" target="_blank" rel="noopener noreferrer" className="text-xs text-yellow-400 hover:text-yellow-300 font-semibold whitespace-nowrap flex items-center gap-1 transition-colors">Bulk Entry ↗<ExternalLink className="w-3 h-3" /></a>
               </div>
+              {/* Panel Type selector — inside Materials tab for panel-eligible jobs */}
+              {showPanelSelector && (
+                <div className="mt-3 flex flex-col sm:flex-row sm:items-center gap-2 p-3 rounded-lg bg-cyan-500/8 border border-cyan-500/25 no-print">
+                  <div className="flex items-center gap-2 shrink-0">
+                    <Zap className="w-4 h-4 text-cyan-400 shrink-0" />
+                    <span className="text-xs text-cyan-300 font-semibold whitespace-nowrap">Panel Type</span>
+                  </div>
+                  <select
+                    value={panelType}
+                    onChange={(e) => setPanelType(e.target.value as PanelTypeId)}
+                    className="flex-1 text-xs bg-[hsl(222,47%,12%)] border border-cyan-500/30 text-gray-200 rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-cyan-400/50 cursor-pointer transition-colors hover:border-cyan-400/50 appearance-none"
+                    style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2322d3ee' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E")`, backgroundRepeat: "no-repeat", backgroundPosition: "right 10px center" }}
+                  >
+                    {PANEL_TYPE_OPTIONS.map((opt) => (
+                      <option key={opt.id} value={opt.id}>
+                        {opt.label}{opt.id === defaultPanelType ? " (recommended)" : ""}
+                      </option>
+                    ))}
+                  </select>
+                  <span className="text-[10px] text-gray-500 sm:ml-1">
+                    {PANEL_TYPE_OPTIONS.find((o) => o.id === panelType)?.description}
+                  </span>
+                </div>
+              )}
               {/* Point of Attachment dropdown for meter jobs */}
               {showPOA && (
                 <div className="mt-3 flex flex-col sm:flex-row sm:items-center gap-2 p-3 rounded-lg bg-purple-500/8 border border-purple-500/25 no-print">
@@ -531,47 +579,59 @@ export function ResultsPanel({ result }: ResultsPanelProps) {
               <p className="sm:hidden text-xs text-gray-600 mb-2 flex items-center gap-1">
                 <span>←</span> Swipe table to see all columns <span>→</span>
               </p>
-              <div className="overflow-x-auto -mx-4 sm:mx-0 px-4 sm:px-0 scroll-touch">
-                <table className="w-full text-sm min-w-[600px]">
-                  <thead>
-                    <tr className="border-b border-[hsl(217,33%,22%)] text-left">
-                      <th className="pb-2 text-gray-500 font-medium text-xs uppercase tracking-wider pr-3 sm:pr-4">Item</th>
-                      <th className="pb-2 text-gray-500 font-medium text-xs uppercase tracking-wider pr-3 sm:pr-4 whitespace-nowrap">Qty</th>
-                      <th className="pb-2 text-gray-500 font-medium text-xs uppercase tracking-wider">Specification</th>
-                      {hasPricing && showPricing && (
-                        <th className="pb-2 text-gray-500 font-medium text-xs uppercase tracking-wider text-right pr-4 whitespace-nowrap">Est. Cost</th>
-                      )}
-                      <th className="pb-2 text-gray-500 font-medium text-xs uppercase tracking-wider text-right no-print">EES</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-[hsl(217,33%,16%)]">
-                    {effectiveMaterials.map((mat, i) => (
-                      <tr key={i} className="hover:bg-white/2 transition-colors">
-                        <td className="py-3 sm:py-3 pr-3 sm:pr-4 font-medium text-white whitespace-nowrap text-xs sm:text-sm">{mat.item}</td>
-                        <td className="py-3 sm:py-3 pr-3 sm:pr-4 text-yellow-400 font-semibold whitespace-nowrap text-xs sm:text-sm">{mat.quantity}</td>
-                        <td className="py-3 sm:py-3 text-gray-400 leading-relaxed text-xs sm:text-sm">{mat.spec}</td>
-                        {hasPricing && showPricing && (
-                          <td className="py-3 pr-4 text-right whitespace-nowrap">
-                            {isWireItem(mat.item, mat.spec) ? (
-                              <span className="text-yellow-400/80 text-xs italic">Speak to sales</span>
-                            ) : mat.unitPrice != null ? (
-                              <div>
-                                <span className="text-gray-500 text-xs">{fmtPrice(mat.unitPrice)} ea</span>
-                                <div className="text-emerald-400 font-semibold text-sm">{fmtPrice(mat.unitPrice * parseQtyNum(mat.quantity))}</div>
-                              </div>
-                            ) : (
-                              <span className="text-gray-600">—</span>
+
+              {/* Grouped materials rendering */}
+              {groupMaterials(effectiveMaterials).map((group) => (
+                <div key={group.id} className="mb-6 last:mb-0">
+                  {/* Group header */}
+                  <div className="flex items-center gap-2 mb-2 pb-1.5 border-b border-[hsl(217,33%,22%)]">
+                    <span className="text-sm">{group.icon}</span>
+                    <h4 className="text-xs font-bold text-gray-300 uppercase tracking-wider">{group.label}</h4>
+                    <span className="text-[10px] text-gray-600 ml-auto">{group.items.length} item{group.items.length !== 1 ? "s" : ""}</span>
+                  </div>
+                  <div className="overflow-x-auto -mx-4 sm:mx-0 px-4 sm:px-0 scroll-touch">
+                    <table className="w-full text-sm min-w-[600px]">
+                      <thead>
+                        <tr className="text-left">
+                          <th className="pb-1.5 text-gray-600 font-medium text-[10px] uppercase tracking-wider pr-3 sm:pr-4">Item</th>
+                          <th className="pb-1.5 text-gray-600 font-medium text-[10px] uppercase tracking-wider pr-3 sm:pr-4 whitespace-nowrap">Qty</th>
+                          <th className="pb-1.5 text-gray-600 font-medium text-[10px] uppercase tracking-wider">Specification</th>
+                          {hasPricing && showPricing && (
+                            <th className="pb-1.5 text-gray-600 font-medium text-[10px] uppercase tracking-wider text-right pr-4 whitespace-nowrap">Est. Cost</th>
+                          )}
+                          <th className="pb-1.5 text-gray-600 font-medium text-[10px] uppercase tracking-wider text-right no-print">EES</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-[hsl(217,33%,14%)]">
+                        {group.items.map((mat, i) => (
+                          <tr key={i} className="hover:bg-white/2 transition-colors">
+                            <td className="py-2.5 sm:py-2.5 pr-3 sm:pr-4 font-medium text-white whitespace-nowrap text-xs sm:text-sm">{mat.item}</td>
+                            <td className="py-2.5 sm:py-2.5 pr-3 sm:pr-4 text-yellow-400 font-semibold whitespace-nowrap text-xs sm:text-sm">{mat.quantity}</td>
+                            <td className="py-2.5 sm:py-2.5 text-gray-400 leading-relaxed text-xs sm:text-sm">{mat.spec}</td>
+                            {hasPricing && showPricing && (
+                              <td className="py-2.5 pr-4 text-right whitespace-nowrap">
+                                {isWireItem(mat.item, mat.spec) ? (
+                                  <span className="text-yellow-400/80 text-xs italic">Speak to sales</span>
+                                ) : mat.unitPrice != null ? (
+                                  <div>
+                                    <span className="text-gray-500 text-xs">{fmtPrice(mat.unitPrice)} ea</span>
+                                    <div className="text-emerald-400 font-semibold text-sm">{fmtPrice(mat.unitPrice * parseQtyNum(mat.quantity))}</div>
+                                  </div>
+                                ) : (
+                                  <span className="text-gray-600">—</span>
+                                )}
+                              </td>
                             )}
-                          </td>
-                        )}
-                        <td className="py-3 text-right no-print">
-                          <ElliottLinks item={mat.item} spec={mat.spec} getUrls={elliottUrls} />
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+                            <td className="py-2.5 text-right no-print">
+                              <ElliottLinks item={mat.item} spec={mat.spec} getUrls={elliottUrls} />
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              ))}
               {hasPricing && showPricing && (
                 <div className="mt-4 pt-4 border-t border-[hsl(217,33%,18%)]">
                   <div className="flex justify-end items-baseline gap-4 mb-3">
@@ -766,7 +826,7 @@ export function ResultsPanel({ result }: ResultsPanelProps) {
         {/* Official Docs Tab */}
         <TabsContent value="docs">
           <div className="space-y-3">
-            {job.officialDocs.map((doc, i) => (
+            {panelJob.officialDocs.map((doc, i) => (
               <Card key={i} className="bg-[hsl(222,47%,10%)] border-[hsl(217,33%,20%)]">
                 <CardContent className="pt-4 pb-4">
                   <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">

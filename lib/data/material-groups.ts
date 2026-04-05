@@ -157,15 +157,36 @@ function matchesAny(text: string, patterns: RegExp[]): boolean {
   return patterns.some((p) => p.test(text));
 }
 
+// ── Items that should be conduit/raceway even if other patterns match ──
+const CONDUIT_OVERRIDE_PATTERNS = [
+  /\bENT\b.*\b(flex|coil|tubing|conduit|blue)\b/i,
+  /\bflex\b.*\b(conduit|tubing|nonmetallic)\b/i,
+  /\bliquidtight\b.*\b(flex|conduit)\b/i,
+  /\bENT\d/i,  // part numbers like ENT1B0X
+  /\bLT\d/i,   // liquidtight part numbers like LT34
+  /\bcarflex\b/i,
+];
+
+// ── Items that look like "panel" but are really misc/labels ──
+const PANEL_EXCLUDE_PATTERNS = [
+  /\bpanel\s*directory\b/i,
+  /\blabel\s*kit\b/i,
+  /\barc\s*flash\s*label\b/i,
+];
+
 function classifyMaterial(mat: MaterialItem): MaterialGroupId {
   const combined = `${mat.item} ${mat.spec}`;
 
-  // Order matters — check most specific first
+  // Priority 1: Conduit overrides — catch ENT/flex/liquidtight before panel patterns grab them
+  if (matchesAny(combined, CONDUIT_OVERRIDE_PATTERNS)) return "conduit-raceway";
 
-  // Panel & Breakers: check first since breakers/panels are the most distinct
+  // Priority 2: Miscellaneous overrides — catch label kits before panel patterns grab "panel directory"
+  if (matchesAny(combined, PANEL_EXCLUDE_PATTERNS)) return "miscellaneous";
+
+  // Panel & Breakers
   if (matchesAny(combined, PANEL_BREAKER_PATTERNS)) return "panel-breakers";
 
-  // Wire: check before conduit since wire specs often mention conduit
+  // Wire
   if (matchesAny(combined, WIRE_CONDUCTOR_PATTERNS)) return "wire-conductors";
 
   // Fittings: check before conduit since "EMT connector" should be fitting not conduit
@@ -173,6 +194,9 @@ function classifyMaterial(mat: MaterialItem): MaterialGroupId {
 
   // Conduit
   if (matchesAny(combined, CONDUIT_RACEWAY_PATTERNS)) return "conduit-raceway";
+
+  // Miscellaneous explicit patterns
+  if (matchesAny(combined, MISC_PATTERNS)) return "miscellaneous";
 
   // Default to miscellaneous
   return "miscellaneous";

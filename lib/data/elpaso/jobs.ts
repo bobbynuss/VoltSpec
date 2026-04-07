@@ -6,10 +6,11 @@ import { ELPASO_PRICES } from "./pricing";
 
 /**
  * El Paso / El Paso Electric jobs inherit San Antonio BR-series definitions
- * with El Paso-specific suppliers, official docs, and utility references.
+ * with El Paso-specific suppliers, official docs, utility references, and
+ * local meter socket defaults.
  *
- * Pricing: placeholder — SA prices used until El Paso Elliott invoices arrive.
- * Meter socket: inherits SA's until confirmed with El Paso Electric.
+ * Pricing: derived from Elliott Electric Supply El Paso (Store 191) invoices.
+ * Default 200A meter socket: MBE2040B200BTS (BR EUSERC 200A meter-breaker 20/40).
  * BR-series breakers and loadcenters are standard.
  */
 
@@ -29,13 +30,31 @@ function elpasoPrice(mat: MaterialItem): number | undefined {
   return undefined;
 }
 
+/** Swap SA 200A meter sockets to El Paso default: MBE2040B200BTS */
+function patchMeterSocket(mat: MaterialItem): MaterialItem {
+  // Match any 200A meter socket line item (Eaton 1009874ACH, Milbank U5135-XL-200, etc.)
+  const is200AMeter =
+    /200A.*(?:meter|ringless)/i.test(mat.item) ||
+    /1009874ACH|U5135-XL-200|UTRS213|UATRS213/i.test(mat.spec);
+  if (is200AMeter) {
+    return {
+      ...mat,
+      item: "200A BR Meter-Breaker",
+      spec: "Eaton MBE2040B200BTS - BR EUSERC 200A main breaker meter combo, 20/40 circuit, bottom/top feed, El Paso Electric approved",
+      unitPrice: ELPASO_PRICES["MBE2040B200BTS"] ?? mat.unitPrice,
+    };
+  }
+  return mat;
+}
+
 function applyElpasoPricing(materials: MaterialItem[]): MaterialItem[] {
   return materials.map((mat) => {
-    const price = elpasoPrice(mat);
+    const patched = patchMeterSocket(mat);
+    const price = elpasoPrice(patched);
     if (price !== undefined) {
-      return { ...mat, unitPrice: price };
+      return { ...patched, unitPrice: price };
     }
-    return mat;
+    return patched;
   });
 }
 
@@ -46,7 +65,10 @@ function patchRequirements(reqs: string[]): string[] {
       .replace(/\bCPS\b/g, "EPE")
       .replace(/City of San Antonio/g, "City of El Paso")
       .replace(/\(210\) 353-4050/g, "(915) 543-5711")
-      .replace(/\(210\) 353-2222/g, "(915) 543-5711"),
+      .replace(/\(210\) 353-2222/g, "(915) 543-5711")
+      .replace(/Eaton 1009874ACH/g, "Eaton MBE2040B200BTS")
+      .replace(/Milbank U5135-XL-200/g, "Eaton MBE2040B200BTS")
+      .replace(/CPS-approved ringless type/g, "El Paso Electric approved BR meter-breaker type"),
   );
 }
 

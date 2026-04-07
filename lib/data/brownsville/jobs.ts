@@ -29,13 +29,30 @@ function brownsvillePrice(mat: MaterialItem): number | undefined {
   return undefined;
 }
 
+/** Swap SA 200A meter sockets to Brownsville default: UATRS213CFLCH */
+function patchMeterSocket(mat: MaterialItem): MaterialItem {
+  const is200AMeter =
+    /200A.*(?:meter|ringless)/i.test(mat.item) ||
+    /1009874ACH|U5135-XL-200/i.test(mat.spec);
+  if (is200AMeter) {
+    return {
+      ...mat,
+      item: "200A Meter Socket",
+      spec: "Eaton UATRS213CFLCH - 200A aluminum enclosure meter socket, OH/UG, UL listed, AEP Texas Central approved",
+      unitPrice: BROWNSVILLE_PRICES["UATRS213CFLCH"] ?? mat.unitPrice,
+    };
+  }
+  return mat;
+}
+
 function applyBrownsvillePricing(materials: MaterialItem[]): MaterialItem[] {
   return materials.map((mat) => {
-    const price = brownsvillePrice(mat);
+    const patched = patchMeterSocket(mat);
+    const price = brownsvillePrice(patched);
     if (price !== undefined) {
-      return { ...mat, unitPrice: price };
+      return { ...patched, unitPrice: price };
     }
-    return mat;
+    return patched;
   });
 }
 
@@ -46,7 +63,10 @@ function patchRequirements(reqs: string[]): string[] {
       .replace(/\bCPS\b/g, "AEP Texas")
       .replace(/City of San Antonio/g, "City of Brownsville")
       .replace(/\(210\) 353-4050/g, "(877) 373-4858")
-      .replace(/\(210\) 353-2222/g, "(877) 373-4858"),
+      .replace(/\(210\) 353-2222/g, "(877) 373-4858")
+      .replace(/Eaton 1009874ACH/g, "Eaton UATRS213CFLCH")
+      .replace(/Milbank U5135-XL-200/g, "Eaton UATRS213CFLCH")
+      .replace(/CPS-approved ringless type/g, "AEP Texas Central approved meter socket"),
   );
 }
 

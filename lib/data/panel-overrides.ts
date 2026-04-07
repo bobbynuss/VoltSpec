@@ -50,7 +50,7 @@ const JURISDICTION_DEFAULTS: Record<string, PanelTypeId> = {
   amarillo: "br",
   elpaso: "br",
   brownsville: "br",
-  abilene: "br",
+  abilene: "ch",
   odessa: "br",
 };
 

@@ -1,14 +1,148 @@
 /**
- * Abilene / AEP Texas North pricing — PLACEHOLDER
+ * Abilene / AEP Texas North pricing derived from Elliott Electric Supply
+ * Abilene (Store 58) cash-sale invoices.
  *
- * No Elliott invoices available yet for Abilene.
- * Uses San Antonio pricing as baseline until Abilene-specific quotes arrive.
- * When invoices are uploaded, apply the same methodology:
+ * Source invoices (all from Elliott Abilene, Branch 58):
+ *   58-57577-02 (02/06/2026) — M D Electric
+ *   58-58176-01 (02/11/2026) — Sal Alcantar Salgado
+ *   58-58199-01 (02/11/2026) — Intellihome Smart Home
+ *   58-58492-01 (02/13/2026) — Victory Electrical (Mario)
+ *   58-58544-01 (02/13/2026) — Victory Electrical (JR Flooring)
+ *   58-58816-01 (02/17/2026) — Amptex Electric
+ *   58-59057-01 (02/24/2026) — Trinity Service Pros
+ *   58-59197-01 (03/18/2026) — Perkin Electrical
+ *   58-59577-03 (02/23/2026) — DSR Electric
+ *   58-59629-01 (02/24/2026) — Walker Mechanical
+ *   58-59647-01 (02/23/2026) — Cash Sale 58
+ *   58-59924-01 (02/25/2026) — Royal Electric
+ *   58-60396-03 (02/28/2026) — Eric Salazar
+ *   58-60591-02 (03/03/2026) — P3 Industries
+ *   58-60973-02 (03/06/2026) — HHSC Abilene
+ *   58-63505-01 (03/28/2026) — T D Electric
+ *   58-64399-01 (04/03/2026) — Wyatt Electrical
+ *   58-64661-01 (04/07/2026) — Arther Electric
+ *   58-64669-01 (04/07/2026) — T D Electric
+ *   58-64711-02 (04/07/2026) — Victory Electrical
+ *
+ * Methodology:
  *   True Unit Cost = Extended Price ÷ Ship Quantity
- *   Final Est. Cost = averaged True Unit Cost × 1.15 (+15% markup)
+ *   When a catalog number appears across multiple invoices, values are averaged.
+ *   Final Est. Cost = averaged True Unit Cost × 1.15 (+15% markup).
+ *
+ * Wire / cable items are excluded — always "Speak to sales" in VoltSpec.
  */
 
 export const ABILENE_PRICES: Record<string, number> = {
-  // Placeholder — empty until Abilene invoices are processed.
-  // San Antonio prices are inherited as-is via SA_JOBS.
+  // ────────────────────────────────────────────
+  // Meter Sockets & Accessories
+  // ────────────────────────────────────────────
+  "U7040XLTG":     84.42, // 200A 1PH OH/UG 4T meter socket — avg $73.41 × 1.15 (inv 1:$65, 2:$67.66, 4:$81.62, 5:$81.62, 6:$73.24, 8:$87.15, 10:$64.28, 12:$64.28, 13:$67.66)
+  "U5168XTL200":  393.62, // 200A 8/16 combo panel          — avg $342.28 × 1.15 (inv 3:$399.21, 14:$405, 20:$285)
+  "U9581RLQG":    475.34, // 200A 5T meter socket            — $413.34 × 1.15 (inv 11)
+  "UTH43369TCH":  717.73, // 320A meter socket 1PH 4T        — $624.11 × 1.15 (inv 9)
+  "ARP00006CH2":   12.22, // 2″ hub closure plate            — avg $10.63 × 1.15 (inv 1:$10.21, 3:$10.54, 4:$10.54, 5:$10.54, 6:$10.54, 8:$11.31, 10:$10.41, 13:$10.96, 14:$10.41, 17:$11.01, 18:$11.01, 19:$10.54)
+  "ARP00004CH12":  12.42, // 1-1/4″ hub closure plate        — $10.80 × 1.15 (inv 18)
+  "A7517":         10.40, // 2″ unit hub                     — $9.04 × 1.15 (inv 20)
+  "DS200H2":       30.10, // 2″ plate type hub               — avg $26.18 × 1.15 (inv 10:$23.06, 15:$29.29)
+
+  // ────────────────────────────────────────────
+  // CH-Series Breakers
+  // ────────────────────────────────────────────
+  "CHF120":       11.82, // 20A/1P CH  — avg $10.28 × 1.15 (inv 8:$8.42, 15:$13.32, inv 7: $0 skip)
+  "CHF220":       30.33, // 20A/2P CH  — $26.37 × 1.15 (inv 15)
+  "CHF230":       19.49, // 30A/2P CH  — $16.95 × 1.15 (inv 8)
+  "CH2100":       64.26, // 100A/2P CH — $55.88 × 1.15 (inv 10)
+  "CHNSURGE":     71.47, // CH 2-pole surge arrester — $62.15 × 1.15 (inv 1)
+
+  // ────────────────────────────────────────────
+  // CH-Series Loadcenters
+  // ────────────────────────────────────────────
+  "CHP32B200R":  289.08, // CH 200A MB 32sp N3R        — avg $251.37 × 1.15 (inv 1:$238.25, 15:$276.23, inv 7:$0 skip)
+  "CHP08B200RF": 224.09, // CH 200A MB 8sp N3R         — avg $194.86 × 1.15 (inv 8:$182.99, 10:$206.72)
+  "CHP20L125X2": 165.69, // CH 125A MLO 20sp           — $144.08 × 1.15 (inv 10)
+  "CHPX2AS":      26.68, // CH PON surface cover ≤125A — $23.20 × 1.15 (inv 10)
+  "CHP42B200X7":   1.18, // CH 200A MB 42sp            — $1.03 × 1.15 (inv 16 — likely wrong price, internal)
+
+  // ────────────────────────────────────────────
+  // Grounding
+  // ────────────────────────────────────────────
+  "615860":      23.67, // 5/8″×6′ CU ground rod — avg $20.58 × 1.15 (inv 1:$15.00, 2:$15.22, 4:$18.37, 5:$18.37, 6:$16.53, 8:$23.30, 10:$14.46, 12:$14.46, 17:$14.46, 18:$36.73)
+  "615880":      30.14, // 5/8″×8′ CU ground rod — avg $26.21 × 1.15 (inv 3:$23.94, 11:$33.88, 12:$20.11, 13:$19.84, 14:$18.85, 15:$23.94, 19:$21.54, 20:$21.55)
+  "UGC":          6.87, // 3/8″-3/4″ 1/0 ground clamp — avg $5.97 × 1.15 (inv 1:$3.60, 2:$3.22, 3:$3.89, 4:$3.89, 5:$3.50, 6:$3.65, 10:$3.06, 14:$3.06, 18:$3.89)
+  "GRC3834":      4.80, // 3/8″-3/4″ ground clamp     — avg $4.18 × 1.15 (inv 11:$4.87, 13:$3.22, 17:$3.06, 19:$3.50, 20:$3.50)
+  "G1S":          3.01, // 1/2″-1″ bronze ground clamp — $2.62 × 1.15 (inv 12)
+  "GBIAL1264414WC": 18.59, // Intersystem grounding    — avg $16.17 × 1.15 (inv 1:$16.63, 4:$17.98, 5:$17.98, 13:$14.91)
+
+  // ────────────────────────────────────────────
+  // Conduit & Weatherheads
+  // ────────────────────────────────────────────
+  "GAL2":      10.38, // 2″ rigid conduit (per 10′)  — avg $9.03 × 1.15 (inv 1:$9.00, 2:$9.33, 7:$9.44, 12:$8.32, 14:$9.26, 18:$9.53, 19:$9.53)
+  "IMC2":       6.24, // 2″ IMC conduit (per 10′)    — avg $5.43 × 1.15 (inv 4:$5.58, 6:$5.58, 10:$6.25, 13:$5.40, 17:$5.63)
+  "EMT2":       4.60, // 2″ EMT conduit (per 10′)    — avg $4.00 × 1.15 (inv 5:$3.40, 8:$3.61, 11:$3.81, 15:$3.81, 19:$3.25)
+  "1256":      19.73, // 2″ weatherhead               — avg $17.16 × 1.15 (inv 1:$15.00, 2:$15.52, 3:$18.71, 4:$18.71, 5:$18.71, 6:$16.84, 7:$18.71, 8:$17.75, 10:$8.56, 11:$23.66, 12:$15.72, 13:$15.51, 14:$17.75, 15:$18.71, 17:$17.75, 18:$18.71, 19:$16.84, 20:$16.84)
+  "RF200":     15.97, // 2″ roof flashing             — avg $13.89 × 1.15 (inv 1:$12.00, 6:$13.93, 7:$15.48, 17:$12.35)
+  "MWH1":      16.27, // 1-1/4″-3″ adj wire holder   — avg $14.15 × 1.15 (inv 2:$12.86, 4:$15.51, 5:$15.51, 6:$13.96, 10:$12.21, 13:$12.86, 18:$15.51, 19:$13.96, 20:$15.51)
+
+  // ────────────────────────────────────────────
+  // 2″ Fittings
+  // ────────────────────────────────────────────
+  "TA2":        1.33, // 2″ PVC male adapter    — avg $1.16 × 1.15 (inv 1:$1.29, 5:$1.29, 6:$1.02, 14:$1.05)
+  "106S":       1.50, // 2″ steel locknut       — avg $1.30 × 1.15 (inv 1:$1.25, 5:$1.33, 6:$1.11, 8:$1.55, 10:$0.94, 14:$1.23)
+  "326":        0.78, // 2″ plastic bushing     — avg $0.68 × 1.15 (inv 5:$0.70, 6:$0.59, 8:$0.76, 10:$0.48, 14:$0.54, 17:$0.54)
+  "1525DC":     6.90, // 2″ diecast offset nipple — $6.00 × 1.15 (inv 10)
+  "GLL6":       8.75, // 2″ mall ins grnd bushing — $7.61 × 1.15 (inv 17)
+  "SL6":        6.55, // 2″ sealing locknut      — $5.70 × 1.15 (inv 13)
+  "655":        5.28, // 2″ stl conn concrete tight — avg $4.59 × 1.15 (inv 5:$4.96, 8:$4.79, 15:$4.96, 19:$3.83, 20:$5.25)
+  "1906":       1.73, // 2″ two-hole rigid strap — avg $1.50 × 1.15 (inv 1:$1.18, 5:$1.27, 7:$1.27, 8:$1.52, 18:$1.27, 19:$1.27)
+  "1925":       1.11, // 2″ two-hole EMT strap   — avg $0.97 × 1.15 (inv 3:$0.99, 11:$1.38, 19:$0.83, 20:$0.83)
+  "1907":       1.42, // 2-1/2″ two-hole rigid strap — avg $1.23 × 1.15 (inv 6:$1.49, 7:$1.65, 14:$0.97)
+  "PVC2":       1.07, // 2″ Sch40 PVC (per 10′)  — avg $0.93 × 1.15 (inv 8:$0.96, 14:$0.90)
+  "PVC280":     1.65, // 2″ Sch80 PVC (per 10′)  — $1.43 × 1.15 (inv 14)
+  "CPL2":       0.79, // 2″ PVC coupling         — $0.69 × 1.15 (inv 14)
+  "5133720":    1.66, // 2″ PVC box adapter      — $1.44 × 1.15 (inv 5)
+  "B2213PAZN":  2.28, // 2″ zinc pipe clamp      — avg $1.98 × 1.15 (inv 4:$1.67, 13:$1.34, 14:$2.81)
+
+  // ────────────────────────────────────────────
+  // 1/2″ & Small Conduit/Fittings
+  // ────────────────────────────────────────────
+  "PVC12":      0.32, // 1/2″ Sch40 PVC (per 10′) — avg $0.28 × 1.15 (inv 4:$0.29, 19:$0.25)
+  "TA12":       0.26, // 1/2″ PVC male adapter    — avg $0.23 × 1.15 (inv 4:$0.26, 19:$0.21, 20:$0.21)
+  "PVC34":      0.36, // 3/4″ Sch40 PVC (per 10′) — $0.32 × 1.15 (inv 8)
+  "PVC1":       0.51, // 1″ Sch40 PVC (per 10′)   — avg $0.44 × 1.15 (inv 14:$0.43, 19:$0.44)
+  "EMT34":      0.99, // 3/4″ EMT conduit (per 10′) — $0.86 × 1.15 (inv 17)
+  "EMT114":     2.87, // 1-1/4″ EMT conduit (per 10′) — avg $2.39 × 1.15 (inv 10:$2.30, 18:$2.39)
+
+  // ────────────────────────────────────────────
+  // 1-1/4″ Fittings
+  // ────────────────────────────────────────────
+  "1254":      10.28, // 1-1/4″ weatherhead       — $8.94 × 1.15 (inv 18)
+  "1523DC":     9.04, // 1-1/4″ diecast offset nipple — $7.86 × 1.15 (inv 18)
+  "324":        0.41, // 1-1/4″ plastic bushing   — $0.36 × 1.15 (inv 18)
+  "104S":       0.80, // 1-1/4″ steel locknut     — $0.70 × 1.15 (inv 18)
+  "384DC":     10.19, // 1-1/4″ insul grnd bushing — $8.86 × 1.15 (inv 18)
+  "653":        2.76, // 1-1/4″ stl conn concrete tight — $2.40 × 1.15 (inv 18)
+
+  // ────────────────────────────────────────────
+  // Devices & Accessories
+  // ────────────────────────────────────────────
+  "TWRGF15W":   23.16, // TWR GFCI 15A WH          — $20.14 × 1.15 (inv 8)
+  "GF20W":      34.70, // GFCI 20A 125V WH         — $30.17 × 1.15 (inv 15)
+  "MM410C":     11.73, // 1G 2-3/4″ in-use cover   — $10.20 × 1.15 (inv 8)
+  "688ES":      29.93, // 50CFM bath fan            — $26.03 × 1.15 (inv 4)
+  "WPB33":      5.43, // WP box 1G 3-hole 3/4      — avg $4.72 × 1.15 (inv 8:$4.60, 17:$4.72, 18:$4.72)
+  "WPB1":       4.10, // WP cover 1G blank          — avg $3.57 × 1.15 (inv 17:$3.57, 18:$3.57)
+  "WPB23":      5.02, // WP box 1G 3-hole 1/2      — avg $4.38 × 1.15 (inv 18)
+  "612":       20.25, // Porcelain wire holder w/lag — avg $17.63 × 1.15 (inv 3:$18.49, 19:$16.77)
+  "616":       28.88, // Porcelain wire holder      — $25.13 × 1.15 (inv 12)
+
+  // ────────────────────────────────────────────
+  // Boxes & Misc
+  // ────────────────────────────────────────────
+  "B120AUPC":    1.04, // 1G 20in³ nail-on box     — $0.90 × 1.15 (inv 4)
+  "B618RR":      3.80, // 4-1/4″ round PVC ceiling box — $3.31 × 1.15 (inv 4)
+  "B114RUPC":    2.20, // 1G nail box w/ears 14cu-in — $1.91 × 1.15 (inv 4)
+  "IT250":      40.10, // 250MCM-#6 Polaris insul-tap — $34.87 × 1.15 (inv 14)
+  "IPLD303":    65.11, // 3/0-#6 3P Polaris block   — $56.62 × 1.15 (inv 11)
+  "IPLD2503":   72.22, // 250MCM-#6 3P Polaris block — $62.80 × 1.15 (inv 11)
+  "TA3":         2.92, // 3″ PVC male adapter       — $2.54 × 1.15 (inv 19)
 };

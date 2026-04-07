@@ -2,7 +2,7 @@ import type { Supplier } from "../types";
 
 export const ABILENE_SUPPLIERS: Supplier[] = [
   {
-    name: "Elliott Electric Supply - Abilene (35)",
+    name: "Elliott Electric Supply - Abilene (58)",
     address: "1233 S Treadaway Blvd, Abilene, TX 79602",
     phone: "(325) 677-2558",
     website: "https://www.elliottelectric.com",

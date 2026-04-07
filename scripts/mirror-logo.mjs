@@ -10,92 +10,71 @@ async function main() {
   const W = meta.width, H = meta.height;
   console.log(`Source: ${W}x${H}`);
 
-  // The V's center axis is at approximately x=395
+  // V center axis
   const CX = 395;
 
-  // Step 1: Extract the left half of the image (0 to CX)
-  const leftHalf = await sharp(SOURCE)
-    .extract({ left: 0, top: 0, width: CX, height: H })
-    .toBuffer();
+  // Load original pixels
+  const { data: orig } = await sharp(SOURCE).raw().toBuffer({ resolveWithObject: true });
+  const ch = 3; // JPEG = RGB
 
-  // Step 2: Flip the left half horizontally to create the right side
-  const leftFlipped = await sharp(leftHalf)
-    .flop()
-    .toBuffer();
+  // Simple color checks
+  const isYellow = (r, g, b) => r > 145 && g > 100 && b < 115 && (r - b) > 50;
+  const isChecker = (r, g, b) => ((r + g + b) / 3) > 165 && (Math.max(r, g, b) - Math.min(r, g, b)) < 40;
 
-  // Step 3: Create the mirrored base — left half + flipped left half
-  // The total width = CX + CX = 2*CX
-  const mirroredBase = await sharp({
-    create: { width: CX * 2, height: H, channels: 3, background: { r: 200, g: 200, b: 200 } }
-  })
-    .composite([
-      { input: leftHalf, left: 0, top: 0 },
-      { input: leftFlipped, left: CX, top: 0 },
-    ])
-    .jpeg({ quality: 98 })
-    .toBuffer();
+  // OUTPUT = copy of original
+  const out = Buffer.from(orig);
 
-  // Step 4: Now extract the bolt from the original image and overlay it
-  // We need to identify bolt pixels. Let's get the original and mirrored as raw.
-  const { data: origRaw, info: origInfo } = await sharp(SOURCE)
-    .resize(CX * 2, H, { fit: "cover", position: "left top" })
-    .raw()
-    .toBuffer({ resolveWithObject: true });
+  // For every pixel to the RIGHT of center:
+  //   - If it's a yellow bolt pixel → keep it (don't touch)
+  //   - Otherwise → replace with the mirrored left-side pixel,
+  //     UNLESS the mirrored left pixel is yellow (bolt on left side),
+  //     in which case use checker gray so we don't create a ghost bolt
+  for (let y = 0; y < H; y++) {
+    for (let x = CX + 1; x < W; x++) {
+      const idx = (y * W + x) * ch;
+      const r = out[idx], g = out[idx + 1], b = out[idx + 2];
 
-  const { data: mirRaw, info: mirInfo } = await sharp(mirroredBase)
-    .raw()
-    .toBuffer({ resolveWithObject: true });
+      // Keep bolt pixels on the right side untouched
+      if (isYellow(r, g, b)) continue;
 
-  const mW = mirInfo.width, mH = mirInfo.height, ch = mirInfo.channels;
-  const out = Buffer.from(mirRaw);
+      // Mirror coordinate
+      const mx = CX - (x - CX);
+      if (mx < 0) continue;
 
-  // Overlay bolt pixels from original onto mirrored base
-  // The bolt is in the center area of the image
-  const boltZoneLeft = CX - 180;
-  const boltZoneRight = CX + 180;
+      const mIdx = (y * W + mx) * ch;
+      const mr = orig[mIdx], mg = orig[mIdx + 1], mb = orig[mIdx + 2];
 
-  for (let y = 0; y < mH; y++) {
-    for (let x = boltZoneLeft; x < Math.min(boltZoneRight, mW); x++) {
-      if (x < 0 || x >= Math.min(origInfo.width, mW)) continue;
-      const idx = (y * mW + x) * ch;
-      const oIdx = (y * origInfo.width + x) * ch;
-      if (oIdx + 2 >= origRaw.length) continue;
-
-      const r = origRaw[oIdx], g = origRaw[oIdx + 1], b = origRaw[oIdx + 2];
-
-      // Detect bolt (yellow/gold pixels)
-      const isYellow = r > 155 && g > 115 && b < 110 && (r - b) > 60;
-      // Also catch darker gold edges of bolt
-      const isDarkGold = r > 120 && g > 80 && b < 60 && (r - b) > 60 && g < 170;
-
-      if (isYellow || isDarkGold) {
-        out[idx] = r;
-        out[idx + 1] = g;
-        out[idx + 2] = b;
+      // If the mirrored left pixel is yellow (bolt), don't copy it — use checker bg
+      if (isYellow(mr, mg, mb)) {
+        out[idx] = 204;
+        out[idx + 1] = 204;
+        out[idx + 2] = 204;
+      } else {
+        // Copy the mirrored left pixel (V arm, trace, bg, glow)
+        out[idx] = mr;
+        out[idx + 1] = mg;
+        out[idx + 2] = mb;
       }
     }
   }
 
-  // Save mirrored result for inspection
-  await sharp(out, { raw: { width: mW, height: mH, channels: ch } })
+  // Save mirrored JPG for inspection
+  await sharp(out, { raw: { width: W, height: H, channels: ch } })
     .jpeg({ quality: 95 })
     .toFile(join(PUBLIC, "voltspec-logo-mirrored.jpg"));
   console.log("Saved: voltspec-logo-mirrored.jpg");
 
-  // Step 5: Make transparent — remove checker background
-  const rgba = Buffer.alloc(mW * mH * 4);
-  for (let i = 0; i < mW * mH; i++) {
+  // Make transparent
+  const rgba = Buffer.alloc(W * H * 4);
+  for (let i = 0; i < W * H; i++) {
     const r = out[i * ch], g = out[i * ch + 1], b = out[i * ch + 2];
     rgba[i * 4] = r;
     rgba[i * 4 + 1] = g;
     rgba[i * 4 + 2] = b;
-
-    const avg = (r + g + b) / 3;
-    const sat = Math.max(r, g, b) - Math.min(r, g, b);
-    rgba[i * 4 + 3] = (avg > 165 && sat < 40) ? 0 : 255;
+    rgba[i * 4 + 3] = isChecker(r, g, b) ? 0 : 255;
   }
 
-  const trimmed = await sharp(rgba, { raw: { width: mW, height: mH, channels: 4 } })
+  const trimmed = await sharp(rgba, { raw: { width: W, height: H, channels: 4 } })
     .trim()
     .toBuffer({ resolveWithObject: true });
   console.log(`Trimmed: ${trimmed.info.width}x${trimmed.info.height}`);

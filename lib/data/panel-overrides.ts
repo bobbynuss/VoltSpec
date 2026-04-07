@@ -407,6 +407,44 @@ export function applyPanelOverride(job: Job, targetType: PanelTypeId): Job {
     if (!blueprintNotes.includes(prlNote)) blueprintNotes.push(prlNote);
   }
 
+  // ── CH ↔ BR text patching in blueprint notes and SVG ──────────
+  // When switching to CH from BR (or vice versa), update part number
+  // references in blueprint notes and SVG diagrams so they match the
+  // materials tab.
+  if (targetType === "ch") {
+    const chReplace = (s: string) =>
+      s
+        .replace(/BRP20B200R/g, "CHP32B200R")
+        .replace(/BRP24L125G/g, "CHP20L125X2")
+        .replace(/BRNSURGE10/g, "CHNSURGE")
+        .replace(/\bBR series\b/g, "CH series")
+        .replace(/\bBR PON\b/g, "CH PON")
+        .replace(/\bType BR\b/g, "Type CH");
+    for (let i = 0; i < blueprintNotes.length; i++) {
+      blueprintNotes[i] = chReplace(blueprintNotes[i]);
+    }
+    for (let i = 0; i < requirements.length; i++) {
+      requirements[i] = chReplace(requirements[i]);
+    }
+    if (svgDiagram) svgDiagram = chReplace(svgDiagram);
+  } else if (targetType === "br") {
+    const brReplace = (s: string) =>
+      s
+        .replace(/CHP32B200R|CHP42B200R|CHP42B200X7/g, "BRP20B200R")
+        .replace(/CHP20L125X2|CHP24L125X2/g, "BRP24L125G")
+        .replace(/CHNSURGE|CHSPT2ULTRA/g, "BRNSURGE10")
+        .replace(/\bCH series\b/g, "BR series")
+        .replace(/\bCH PON\b/g, "BR PON")
+        .replace(/\bType CH\b/g, "Type BR");
+    for (let i = 0; i < blueprintNotes.length; i++) {
+      blueprintNotes[i] = brReplace(blueprintNotes[i]);
+    }
+    for (let i = 0; i < requirements.length; i++) {
+      requirements[i] = brReplace(requirements[i]);
+    }
+    if (svgDiagram) svgDiagram = brReplace(svgDiagram);
+  }
+
   return {
     ...job,
     label,

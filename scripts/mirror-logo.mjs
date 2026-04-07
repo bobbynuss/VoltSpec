@@ -18,14 +18,22 @@ async function main() {
   const isBolt = (r, g, b) =>
     (r > 145 && g > 100 && b < 115 && (r - b) > 50) ||
     (r > 100 && g > 60 && b < 50 && (r - b) > 60 && r > g);
+  // Also catch the blue/cyan glow pixels around the bolt (they have high blue channel)
+  const isBoltGlow = (r, g, b) => {
+    // Yellow-adjacent warm glow
+    if (r > 120 && g > 80 && b < 80 && (r - b) > 40) return true;
+    // Dark amber edges
+    if (r > 80 && g > 50 && b < 40 && (r - b) > 40) return true;
+    return false;
+  };
   const isChecker = (r, g, b) => ((r + g + b) / 3) > 165 && (Math.max(r, g, b) - Math.min(r, g, b)) < 40;
 
-  // Build bolt mask with dilation for glow protection
-  const GLOW = 25;
+  // Build bolt mask with wider dilation for glow protection
+  const GLOW = 35;
   const boltMask = new Uint8Array(W * H);
   for (let i = 0; i < W * H; i++) {
     const r = orig[i * ch], g = orig[i * ch + 1], b = orig[i * ch + 2];
-    if (isBolt(r, g, b)) boltMask[i] = 1;
+    if (isBolt(r, g, b) || isBoltGlow(r, g, b)) boltMask[i] = 1;
   }
   const dilated = new Uint8Array(W * H);
   for (let y = 0; y < H; y++) {

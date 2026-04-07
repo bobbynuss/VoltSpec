@@ -103,7 +103,10 @@ function isCTItem(mat: MaterialItem): boolean {
 }
 
 function isEnclosureTrimItem(mat: MaterialItem): boolean {
-  return /\bEZB\d|\bEZT\d|\benclosure\b|\btrim\b.*\b(surface|flush)\b/i.test(`${mat.item} ${mat.spec}`);
+  const combined = `${mat.item} ${mat.spec}`;
+  // Don't treat meter sockets as enclosure items even if spec says "enclosure"
+  if (/\bmeter\b/i.test(combined)) return false;
+  return /\bEZB\d|\bEZT\d|\benclosure\b|\btrim\b.*\b(surface|flush)\b/i.test(combined);
 }
 
 function isGroundBusItem(mat: MaterialItem): boolean {

@@ -6,12 +6,23 @@ import { BROWNSVILLE_PRICES } from "./pricing";
 
 /**
  * Brownsville / AEP Texas Central jobs inherit San Antonio BR-series
- * definitions with Brownsville-specific suppliers, official docs, and utility refs.
+ * definitions with Brownsville-specific suppliers, official docs, utility refs,
+ * and local meter socket default (UATRS213CFLCH).
  *
  * Pricing: derived from Elliott Electric Supply Brownsville (Store 151) invoices.
- * Meter socket: UATRS213CFLCH / BR-style meter main.
+ * Default 200A meter socket: UATRS213CFLCH (200A AL meter socket OH/UG).
  * BR-series breakers and loadcenters are standard.
  */
+
+/* ── Brownsville 200A Meter Socket ─────────────────────────────── */
+const BROWNSVILLE_200A_METER: MaterialItem = {
+  item: "200A Meter Socket",
+  quantity: "1",
+  spec: "Eaton UATRS213CFLCH - 200A aluminum enclosure meter socket, OH/UG, UL listed, AEP Texas Central approved",
+  unitPrice: 119.88,
+};
+
+/* ── Helpers ────────────────────────────────────────────────────── */
 
 function escapeRegex(s: string): string {
   return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
@@ -29,30 +40,49 @@ function brownsvillePrice(mat: MaterialItem): number | undefined {
   return undefined;
 }
 
-/** Swap SA 200A meter sockets to Brownsville default: UATRS213CFLCH */
-function patchMeterSocket(mat: MaterialItem): MaterialItem {
-  const is200AMeter =
+/** Is this a 200A meter socket line? */
+function is200AMeterSocket(mat: MaterialItem): boolean {
+  return (
     /200A.*(?:meter|ringless)/i.test(mat.item) ||
-    /1009874ACH|U5135-XL-200/i.test(mat.spec);
-  if (is200AMeter) {
-    return {
-      ...mat,
-      item: "200A Meter Socket",
-      spec: "Eaton UATRS213CFLCH - 200A aluminum enclosure meter socket, OH/UG, UL listed, AEP Texas Central approved",
-      unitPrice: BROWNSVILLE_PRICES["UATRS213CFLCH"] ?? mat.unitPrice,
-    };
+    /1009874ACH|U5135-XL-200|UTRS213|UATRS213/i.test(mat.spec)
+  );
+}
+
+/**
+ * Force the correct Brownsville meter socket into the materials list:
+ * - Replace any existing SA 200A meter socket with the Brownsville default
+ * - If no 200A meter socket exists in a 200A job, inject one at the top
+ */
+function forceMeterSocket(materials: MaterialItem[], jobId: string): MaterialItem[] {
+  const is200AJob = /200a|meter-base|span-panel-upgrade|temp-power/i.test(jobId);
+  if (!is200AJob) return materials;
+
+  let replaced = false;
+  const result = materials.map((mat) => {
+    if (is200AMeterSocket(mat)) {
+      replaced = true;
+      return { ...BROWNSVILLE_200A_METER };
+    }
+    return mat;
+  });
+
+  // If no meter socket was found to replace, inject at position 1 (after panel)
+  if (!replaced) {
+    result.splice(1, 0, { ...BROWNSVILLE_200A_METER });
   }
-  return mat;
+
+  return result;
 }
 
 function applyBrownsvillePricing(materials: MaterialItem[]): MaterialItem[] {
   return materials.map((mat) => {
-    const patched = patchMeterSocket(mat);
-    const price = brownsvillePrice(patched);
+    // Don't overwrite the forced meter socket price
+    if (is200AMeterSocket(mat)) return mat;
+    const price = brownsvillePrice(mat);
     if (price !== undefined) {
-      return { ...patched, unitPrice: price };
+      return { ...mat, unitPrice: price };
     }
-    return patched;
+    return mat;
   });
 }
 
@@ -88,7 +118,7 @@ function patchSvg(svg: string | undefined): string | undefined {
 
 export const BROWNSVILLE_JOBS: Job[] = SA_JOBS.map((job) => ({
   ...job,
-  materials: applyBrownsvillePricing(job.materials),
+  materials: applyBrownsvillePricing(forceMeterSocket(job.materials, job.id)),
   requirements: patchRequirements(job.requirements),
   blueprintNotes: patchBlueprintNotes(job.blueprintNotes),
   svgDiagram: patchSvg(job.svgDiagram),

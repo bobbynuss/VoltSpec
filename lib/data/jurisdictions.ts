@@ -8,7 +8,7 @@ import { GVEC_JOBS } from "./gvec/jobs";
 import { BEC_JOBS } from "./bec/jobs";
 import { AMARILLO_JOBS } from "./amarillo/jobs";
 import { ELPASO_JOBS } from "./elpaso/jobs";
-import { CORPUS_JOBS } from "./corpus/jobs";
+import { BROWNSVILLE_JOBS } from "./brownsville/jobs";
 import { ABILENE_JOBS } from "./abilene/jobs";
 import { ODESSA_JOBS } from "./odessa/jobs";
 
@@ -115,14 +115,14 @@ export const JURISDICTIONS: Jurisdiction[] = [
     jobs: ELPASO_JOBS,
   },
   {
-    id: "corpus",
-    label: "Corpus Christi, TX (Nueces County)",
-    shortLabel: "Corpus Christi, TX",
+    id: "brownsville",
+    label: "Brownsville, TX (Cameron County)",
+    shortLabel: "Brownsville, TX",
     utility: "AEP Texas Central",
-    county: "Nueces County",
-    defaultZip: "78401",
-    zipPrefixes: ["784", "783"],
-    jobs: CORPUS_JOBS,
+    county: "Cameron County",
+    defaultZip: "78520",
+    zipPrefixes: ["785"],
+    jobs: BROWNSVILLE_JOBS,
   },
   {
     id: "abilene",

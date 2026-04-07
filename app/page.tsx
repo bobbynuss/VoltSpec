@@ -77,7 +77,7 @@ export default function LandingPage() {
             <FeatureCard
               icon={<MapPin className="w-7 h-7" />}
               title="12 Texas Jurisdictions"
-              description="Austin, San Antonio, Houston, DFW, Amarillo, El Paso, Corpus Christi, Odessa, Abilene, PEC, GVEC, and BEC — each with correct utility & panel series."
+              description="Austin, San Antonio, Houston, DFW, Amarillo, El Paso, Brownsville, Odessa, Abilene, PEC, GVEC, and BEC — each with correct utility & panel series."
             />
             <FeatureCard
               icon={<DollarSign className="w-7 h-7" />}

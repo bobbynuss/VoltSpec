@@ -1,62 +1,64 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
   <defs>
-    <!-- Blue glow filter -->
-    <filter id="glow" x="-40%" y="-40%" width="180%" height="180%">
+    <!-- Soft blue outer glow on V -->
+    <filter id="vGlow" x="-25%" y="-25%" width="150%" height="150%">
       <feGaussianBlur in="SourceGraphic" stdDeviation="8" result="blur"/>
-      <feFlood flood-color="#38bdf8" flood-opacity="0.6"/>
-      <feComposite in2="blur" operator="in" result="glowColor"/>
+      <feFlood flood-color="#00d4ff" flood-opacity="0.55"/>
+      <feComposite in2="blur" operator="in" result="glow"/>
       <feMerge>
-        <feMergeNode in="glowColor"/>
+        <feMergeNode in="glow"/>
         <feMergeNode in="SourceGraphic"/>
       </feMerge>
     </filter>
-    <!-- Stronger glow for traces -->
-    <filter id="traceGlow" x="-50%" y="-50%" width="200%" height="200%">
-      <feGaussianBlur in="SourceGraphic" stdDeviation="5" result="blur"/>
-      <feFlood flood-color="#0ea5e9" flood-opacity="0.7"/>
-      <feComposite in2="blur" operator="in" result="glowColor"/>
+    <!-- Node glow -->
+    <filter id="nGlow" x="-100%" y="-100%" width="300%" height="300%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="4" result="blur"/>
+      <feFlood flood-color="#00d4ff" flood-opacity="0.6"/>
+      <feComposite in2="blur" operator="in" result="glow"/>
       <feMerge>
-        <feMergeNode in="glowColor"/>
+        <feMergeNode in="glow"/>
         <feMergeNode in="SourceGraphic"/>
       </feMerge>
     </filter>
-    <!-- Lightning bolt gradient -->
-    <linearGradient id="boltGrad" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0%" stop-color="#fde047"/>
-      <stop offset="100%" stop-color="#eab308"/>
+    <!-- Bolt gradient (top bright, bottom deeper gold) -->
+    <linearGradient id="bolt" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#ffe066"/>
+      <stop offset="50%" stop-color="#facc15"/>
+      <stop offset="100%" stop-color="#d97706"/>
     </linearGradient>
   </defs>
 
-  <!-- V shape - two thick arms meeting at bottom center -->
-  <!-- Left arm -->
-  <polygon points="100,72 148,72 268,432 220,432" fill="#0f172a" stroke="#1e3a5f" stroke-width="2"/>
-  <!-- Right arm (mirrored) -->
-  <polygon points="412,72 364,72 244,432 292,432" fill="#0f172a" stroke="#1e3a5f" stroke-width="2"/>
-
-  <!-- Circuit traces - LEFT arm -->
-  <g filter="url(#traceGlow)">
-    <!-- Node 1 (top of left arm) to Node 2 (mid-left, outer edge) -->
-    <line x1="112" y1="82" x2="88" y2="190" stroke="#0ea5e9" stroke-width="3.5" stroke-linecap="round"/>
-    <!-- Node 2 to Node 3 (lower, angling inward) -->
-    <line x1="88" y1="190" x2="160" y2="300" stroke="#0ea5e9" stroke-width="3.5" stroke-linecap="round"/>
-    <!-- Nodes (solder pads) -->
-    <circle cx="112" cy="82" r="9" fill="#0b1629" stroke="#0ea5e9" stroke-width="3"/>
-    <circle cx="88" cy="190" r="7" fill="#0b1629" stroke="#0ea5e9" stroke-width="2.5"/>
-    <circle cx="160" cy="300" r="7" fill="#0b1629" stroke="#0ea5e9" stroke-width="2.5"/>
+  <!-- === V SHAPE === -->
+  <!-- Both arms defined as matching polygons, symmetric about x=256 -->
+  <g filter="url(#vGlow)">
+    <!-- Left arm: top-left(88,64) → inner-top(168,64) → bottom-inner(268,432) → bottom-point(256,452) → bottom-outer(244,432) -->
+    <polygon points="88,64 168,64 268,432 256,452 244,432" fill="#0d1b2a"/>
+    <!-- Right arm: mirrored (x' = 512 - x) -->
+    <polygon points="424,64 344,64 244,432 256,452 268,432" fill="#0d1b2a"/>
+    <!-- Thin cyan border -->
+    <polygon points="88,64 168,64 268,432 256,452 244,432" fill="none" stroke="#4dd9ff" stroke-width="2.5" stroke-linejoin="round"/>
+    <polygon points="424,64 344,64 244,432 256,452 268,432" fill="none" stroke="#4dd9ff" stroke-width="2.5" stroke-linejoin="round"/>
   </g>
 
-  <!-- Circuit traces - RIGHT arm (mirrored from left: x' = 512 - x) -->
-  <g filter="url(#traceGlow)">
-    <!-- Node 1 (top of right arm) to Node 2 (mid-right, outer edge) -->
-    <line x1="400" y1="82" x2="424" y2="190" stroke="#0ea5e9" stroke-width="3.5" stroke-linecap="round"/>
-    <!-- Node 2 to Node 3 (lower, angling inward) -->
-    <line x1="424" y1="190" x2="352" y2="300" stroke="#0ea5e9" stroke-width="3.5" stroke-linecap="round"/>
-    <!-- Nodes (solder pads) -->
-    <circle cx="400" cy="82" r="9" fill="#0b1629" stroke="#0ea5e9" stroke-width="3"/>
-    <circle cx="424" cy="190" r="7" fill="#0b1629" stroke="#0ea5e9" stroke-width="2.5"/>
-    <circle cx="352" cy="300" r="7" fill="#0b1629" stroke="#0ea5e9" stroke-width="2.5"/>
+  <!-- === CIRCUIT TRACES — LEFT ARM === -->
+  <!-- 3 nodes: top-outer, mid-outer, lower-inner, connected by lines -->
+  <g filter="url(#nGlow)">
+    <line x1="120" y1="96" x2="108" y2="196" stroke="#4dd9ff" stroke-width="2.5" stroke-linecap="round"/>
+    <line x1="108" y1="196" x2="168" y2="304" stroke="#4dd9ff" stroke-width="2.5" stroke-linecap="round"/>
+    <circle cx="120" cy="96" r="9" fill="#0d1b2a" stroke="#4dd9ff" stroke-width="2.5"/>
+    <circle cx="108" cy="196" r="7" fill="#0d1b2a" stroke="#4dd9ff" stroke-width="2.5"/>
+    <circle cx="168" cy="304" r="7" fill="#0d1b2a" stroke="#4dd9ff" stroke-width="2.5"/>
   </g>
 
-  <!-- Lightning bolt (centered) -->
-  <path d="M296 52 L210 256 L268 256 L224 462 L340 220 L278 220 Z" fill="url(#boltGrad)"/>
+  <!-- === CIRCUIT TRACES — RIGHT ARM (mirrored: x' = 512 - x) === -->
+  <g filter="url(#nGlow)">
+    <line x1="392" y1="96" x2="404" y2="196" stroke="#4dd9ff" stroke-width="2.5" stroke-linecap="round"/>
+    <line x1="404" y1="196" x2="344" y2="304" stroke="#4dd9ff" stroke-width="2.5" stroke-linecap="round"/>
+    <circle cx="392" cy="96" r="9" fill="#0d1b2a" stroke="#4dd9ff" stroke-width="2.5"/>
+    <circle cx="404" cy="196" r="7" fill="#0d1b2a" stroke="#4dd9ff" stroke-width="2.5"/>
+    <circle cx="344" cy="304" r="7" fill="#0d1b2a" stroke="#4dd9ff" stroke-width="2.5"/>
+  </g>
+
+  <!-- === LIGHTNING BOLT === -->
+  <polygon points="296,32 216,236 272,236 208,480 340,196 280,196" fill="url(#bolt)"/>
 </svg>

@@ -96,7 +96,8 @@ function patchRequirements(reqs: string[]): string[] {
       .replace(/\(210\) 353-2222/g, "(877) 373-4858")
       .replace(/Eaton 1009874ACH/g, "Eaton UATRS213CFLCH")
       .replace(/Milbank U5135-XL-200/g, "Eaton UATRS213CFLCH")
-      .replace(/CPS-approved ringless type/g, "AEP Texas Central approved meter socket"),
+      .replace(/CPS-approved ringless type/g, "AEP Texas Central approved meter socket")
+      .replace(/approved ringless type/g, "approved meter socket (UATRS213CFLCH)"),
   );
 }
 
@@ -105,7 +106,12 @@ function patchBlueprintNotes(notes: string[] | undefined): string[] | undefined 
   return notes.map((n) =>
     n
       .replace(/CPS Energy/g, "AEP Texas Central")
-      .replace(/\bCPS\b/g, "AEP Texas"),
+      .replace(/\bCPS\b/g, "AEP Texas")
+      .replace(/Eaton 1009874ACH/g, "Eaton UATRS213CFLCH")
+      .replace(/1009874ACH/g, "UATRS213CFLCH")
+      .replace(/Milbank U5135-XL-200/g, "Eaton UATRS213CFLCH")
+      .replace(/200A ringless/g, "200A meter socket")
+      .replace(/\(210\) 353-4050/g, "(877) 373-4858"),
   );
 }
 
@@ -113,7 +119,10 @@ function patchSvg(svg: string | undefined): string | undefined {
   if (!svg) return svg;
   return svg
     .replace(/CPS Energy/g, "AEP Texas")
-    .replace(/\bCPS\b/g, "AEP Texas");
+    .replace(/\bCPS\b/g, "AEP Texas")
+    .replace(/1009874ACH/g, "UATRS213CFLCH")
+    .replace(/200A ringless/g, "200A meter socket")
+    .replace(/Milbank U5135-XL-200/g, "UATRS213CFLCH");
 }
 
 export const BROWNSVILLE_JOBS: Job[] = SA_JOBS.map((job) => ({

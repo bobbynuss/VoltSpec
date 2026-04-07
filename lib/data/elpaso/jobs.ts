@@ -96,7 +96,8 @@ function patchRequirements(reqs: string[]): string[] {
       .replace(/\(210\) 353-2222/g, "(915) 543-5711")
       .replace(/Eaton 1009874ACH/g, "Eaton MBE2040B200BTS")
       .replace(/Milbank U5135-XL-200/g, "Eaton MBE2040B200BTS")
-      .replace(/CPS-approved ringless type/g, "El Paso Electric approved BR meter-breaker type"),
+      .replace(/CPS-approved ringless type/g, "El Paso Electric approved BR meter-breaker type")
+      .replace(/approved ringless type/g, "approved BR meter-breaker (MBE2040B200BTS)"),
   );
 }
 
@@ -105,7 +106,12 @@ function patchBlueprintNotes(notes: string[] | undefined): string[] | undefined 
   return notes.map((n) =>
     n
       .replace(/CPS Energy/g, "El Paso Electric")
-      .replace(/\bCPS\b/g, "EPE"),
+      .replace(/\bCPS\b/g, "EPE")
+      .replace(/Eaton 1009874ACH/g, "Eaton MBE2040B200BTS")
+      .replace(/1009874ACH/g, "MBE2040B200BTS")
+      .replace(/Milbank U5135-XL-200/g, "Eaton MBE2040B200BTS")
+      .replace(/200A ringless/g, "200A BR meter-breaker")
+      .replace(/\(210\) 353-4050/g, "(915) 543-5711"),
   );
 }
 
@@ -113,7 +119,10 @@ function patchSvg(svg: string | undefined): string | undefined {
   if (!svg) return svg;
   return svg
     .replace(/CPS Energy/g, "El Paso Electric")
-    .replace(/\bCPS\b/g, "EPE");
+    .replace(/\bCPS\b/g, "EPE")
+    .replace(/1009874ACH/g, "MBE2040B200BTS")
+    .replace(/200A ringless/g, "200A BR meter-breaker")
+    .replace(/Milbank U5135-XL-200/g, "MBE2040B200BTS");
 }
 
 export const ELPASO_JOBS: Job[] = SA_JOBS.map((job) => ({

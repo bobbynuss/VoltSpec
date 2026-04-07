@@ -18,18 +18,21 @@ async function main() {
   const isBolt = (r, g, b) =>
     (r > 145 && g > 100 && b < 115 && (r - b) > 50) ||
     (r > 100 && g > 60 && b < 50 && (r - b) > 60 && r > g);
-  // Also catch the blue/cyan glow pixels around the bolt (they have high blue channel)
+  // Catch warm/amber glow pixels around the bolt edges
   const isBoltGlow = (r, g, b) => {
     // Yellow-adjacent warm glow
     if (r > 120 && g > 80 && b < 80 && (r - b) > 40) return true;
-    // Dark amber edges
-    if (r > 80 && g > 50 && b < 40 && (r - b) > 40) return true;
+    // Dark amber/brown edges
+    if (r > 70 && g > 40 && b < 50 && (r - b) > 30) return true;
+    // Orange-ish transition pixels
+    if (r > 150 && g > 60 && g < 130 && b < 70) return true;
     return false;
   };
   const isChecker = (r, g, b) => ((r + g + b) / 3) > 165 && (Math.max(r, g, b) - Math.min(r, g, b)) < 40;
 
-  // Build bolt mask with wider dilation for glow protection
-  const GLOW = 35;
+  // Build bolt mask with wide dilation for glow protection
+  // 45px radius to fully cover the warm glow halo around the bolt
+  const GLOW = 45;
   const boltMask = new Uint8Array(W * H);
   for (let i = 0; i < W * H; i++) {
     const r = orig[i * ch], g = orig[i * ch + 1], b = orig[i * ch + 2];
@@ -57,7 +60,7 @@ async function main() {
   // For every pixel on the RIGHT side:
   // - If in bolt+glow zone → keep original (preserves bolt perfectly)
   // - Otherwise → replace with mirrored left pixel
-  //   - Unless mirror source is in bolt zone → use checker bg
+  //   - Unless mirror source is in bolt zone → sample nearest clean pixel instead
   for (let y = 0; y < H; y++) {
     for (let x = CX + 1; x < W; x++) {
       if (dilated[y * W + x]) continue; // protect bolt zone
@@ -66,10 +69,25 @@ async function main() {
       if (mx < 0) continue;
 
       if (dilated[y * W + mx]) {
-        // Mirror source is bolt — fill with checker
-        out[(y * W + x) * ch] = 204;
-        out[(y * W + x) * ch + 1] = 204;
-        out[(y * W + x) * ch + 2] = 204;
+        // Mirror source is in bolt zone — find the nearest non-bolt pixel
+        // on the same row, scanning outward from the bolt zone
+        let found = false;
+        for (let sx = mx - 1; sx >= 0; sx--) {
+          if (!dilated[y * W + sx]) {
+            const si = (y * W + sx) * ch;
+            out[(y * W + x) * ch] = orig[si];
+            out[(y * W + x) * ch + 1] = orig[si + 1];
+            out[(y * W + x) * ch + 2] = orig[si + 2];
+            found = true;
+            break;
+          }
+        }
+        if (!found) {
+          // Fallback to checker
+          out[(y * W + x) * ch] = 204;
+          out[(y * W + x) * ch + 1] = 204;
+          out[(y * W + x) * ch + 2] = 204;
+        }
       } else {
         const si = (y * W + mx) * ch;
         const di = (y * W + x) * ch;

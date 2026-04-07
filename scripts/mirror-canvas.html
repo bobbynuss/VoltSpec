@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head><title>Mirror Logo</title></head>
+<body style="background:#222;padding:20px">
+<h2 style="color:white">VoltSpec Logo Mirror Tool</h2>
+<p style="color:#aaa">Left: Original | Center: Left arm flipped | Right: Final (mirrored V + original bolt)</p>
+<div style="display:flex;gap:20px;flex-wrap:wrap">
+  <div>
+    <h3 style="color:#facc15">Original</h3>
+    <canvas id="original" style="border:1px solid #444"></canvas>
+  </div>
+  <div>
+    <h3 style="color:#facc15">Mirrored V</h3>
+    <canvas id="mirrored" style="border:1px solid #444"></canvas>
+  </div>
+  <div>
+    <h3 style="color:#facc15">Final Result</h3>
+    <canvas id="final" style="border:1px solid #444"></canvas>
+  </div>
+</div>
+<br>
+<button id="download" style="padding:10px 20px;font-size:16px;background:#facc15;border:none;cursor:pointer;border-radius:4px">Download Final PNG</button>
+<div id="status" style="color:#0ea5e9;margin-top:10px"></div>
+
+<script>
+const img = new Image();
+img.onload = () => {
+  const W = img.width, H = img.height;
+  const status = document.getElementById('status');
+  status.textContent = `Loaded: ${W}x${H}`;
+
+  // Setup canvases
+  const origCanvas = document.getElementById('original');
+  const mirrorCanvas = document.getElementById('mirrored');
+  const finalCanvas = document.getElementById('final');
+  [origCanvas, mirrorCanvas, finalCanvas].forEach(c => { c.width = W; c.height = H; });
+
+  const origCtx = origCanvas.getContext('2d');
+  const mirCtx = mirrorCanvas.getContext('2d');
+  const finCtx = finalCanvas.getContext('2d');
+
+  // Draw original
+  origCtx.drawImage(img, 0, 0);
+
+  // Center axis of the V
+  const CX = 395;
+
+  // Step 1: Create mirrored version
+  // Draw the left half as-is
+  mirCtx.drawImage(img, 0, 0, CX, H, 0, 0, CX, H);
+  // Draw the left half flipped for the right side
+  mirCtx.save();
+  mirCtx.translate(CX * 2, 0);
+  mirCtx.scale(-1, 1);
+  mirCtx.drawImage(img, 0, 0, CX, H, 0, 0, CX, H);
+  mirCtx.restore();
+
+  // Step 2: Build final — start with mirrored V
+  finCtx.drawImage(mirrorCanvas, 0, 0);
+
+  // Step 3: Extract and overlay ONLY the bolt from the original
+  const origData = origCtx.getImageData(0, 0, W, H);
+  const finData = finCtx.getImageData(0, 0, W, H);
+  const od = origData.data;
+  const fd = finData.data;
+
+  for (let i = 0; i < od.length; i += 4) {
+    const r = od[i], g = od[i+1], b = od[i+2];
+    
+    // Is this pixel yellow/gold (part of the bolt)?
+    const isYellow = r > 160 && g > 120 && b < 100 && (r - b) > 70;
+    // Is this a bright yellow highlight on the bolt?
+    const isBrightYellow = r > 200 && g > 180 && b < 80;
+    
+    if (isYellow || isBrightYellow) {
+      // Overlay bolt pixel from original onto the mirrored base
+      fd[i] = r;
+      fd[i+1] = g;
+      fd[i+2] = b;
+      fd[i+3] = 255;
+    }
+  }
+
+  finCtx.putImageData(finData, 0, 0);
+  status.textContent += ' | Mirror complete!';
+
+  // Download
+  document.getElementById('download').onclick = () => {
+    const a = document.createElement('a');
+    a.download = 'voltspec-logo-mirrored-final.png';
+    a.href = finalCanvas.toDataURL('image/png');
+    a.click();
+    status.textContent += ' | Downloaded!';
+  };
+
+  // Also expose for automation
+  window.__finalDataUrl = finalCanvas.toDataURL('image/png');
+  window.__mirrorDone = true;
+};
+img.src = '/voltspec-logo-source.jpg';
+</script>
+</body>
+</html>

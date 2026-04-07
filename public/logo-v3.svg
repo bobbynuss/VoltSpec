@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <filter id="glow3" x="-25%" y="-25%" width="150%" height="150%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="7" result="blur"/>
+      <feFlood flood-color="#0ea5e9" flood-opacity="0.6"/>
+      <feComposite in2="blur" operator="in" result="g"/>
+      <feMerge><feMergeNode in="g"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="boltGlow3" x="-25%" y="-15%" width="150%" height="130%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="6" result="blur"/>
+      <feFlood flood-color="#fbbf24" flood-opacity="0.3"/>
+      <feComposite in2="blur" operator="in" result="g"/>
+      <feMerge><feMergeNode in="g"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <linearGradient id="bolt3" x1="0.3" y1="0" x2="0.7" y2="1">
+      <stop offset="0%" stop-color="#fef08a"/>
+      <stop offset="45%" stop-color="#facc15"/>
+      <stop offset="100%" stop-color="#a16207"/>
+    </linearGradient>
+  </defs>
+
+  <!-- V shape — bold with slightly rounded bottom -->
+  <g filter="url(#glow3)">
+    <path d="M80,52 L176,52 C176,52 256,400 256,440 C256,400 336,52 336,52 L432,52 L276,468 C268,486 244,486 236,468 Z"
+      fill="#0b1526" stroke="#0ea5e9" stroke-width="2" stroke-linejoin="round"/>
+  </g>
+
+  <!-- Circuit traces — minimal, elegant, on-surface -->
+  <!-- Left: two nodes + connecting trace following the arm angle -->
+  <g filter="url(#glow3)">
+    <line x1="124" y1="84" x2="144" y2="200" stroke="#22d3ee" stroke-width="2" stroke-linecap="round"/>
+    <line x1="144" y1="200" x2="108" y2="120" stroke="#22d3ee" stroke-width="2" stroke-linecap="round" opacity="0.4"/>
+    <circle cx="124" cy="84" r="7" fill="#0b1526" stroke="#22d3ee" stroke-width="2"/>
+    <circle cx="144" cy="200" r="5.5" fill="#0b1526" stroke="#22d3ee" stroke-width="2"/>
+    <!-- Small branch -->
+    <line x1="124" y1="84" x2="92" y2="104" stroke="#22d3ee" stroke-width="1.5" stroke-linecap="round" opacity="0.5"/>
+    <circle cx="92" cy="104" r="4" fill="#0b1526" stroke="#22d3ee" stroke-width="1.5" opacity="0.5"/>
+  </g>
+
+  <!-- Right: mirrored -->
+  <g filter="url(#glow3)">
+    <line x1="388" y1="84" x2="368" y2="200" stroke="#22d3ee" stroke-width="2" stroke-linecap="round"/>
+    <line x1="368" y1="200" x2="404" y2="120" stroke="#22d3ee" stroke-width="2" stroke-linecap="round" opacity="0.4"/>
+    <circle cx="388" cy="84" r="7" fill="#0b1526" stroke="#22d3ee" stroke-width="2"/>
+    <circle cx="368" cy="200" r="5.5" fill="#0b1526" stroke="#22d3ee" stroke-width="2"/>
+    <line x1="388" y1="84" x2="420" y2="104" stroke="#22d3ee" stroke-width="1.5" stroke-linecap="round" opacity="0.5"/>
+    <circle cx="420" cy="104" r="4" fill="#0b1526" stroke="#22d3ee" stroke-width="1.5" opacity="0.5"/>
+  </g>
+
+  <!-- Lightning bolt — sharp, embedded in the V -->
+  <g filter="url(#boltGlow3)">
+    <path d="M300,28 L228,224 L276,216 L220,484 L332,196 L280,204 Z" fill="url(#bolt3)"/>
+  </g>
+</svg>

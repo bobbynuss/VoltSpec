@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
   <defs>
-    <!-- Soft blue outer glow on V -->
+    <!-- Blue outer glow on V body -->
     <filter id="vGlow" x="-25%" y="-25%" width="150%" height="150%">
       <feGaussianBlur in="SourceGraphic" stdDeviation="8" result="blur"/>
       <feFlood flood-color="#00d4ff" flood-opacity="0.55"/>
@@ -10,8 +10,8 @@
         <feMergeNode in="SourceGraphic"/>
       </feMerge>
     </filter>
-    <!-- Node glow -->
-    <filter id="nGlow" x="-100%" y="-100%" width="300%" height="300%">
+    <!-- Glow for left-arm circuit traces (blue on V surface) -->
+    <filter id="traceGlow" x="-100%" y="-100%" width="300%" height="300%">
       <feGaussianBlur in="SourceGraphic" stdDeviation="4" result="blur"/>
       <feFlood flood-color="#00d4ff" flood-opacity="0.6"/>
       <feComposite in2="blur" operator="in" result="glow"/>
@@ -20,7 +20,22 @@
         <feMergeNode in="SourceGraphic"/>
       </feMerge>
     </filter>
-    <!-- Bolt gradient (top bright, bottom deeper gold) -->
+    <!-- Blue backlight for right-arm circuit traces (strong, wide glow) -->
+    <filter id="rightGlow" x="-120%" y="-120%" width="340%" height="340%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="10" result="blur"/>
+      <feFlood flood-color="#00d4ff" flood-opacity="0.8"/>
+      <feComposite in2="blur" operator="in" result="glow"/>
+      <!-- Double up the glow for intensity -->
+      <feGaussianBlur in="SourceGraphic" stdDeviation="5" result="blur2"/>
+      <feFlood flood-color="#00d4ff" flood-opacity="0.9"/>
+      <feComposite in2="blur2" operator="in" result="glow2"/>
+      <feMerge>
+        <feMergeNode in="glow"/>
+        <feMergeNode in="glow2"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <!-- Bolt gradient -->
     <linearGradient id="bolt" x1="0" y1="0" x2="0" y2="1">
       <stop offset="0%" stop-color="#ffe066"/>
       <stop offset="50%" stop-color="#facc15"/>
@@ -28,21 +43,19 @@
     </linearGradient>
   </defs>
 
-  <!-- === V SHAPE === -->
-  <!-- Both arms defined as matching polygons, symmetric about x=256 -->
+  <!-- === V SHAPE with blue glow === -->
   <g filter="url(#vGlow)">
-    <!-- Left arm: top-left(88,64) → inner-top(168,64) → bottom-inner(268,432) → bottom-point(256,452) → bottom-outer(244,432) -->
+    <!-- Left arm -->
     <polygon points="88,64 168,64 268,432 256,452 244,432" fill="#0d1b2a"/>
-    <!-- Right arm: mirrored (x' = 512 - x) -->
+    <!-- Right arm -->
     <polygon points="424,64 344,64 244,432 256,452 268,432" fill="#0d1b2a"/>
-    <!-- Thin cyan border -->
+    <!-- Cyan border -->
     <polygon points="88,64 168,64 268,432 256,452 244,432" fill="none" stroke="#4dd9ff" stroke-width="2.5" stroke-linejoin="round"/>
     <polygon points="424,64 344,64 244,432 256,452 268,432" fill="none" stroke="#4dd9ff" stroke-width="2.5" stroke-linejoin="round"/>
   </g>
 
-  <!-- === CIRCUIT TRACES — LEFT ARM === -->
-  <!-- 3 nodes: top-outer, mid-outer, lower-inner, connected by lines -->
-  <g filter="url(#nGlow)">
+  <!-- === LEFT ARM — blue glowing traces ON the V surface === -->
+  <g filter="url(#traceGlow)">
     <line x1="120" y1="96" x2="108" y2="196" stroke="#4dd9ff" stroke-width="2.5" stroke-linecap="round"/>
     <line x1="108" y1="196" x2="168" y2="304" stroke="#4dd9ff" stroke-width="2.5" stroke-linecap="round"/>
     <circle cx="120" cy="96" r="9" fill="#0d1b2a" stroke="#4dd9ff" stroke-width="2.5"/>
@@ -50,13 +63,45 @@
     <circle cx="168" cy="304" r="7" fill="#0d1b2a" stroke="#4dd9ff" stroke-width="2.5"/>
   </g>
 
-  <!-- === CIRCUIT TRACES — RIGHT ARM (mirrored: x' = 512 - x) === -->
-  <g filter="url(#nGlow)">
-    <line x1="392" y1="96" x2="404" y2="196" stroke="#4dd9ff" stroke-width="2.5" stroke-linecap="round"/>
-    <line x1="404" y1="196" x2="344" y2="304" stroke="#4dd9ff" stroke-width="2.5" stroke-linecap="round"/>
-    <circle cx="392" cy="96" r="9" fill="#0d1b2a" stroke="#4dd9ff" stroke-width="2.5"/>
-    <circle cx="404" cy="196" r="7" fill="#0d1b2a" stroke="#4dd9ff" stroke-width="2.5"/>
-    <circle cx="344" cy="304" r="7" fill="#0d1b2a" stroke="#4dd9ff" stroke-width="2.5"/>
+  <!-- === RIGHT ARM — black circuit traces extending outside V, with blue backlight === -->
+  <!-- Blue glow layer (rendered first, behind the black traces) -->
+  <g filter="url(#rightGlow)">
+    <!-- Same geometry as black traces, thicker strokes for strong glow source -->
+    <line x1="372" y1="72" x2="420" y2="56" stroke="#4dd9ff" stroke-width="8" stroke-linecap="round"/>
+    <line x1="420" y1="56" x2="428" y2="140" stroke="#4dd9ff" stroke-width="8" stroke-linecap="round"/>
+    <line x1="372" y1="72" x2="356" y2="168" stroke="#4dd9ff" stroke-width="8" stroke-linecap="round"/>
+    <line x1="356" y1="168" x2="324" y2="280" stroke="#4dd9ff" stroke-width="8" stroke-linecap="round"/>
+    <line x1="428" y1="140" x2="416" y2="228" stroke="#4dd9ff" stroke-width="8" stroke-linecap="round"/>
+    <line x1="324" y1="280" x2="416" y2="228" stroke="#4dd9ff" stroke-width="8" stroke-linecap="round"/>
+    <circle cx="372" cy="72" r="12" fill="#4dd9ff"/>
+    <circle cx="420" cy="56" r="12" fill="#4dd9ff"/>
+    <circle cx="428" cy="140" r="10" fill="#4dd9ff"/>
+    <circle cx="356" cy="168" r="10" fill="#4dd9ff"/>
+    <circle cx="416" cy="228" r="11" fill="#4dd9ff"/>
+    <circle cx="324" cy="280" r="10" fill="#4dd9ff"/>
+  </g>
+
+  <!-- Black traces on top (the visible lines/nodes) -->
+  <g>
+    <!-- A-B -->
+    <line x1="372" y1="72" x2="420" y2="56" stroke="#1a1a2e" stroke-width="3.5" stroke-linecap="round"/>
+    <!-- B-C -->
+    <line x1="420" y1="56" x2="428" y2="140" stroke="#1a1a2e" stroke-width="3.5" stroke-linecap="round"/>
+    <!-- A-D -->
+    <line x1="372" y1="72" x2="356" y2="168" stroke="#1a1a2e" stroke-width="3.5" stroke-linecap="round"/>
+    <!-- D-F -->
+    <line x1="356" y1="168" x2="324" y2="280" stroke="#1a1a2e" stroke-width="3.5" stroke-linecap="round"/>
+    <!-- C-E -->
+    <line x1="428" y1="140" x2="416" y2="228" stroke="#1a1a2e" stroke-width="3.5" stroke-linecap="round"/>
+    <!-- F-E -->
+    <line x1="324" y1="280" x2="416" y2="228" stroke="#1a1a2e" stroke-width="3.5" stroke-linecap="round"/>
+    <!-- Nodes: dark fill, dark stroke -->
+    <circle cx="372" cy="72" r="9" fill="#1a1a2e" stroke="#1a1a2e" stroke-width="2"/>
+    <circle cx="420" cy="56" r="9" fill="#1a1a2e" stroke="#1a1a2e" stroke-width="2"/>
+    <circle cx="428" cy="140" r="7" fill="#1a1a2e" stroke="#1a1a2e" stroke-width="2"/>
+    <circle cx="356" cy="168" r="7" fill="#1a1a2e" stroke="#1a1a2e" stroke-width="2"/>
+    <circle cx="416" cy="228" r="8" fill="#1a1a2e" stroke="#1a1a2e" stroke-width="2"/>
+    <circle cx="324" cy="280" r="7" fill="#1a1a2e" stroke="#1a1a2e" stroke-width="2"/>
   </g>
 
   <!-- === LIGHTNING BOLT === -->

@@ -7,7 +7,8 @@ import { Sidebar } from "@/components/Sidebar";
 import type { SidebarHandle } from "@/components/Sidebar";
 import { ResultsPanel } from "@/components/ResultsPanel";
 import { ProjectsPanel } from "@/components/ProjectsPanel";
-import { Zap, Menu, X, Calculator, FolderOpen } from "lucide-react";
+import Image from "next/image";
+import { Menu, X, Calculator, FolderOpen } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { Job } from "@/lib/data";
 import { saveProject } from "@/lib/projects";
@@ -111,7 +112,7 @@ function HomeContent() {
         >
           {sidebarOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
         </Button>
-        <Zap className="w-6 h-6 text-yellow-400 fill-yellow-400" />
+        <Image src="/logo-transparent.png" alt="VoltSpec" width={24} height={24} className="w-6 h-6" />
         <h1 className="text-xl font-bold text-white tracking-tight">
           Volt<span className="text-yellow-400">Spec</span>
         </h1>
@@ -176,7 +177,7 @@ function HomeContent() {
             <ResultsPanel result={result} onSave={handleSaveJob} />
           ) : (
             <div className="flex flex-col items-center justify-center h-full min-h-[60vh] text-center px-4">
-              <Zap className="w-16 h-16 text-yellow-400 fill-yellow-400 mb-4 opacity-20" />
+              <Image src="/logo-transparent.png" alt="VoltSpec" width={64} height={64} className="w-16 h-16 mb-4 opacity-20" />
               <h2 className="text-2xl font-bold text-white mb-2">Ready to Generate</h2>
               <p className="text-gray-400 max-w-md">
                 Select a job type and ZIP code in the sidebar, then click{" "}

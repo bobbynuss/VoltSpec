@@ -1,6 +1,6 @@
 import Link from "next/link";
+import Image from "next/image";
 import {
-  Zap,
   MapPin,
   FileText,
   DollarSign,
@@ -14,7 +14,7 @@ export default function LandingPage() {
     <div className="min-h-screen flex flex-col bg-[hsl(222,47%,7%)]">
       {/* Nav */}
       <header className="border-b border-[hsl(217,33%,20%)] bg-[hsl(222,47%,8%)] px-4 py-4 flex items-center gap-3">
-        <Zap className="w-6 h-6 text-yellow-400 fill-yellow-400" />
+        <Image src="/logo-transparent.png" alt="VoltSpec" width={28} height={28} className="w-7 h-7" />
         <span className="text-xl font-bold text-white tracking-tight">
           Volt<span className="text-yellow-400">Spec</span>
         </span>
@@ -37,7 +37,7 @@ export default function LandingPage() {
       {/* Hero */}
       <section className="flex-1 flex flex-col items-center justify-center text-center px-4 py-16 sm:py-24">
         <div className="mb-6">
-          <Zap className="w-20 h-20 text-yellow-400 fill-yellow-400 mx-auto opacity-90" />
+          <Image src="/logo-transparent.png" alt="VoltSpec" width={80} height={80} className="w-20 h-20 mx-auto opacity-90" />
         </div>
         <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-white tracking-tight max-w-3xl leading-tight">
           Electrical Estimating

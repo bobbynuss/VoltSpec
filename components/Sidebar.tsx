@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useImperativeHandle, forwardRef } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { Zap, MapPin, Briefcase, Building2, Calculator, FolderOpen } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -65,7 +66,7 @@ export const Sidebar = forwardRef<SidebarHandle, SidebarProps>(function Sidebar(
       {/* Header */}
       <div className="hidden lg:flex items-center justify-between pb-2 border-b border-[hsl(217,33%,18%)]">
         <div className="flex items-center gap-2">
-          <Zap className="w-5 h-5 text-yellow-400 fill-yellow-400" />
+          <Image src="/logo-transparent.png" alt="VoltSpec" width={20} height={20} className="w-5 h-5" />
           <span className="text-sm font-semibold text-gray-300">Job Setup</span>
         </div>
         <button

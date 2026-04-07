@@ -2,6 +2,7 @@
 
 import { useState, useMemo } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import {
   Zap,
   Calculator,
@@ -296,7 +297,7 @@ export default function LoadCalcPage() {
             <ArrowLeft className="w-5 h-5" />
           </Button>
         </Link>
-        <Zap className="w-5 h-5 sm:w-6 sm:h-6 text-yellow-400 fill-yellow-400" />
+        <Image src="/logo-transparent.png" alt="VoltSpec" width={24} height={24} className="w-5 h-5 sm:w-6 sm:h-6" />
         <h1 className="text-lg sm:text-xl font-bold text-white tracking-tight">
           Volt<span className="text-yellow-400">Spec</span>
         </h1>

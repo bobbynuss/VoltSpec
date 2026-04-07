@@ -9,6 +9,7 @@ import {
 } from "@react-pdf/renderer";
 import type { Job } from "@/lib/data";
 import { JURISDICTIONS } from "@/lib/data";
+import { VOLTSPEC_LOGO_BASE64 } from "@/lib/logo-base64";
 
 // Rasterise an inline SVG string to a PNG data-URI via an off-screen canvas.
 // @react-pdf/renderer <Image> doesn't reliably handle SVG data URIs, but PNG
@@ -594,9 +595,12 @@ function PageFooter({ dateStr, label }: { dateStr: string; label: string }) {
 function RunningHeader({ jobLabel, cityLabel }: { jobLabel: string; cityLabel: string }) {
   return (
     <View style={styles.runningHeader}>
-      <Text style={styles.runningBrand}>
-        Volt<Text style={styles.runningAccent}>Spec</Text>
-      </Text>
+      <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
+        <Image src={VOLTSPEC_LOGO_BASE64} style={{ width: 16, height: 16 }} />
+        <Text style={styles.runningBrand}>
+          Volt<Text style={styles.runningAccent}>Spec</Text>
+        </Text>
+      </View>
       <Text style={styles.runningTitle}>{clean(jobLabel)} - {clean(cityLabel)}</Text>
     </View>
   );
@@ -667,9 +671,12 @@ function VoltSpecDocument({ result, diagramPng }: DocProps) {
       {/* ── COVER PAGE ─────────────────────────────────────────── */}
       <Page size="LETTER" style={styles.coverPage}>
         <View style={styles.coverStripe}>
-          <Text style={styles.coverBrand}>
-            Volt<Text style={styles.coverBrandAccent}>Spec</Text>
-          </Text>
+          <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
+            <Image src={VOLTSPEC_LOGO_BASE64} style={{ width: 28, height: 28 }} />
+            <Text style={styles.coverBrand}>
+              Volt<Text style={styles.coverBrandAccent}>Spec</Text>
+            </Text>
+          </View>
           <Text style={styles.coverTagline}>
             NEC 2026 Electrical Job Package Generator - {clean(cityLabel)}
           </Text>
@@ -1162,10 +1169,13 @@ function TruckSheetDocument({ result }: { result: GenerateResult }) {
       <Page size="LETTER" style={ts.page}>
         {/* Header */}
         <View style={ts.header}>
-          <Text style={ts.brand}>
-            Volt<Text style={ts.brandAccent}>Spec</Text>
-            <Text style={{ fontSize: 8, color: C.gray }}> Job Sheet</Text>
-          </Text>
+          <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
+            <Image src={VOLTSPEC_LOGO_BASE64} style={{ width: 20, height: 20 }} />
+            <Text style={ts.brand}>
+              Volt<Text style={ts.brandAccent}>Spec</Text>
+              <Text style={{ fontSize: 8, color: C.gray }}> Job Sheet</Text>
+            </Text>
+          </View>
           <View style={ts.headerRight}>
             <Text style={ts.headerCity}>{clean(cityLabel)} - {clean(utilityName)}</Text>
             <Text style={ts.headerDate}>{dateStr}</Text>

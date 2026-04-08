@@ -145,11 +145,17 @@ export function ResultsPanel({ result, onSave }: ResultsPanelProps) {
     : panelJob.blueprintNotes;
 
   const effectiveSvgDiagram = showPOA && panelJob.svgDiagram
-    ? panelJob.svgDiagram.replace(
-        // Inject POA label just before the closing </svg> tag
-        /<\/svg>\s*$/,
-        `<text x="170" y="38" text-anchor="middle" fill="#a78bfa" font-size="8" font-style="italic">${poaOption.svgLabel}</text>\n</svg>`
-      )
+    ? (() => {
+        const svg = panelJob.svgDiagram!;
+        // Extract viewBox height to position POA label near the bottom
+        const vbMatch = svg.match(/viewBox="[\d.]+\s+[\d.]+\s+[\d.]+\s+([\d.]+)"/);
+        const vbH = vbMatch ? parseFloat(vbMatch[1]) : 660;
+        const poaY = vbH - 4; // just above the SVG bottom edge
+        return svg.replace(
+          /<\/svg>\s*$/,
+          `<text x="170" y="${poaY}" text-anchor="middle" fill="#a78bfa" font-size="8" font-style="italic">${poaOption.svgLabel}</text>\n</svg>`
+        );
+      })()
     : panelJob.svgDiagram;
 
   // Extract part number from spec string

@@ -9,6 +9,9 @@ import { ResultsPanel } from "@/components/ResultsPanel";
 import { ProjectsPanel } from "@/components/ProjectsPanel";
 import Image from "next/image";
 import { Menu, X, Calculator, FolderOpen, HelpCircle } from "lucide-react";
+import { TourOverlay } from "@/components/TourOverlay";
+import type { TourStep } from "@/components/TourOverlay";
+import { TOUR_STEPS } from "@/lib/tour-steps";
 import { UserButton } from "@/components/UserButton";
 import { Button } from "@/components/ui/button";
 import type { Job } from "@/lib/data";
@@ -41,6 +44,8 @@ function HomeContent() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [projectsOpen, setProjectsOpen] = useState(false);
   const [authModalOpen, setAuthModalOpen] = useState(false);
+  const [tourActive, setTourActive] = useState(false);
+  const [tourStartStep, setTourStartStep] = useState(0);
   const sidebarRef = useRef<SidebarHandle>(null);
 
   const handleGenerate = async (jobId: string, zip: string, city?: string) => {
@@ -118,6 +123,37 @@ function HomeContent() {
     zip: "78744",
     jobId: "",
   };
+
+  // Build tour steps with beforeShow callbacks for sidebar/tab switching
+  const tourSteps: TourStep[] = TOUR_STEPS.map((s) => ({
+    ...s,
+    beforeShow:
+      s.id === "city" || s.id === "job-type" || s.id === "generate"
+        ? () => setSidebarOpen(true)
+        : s.id === "devices"
+          ? () => {
+              setSidebarOpen(false);
+              // Switch to materials tab if possible
+              const matTab = document.querySelector('[data-value="materials"]') as HTMLElement;
+              matTab?.click();
+            }
+          : () => setSidebarOpen(false),
+  }));
+
+  const startTour = (stepIndex = 0) => {
+    setTourStartStep(stepIndex);
+    setTourActive(true);
+  };
+
+  // Listen for tour start from help page via URL param
+  useEffect(() => {
+    const tourParam = searchParams.get("tour");
+    if (tourParam !== null) {
+      const idx = parseInt(tourParam, 10);
+      startTour(isNaN(idx) ? 0 : idx);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams]);
 
   return (
     <div className="min-h-screen flex flex-col bg-[hsl(222,47%,7%)]">
@@ -229,6 +265,15 @@ function HomeContent() {
         currentZip={sidebarState.zip}
         currentJobId={sidebarState.jobId}
       />
+
+      {/* Interactive tour overlay */}
+      {tourActive && (
+        <TourOverlay
+          steps={tourSteps}
+          startAt={tourStartStep}
+          onEnd={() => setTourActive(false)}
+        />
+      )}
     </div>
   );
 }

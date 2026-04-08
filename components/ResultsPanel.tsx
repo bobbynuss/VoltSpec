@@ -336,6 +336,7 @@ export function ResultsPanel({ result, onSave }: ResultsPanelProps) {
               variant="outline"
               size="sm"
               onClick={handleDownloadJobSheet}
+              data-tour="jobsheet-btn"
               className="border-yellow-400/40 text-yellow-400 hover:text-yellow-300 hover:border-yellow-400 active:bg-yellow-400/10 transition-colors duration-150 font-semibold h-11 sm:h-9 text-xs sm:text-sm whitespace-nowrap"
             >
               <FileText className="w-4 h-4 sm:mr-1.5" />
@@ -345,6 +346,7 @@ export function ResultsPanel({ result, onSave }: ResultsPanelProps) {
             <Button
               size="sm"
               onClick={handleDownloadPDF}
+              data-tour="pdf-btn"
               className="bg-yellow-400 text-gray-900 hover:bg-yellow-300 active:bg-yellow-500 font-semibold transition-colors duration-150 h-11 sm:h-9 text-xs sm:text-sm whitespace-nowrap"
             >
               <Download className="w-4 h-4 sm:mr-1.5" />
@@ -369,6 +371,7 @@ export function ResultsPanel({ result, onSave }: ResultsPanelProps) {
                 variant="outline"
                 size="sm"
                 onClick={() => setQuoteModalOpen(true)}
+                data-tour="quote-btn"
                 className="border-emerald-500/40 text-emerald-400 hover:text-emerald-300 hover:border-emerald-400 active:bg-emerald-400/10 transition-colors duration-150 h-11 sm:h-9 text-xs sm:text-sm whitespace-nowrap"
               >
                 <Send className="w-4 h-4 sm:mr-1.5" />
@@ -380,6 +383,7 @@ export function ResultsPanel({ result, onSave }: ResultsPanelProps) {
                 variant="outline"
                 size="sm"
                 onClick={handleSaveClick}
+                data-tour="save-btn"
                 className={`transition-colors duration-150 h-11 sm:h-9 text-xs sm:text-sm whitespace-nowrap ${
                   justSaved
                     ? "border-emerald-500/50 text-emerald-400 hover:text-emerald-300"
@@ -565,7 +569,7 @@ export function ResultsPanel({ result, onSave }: ResultsPanelProps) {
               {groupMaterials(effectiveMaterials).map((group) => (
                 <div key={group.id} className="mb-6 last:mb-0">
                   {/* Group header */}
-                  <div className="flex items-center gap-2 mb-2 pb-1.5 border-b border-[hsl(217,33%,22%)]">
+                  <div className="flex items-center gap-2 mb-2 pb-1.5 border-b border-[hsl(217,33%,22%)]" data-tour={`group-${group.id}`}>
                     <span className="text-sm">{group.icon}</span>
                     <h4 className="text-xs font-bold text-gray-300 uppercase tracking-wider">{group.label}</h4>
                     <span className="text-[10px] text-gray-600 ml-auto">{group.items.length} item{group.items.length !== 1 ? "s" : ""}</span>

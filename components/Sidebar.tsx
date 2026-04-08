@@ -81,7 +81,7 @@ export const Sidebar = forwardRef<SidebarHandle, SidebarProps>(function Sidebar(
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-5">
         {/* City / Jurisdiction */}
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-2" data-tour="city-selector">
           <label className="flex items-center gap-1.5 text-xs font-semibold text-gray-400 uppercase tracking-wider">
             <Building2 className="w-3.5 h-3.5 text-yellow-400" />
             City / Jurisdiction
@@ -134,7 +134,7 @@ export const Sidebar = forwardRef<SidebarHandle, SidebarProps>(function Sidebar(
         </div>
 
         {/* Job Type */}
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-2" data-tour="job-type-selector">
           <label className="flex items-center gap-1.5 text-xs font-semibold text-gray-400 uppercase tracking-wider">
             <Briefcase className="w-3.5 h-3.5 text-yellow-400" />
             Job Type
@@ -162,6 +162,7 @@ export const Sidebar = forwardRef<SidebarHandle, SidebarProps>(function Sidebar(
           type="submit"
           size="lg"
           disabled={!jobId || loading}
+          data-tour="generate-btn"
           className="
             w-full mt-2 h-12 sm:h-12 font-bold text-sm
             bg-yellow-400 hover:bg-yellow-300 active:bg-yellow-500 text-gray-900

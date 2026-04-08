@@ -34,8 +34,8 @@ export const job: Job = {
     {
       item: "Decora Dimmer Switch",
       quantity: "2",
-      spec: "Eaton DAL06P-C2 - Decora universal dimmer, LED/CFL/incandescent, 120V, single-pole/3-way, white",
-      unitPrice: 18.50,
+      spec: "Lutron DVCL153PWH - Diva C-L dimmer, LED/CFL/incandescent, 150W LED / 600W inc., single-pole/3-way, white",
+      unitPrice: 22.00,
     },
     {
       item: "Bath Fan Switch",

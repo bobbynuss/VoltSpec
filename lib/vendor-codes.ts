@@ -137,7 +137,7 @@ export function elliottVendorCode(part: string, spec: string): string | null {
   if (/^SMI/.test(p) || /\bsmoke\b.*\bdetector\b/i.test(s) || /\bsmoke\/CO\b/i.test(s)) return "EWD";
   // Leviton override
   if (/leviton/i.test(s) && /^(?:TR|GFTR|279|260|261|5262)/.test(p)) return "LEV";
-  if (/lutron/i.test(s)) return "LUT";
+  if (/^(?:DVCL|DVWCL|CTCL|MACL|MSCL|PD|RRD|STCL|MRF)/.test(p) || /lutron/i.test(s)) return "LUT";
 
   // ── Wire connectors (Ideal, Wago, Gardner Bender) → IDL ────────────────
   if (/^30-/.test(p) || /\bideal\b/i.test(s) || /\bwire\s*nut\b/i.test(s)) return "IDL";

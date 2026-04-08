@@ -9,11 +9,14 @@ import { ResultsPanel } from "@/components/ResultsPanel";
 import { ProjectsPanel } from "@/components/ProjectsPanel";
 import Image from "next/image";
 import { Menu, X, Calculator, FolderOpen } from "lucide-react";
+import { UserButton } from "@/components/UserButton";
 import { Button } from "@/components/ui/button";
 import type { Job } from "@/lib/data";
 import { saveProject } from "@/lib/projects";
 import type { SavedProject } from "@/lib/projects";
 import { JOB_TYPES, JURISDICTIONS } from "@/lib/data";
+import { useAuth } from "@/components/AuthProvider";
+import { saveCloudProject } from "@/lib/cloudProjects";
 
 interface GenerateResult {
   job: Job;
@@ -32,10 +35,12 @@ export default function Home() {
 
 function HomeContent() {
   const searchParams = useSearchParams();
+  const { user } = useAuth();
   const [result, setResult] = useState<GenerateResult | null>(null);
   const [loading, setLoading] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [projectsOpen, setProjectsOpen] = useState(false);
+  const [authModalOpen, setAuthModalOpen] = useState(false);
   const sidebarRef = useRef<SidebarHandle>(null);
 
   const handleGenerate = async (jobId: string, zip: string, city?: string) => {
@@ -56,19 +61,33 @@ function HomeContent() {
     }
   };
 
-  const handleSaveJob = (name: string) => {
+  const handleSaveJob = async (name: string) => {
     const state = sidebarRef.current?.getState();
     if (!state?.jobId) return;
     const jobLabel = JOB_TYPES.find((j) => j.id === state.jobId)?.label ?? state.jobId;
     const cityLabel = JURISDICTIONS.find((j) => j.id === state.city)?.shortLabel ?? state.city;
-    saveProject({
-      name,
-      city: state.city,
-      zip: state.zip,
-      jobId: state.jobId,
-      jobLabel,
-      cityLabel,
-    });
+
+    // Save to cloud if logged in, otherwise localStorage
+    if (user) {
+      try {
+        await saveCloudProject({
+          name,
+          job_id: state.jobId,
+          city: state.city,
+          zip: state.zip,
+          job_data: {
+            jobLabel,
+            cityLabel,
+            result: result ?? undefined,
+          } as Record<string, unknown>,
+        });
+      } catch (err) {
+        console.error("Cloud save failed, falling back to local:", err);
+        saveProject({ name, city: state.city, zip: state.zip, jobId: state.jobId, jobLabel, cityLabel });
+      }
+    } else {
+      saveProject({ name, city: state.city, zip: state.zip, jobId: state.jobId, jobLabel, cityLabel });
+    }
   };
 
   const handleLoadProject = (project: SavedProject) => {
@@ -139,6 +158,7 @@ function HomeContent() {
           <span className="text-xs text-gray-600 hidden md:block">
             ⚠️ Reference only — verify with AHJ
           </span>
+          <UserButton />
         </div>
       </header>
 

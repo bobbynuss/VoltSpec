@@ -19,6 +19,12 @@ import {
 } from "@/lib/projects";
 import type { SavedProject } from "@/lib/projects";
 import { JOB_TYPES, JURISDICTIONS } from "@/lib/data";
+import { useAuth } from "@/components/AuthProvider";
+import {
+  listCloudProjects,
+  saveCloudProject,
+  deleteCloudProject,
+} from "@/lib/cloudProjects";
 
 interface ProjectsPanelProps {
   open: boolean;
@@ -38,21 +44,49 @@ export function ProjectsPanel({
   currentZip,
   currentJobId,
 }: ProjectsPanelProps) {
+  const { user } = useAuth();
   const [projects, setProjects] = useState<SavedProject[]>([]);
   const [saving, setSaving] = useState(false);
   const [saveName, setSaveName] = useState("");
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
   const nameRef = useRef<HTMLInputElement>(null);
 
+  // Load projects — cloud if logged in, localStorage if guest
+  const loadProjects = async () => {
+    if (user) {
+      try {
+        const cloud = await listCloudProjects();
+        setProjects(
+          cloud.map((p) => ({
+            id: p.id,
+            name: p.name,
+            city: p.city,
+            zip: p.zip,
+            jobId: p.job_id,
+            jobLabel: (p.job_data as Record<string, string>)?.jobLabel ?? p.job_id,
+            cityLabel: (p.job_data as Record<string, string>)?.cityLabel ?? p.city,
+            savedAt: p.updated_at,
+          }))
+        );
+      } catch (err) {
+        console.error("Failed to load cloud projects:", err);
+        setProjects(getProjects());
+      }
+    } else {
+      setProjects(getProjects());
+    }
+  };
+
   // Refresh list when panel opens
   useEffect(() => {
     if (open) {
-      setProjects(getProjects());
+      loadProjects();
       setSaving(false);
       setSaveName("");
       setDeleteConfirm(null);
     }
-  }, [open]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open, user]);
 
   // Focus name field when save mode opens
   useEffect(() => {
@@ -61,7 +95,7 @@ export function ProjectsPanel({
     }
   }, [saving]);
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!currentJobId) return;
 
     const jobLabel =
@@ -73,23 +107,40 @@ export function ProjectsPanel({
       saveName.trim() ||
       `${jobLabel} — ${cityLabel} ${currentZip}`;
 
-    saveProject({
-      name,
-      city: currentCity,
-      zip: currentZip,
-      jobId: currentJobId,
-      jobLabel,
-      cityLabel,
-    });
+    if (user) {
+      try {
+        await saveCloudProject({
+          name,
+          job_id: currentJobId,
+          city: currentCity,
+          zip: currentZip,
+          job_data: { jobLabel, cityLabel } as Record<string, unknown>,
+        });
+      } catch (err) {
+        console.error("Cloud save failed:", err);
+        saveProject({ name, city: currentCity, zip: currentZip, jobId: currentJobId, jobLabel, cityLabel });
+      }
+    } else {
+      saveProject({ name, city: currentCity, zip: currentZip, jobId: currentJobId, jobLabel, cityLabel });
+    }
 
-    setProjects(getProjects());
+    await loadProjects();
     setSaving(false);
     setSaveName("");
   };
 
-  const handleDelete = (id: string) => {
-    deleteProject(id);
-    setProjects(getProjects());
+  const handleDelete = async (id: string) => {
+    if (user) {
+      try {
+        await deleteCloudProject(id);
+      } catch (err) {
+        console.error("Cloud delete failed:", err);
+        deleteProject(id);
+      }
+    } else {
+      deleteProject(id);
+    }
+    await loadProjects();
     setDeleteConfirm(null);
   };
 

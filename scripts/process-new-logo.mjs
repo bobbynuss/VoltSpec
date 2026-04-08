@@ -22,6 +22,18 @@ async function main() {
   const { data: orig } = await sharp(SOURCE).raw().toBuffer({ resolveWithObject: true });
   const ch = 3;
 
+  // Step 0: Erase the stray vertical line artifact on the left side (x=80-115)
+  // This is a thin blue line in the source that's not part of the logo
+  for (let y = 0; y < H; y++) {
+    for (let x = 75; x < 120; x++) {
+      const i = (y * W + x) * ch;
+      // Replace with background color
+      orig[i] = 13;
+      orig[i + 1] = 16;
+      orig[i + 2] = 40;
+    }
+  }
+
   // Step 1: Build alpha channel based on how different each pixel is from the bg
   // Pixels very close to the bg → transparent; logo content → opaque
   // Smooth gradient at glow edges

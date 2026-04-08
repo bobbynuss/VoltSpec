@@ -131,7 +131,7 @@ Reference pricing only. Please provide current cash-sale quote.
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        from: "VoltSpec <onboarding@resend.dev>",
+        from: "VoltSpec <quotes@voltspec.online>",
         to: [payload.userEmail],
         subject: `Quote Request – ${payload.jobName} – ${payload.city}`,
         text: emailBody,

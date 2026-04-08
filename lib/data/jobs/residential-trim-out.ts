@@ -120,10 +120,10 @@ export const job: Job = {
       unitPrice: 25.00,
     },
     {
-      item: "3/8 in. NM Cable Connector",
+      item: "NM Cable Connector",
       quantity: "10",
-      spec: "Bridgeport 90 - 3/8 in. NM/Romex cable connector, single-screw type for residential boxes",
-      unitPrice: 0.75,
+      spec: "Arlington NM94 - 1-piece non-metallic push-in cable connector for NM/Romex, 3/8 in. knockout",
+      unitPrice: 0.55,
     },
   ],
   blueprintNotes: [

@@ -143,6 +143,9 @@ export function elliottVendorCode(part: string, spec: string): string | null {
   if (/^30-/.test(p) || /\bideal\b/i.test(s) || /\bwire\s*nut\b/i.test(s)) return "IDL";
   if (/^221-/.test(p) || /\bwago\b/i.test(s) || /\blever.nut\b/i.test(s)) return "WAG";
 
+  // ── Arlington (NM connectors, boxes, fittings) → ARL ──────────────────
+  if (/^NM\d/.test(p) || /\barlington\b/i.test(s)) return "ARL";
+
   // ── Eaton Pow-R-Line panels & components → CHS ─────────────────────────
   if (/^PRL[123][AX]/.test(p)) return "CHS";
   if (/^LUGKIT/.test(p)) return "CHS";

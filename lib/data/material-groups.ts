@@ -7,6 +7,7 @@ export type MaterialGroupId =
   | "panel-breakers"
   | "wire-conductors"
   | "conduit-raceway"
+  | "devices-lighting"
   | "fittings-accessories"
   | "miscellaneous";
 
@@ -135,6 +136,62 @@ const FITTING_ACCESSORY_PATTERNS = [
   /\bIPLD\b/i,
 ];
 
+// ── Devices & Lighting ──────────────────────────────────────────────
+// All wiring devices (EWD), Lutron (LUT), smoke/CO (BRK), lighting fixtures
+const DEVICE_LIGHTING_PATTERNS = [
+  // Switches
+  /\bswitch\b/i,
+  /\bdimmer\b/i,
+  /\bDecora\b/i,
+  /\b(single-pole|3-way|4-way)\b.*\bswitch\b/i,
+  // Receptacles (TR, GFCI, USB, WR, duplex)
+  /\breceptacle\b/i,
+  /\boutlet\b/i,
+  /\bGFCI\b/i,
+  /\bUSB\b/i,
+  /\btamper.resistant\b/i,
+  /\bTR\b.*\b(15A|20A|receptacle|duplex)\b/i,
+  // Wall plates
+  /\bwall\s*plate\b/i,
+  /\bcover\s*plate\b/i,
+  /\bfaceplate\b/i,
+  /\bPJ\d/i,
+  // Smoke & CO detectors
+  /\bsmoke\b/i,
+  /\bcarbon\s*monoxide\b/i,
+  /\bCO\s*(detector|alarm|combo)\b/i,
+  /\bSMI\d/i,
+  /\bSMIC\d/i,
+  /\bBRK\b/i,
+  // Lighting fixtures
+  /\blight\s*fixture\b/i,
+  /\brecessed\s*light\b/i,
+  /\bcan\s*light\b/i,
+  /\bLED\s*(fixture|light|panel|strip)\b/i,
+  /\bsconce\b/i,
+  /\bfloodlight\b/i,
+  /\bfan\s*(switch|control)\b/i,
+  // Vendor code patterns (EWD part numbers)
+  /\bEaton\b.*\b(7501|7503|TR11|TR13|TRGF|TWRGF|TR77|PJ\d|DAL|SGD)\b/i,
+  // Lutron part numbers
+  /\bLutron\b/i,
+  /\bDVCL\b/i,
+];
+
+// Items that look like devices but should stay in fittings (boxes, covers for boxes)
+const DEVICE_EXCLUDE_PATTERNS = [
+  /\b4-square\b.*\b(box|cover)\b/i,
+  /\boutlet\s*box\b/i,
+  /\bjunction\s*box\b/i,
+  /\bdevice\s*box\b/i,
+  /\bin-use\s*(cover|weatherproof)\b/i,
+  /\bweather.?proof\s*cover\b/i,
+  /\bconduit\b/i,
+  /\bNEMA\s*14-50\b/i,
+  /\b50A\b.*\b(receptacle|outlet)\b/i,
+  /\b30A\b.*\b(receptacle|outlet|dryer)\b/i,
+];
+
 // Everything else falls to miscellaneous, but these patterns help catch common items
 const MISC_PATTERNS = [
   /\bground\s*rod\b/i,
@@ -189,6 +246,11 @@ function classifyMaterial(mat: MaterialItem): MaterialGroupId {
   // Wire
   if (matchesAny(combined, WIRE_CONDUCTOR_PATTERNS)) return "wire-conductors";
 
+  // Devices & Lighting — check before fittings since "receptacle" matches both
+  // But exclude box/cover/conduit items that happen to mention "receptacle"
+  if (matchesAny(combined, DEVICE_LIGHTING_PATTERNS) && !matchesAny(combined, DEVICE_EXCLUDE_PATTERNS))
+    return "devices-lighting";
+
   // Fittings: check before conduit since "EMT connector" should be fitting not conduit
   if (matchesAny(combined, FITTING_ACCESSORY_PATTERNS)) return "fittings-accessories";
 
@@ -206,6 +268,7 @@ const GROUP_META: Record<MaterialGroupId, { label: string; icon: string }> = {
   "panel-breakers": { label: "Panel & Breakers", icon: "⚡" },
   "wire-conductors": { label: "Wire / Service Entrance Conductors", icon: "🔌" },
   "conduit-raceway": { label: "Conduit & Raceway", icon: "🔧" },
+  "devices-lighting": { label: "Devices & Lighting", icon: "💡" },
   "fittings-accessories": { label: "Fittings & Accessories", icon: "🔩" },
   miscellaneous: { label: "Miscellaneous / Grounding / Other", icon: "📦" },
 };
@@ -214,12 +277,13 @@ const GROUP_ORDER: MaterialGroupId[] = [
   "panel-breakers",
   "wire-conductors",
   "conduit-raceway",
+  "devices-lighting",
   "fittings-accessories",
   "miscellaneous",
 ];
 
 /**
- * Group a flat materials list into 5 ordered sections.
+ * Group a flat materials list into 6 ordered sections.
  * Items within each group preserve their original order.
  */
 export function groupMaterials(materials: MaterialItem[]): MaterialGroup[] {

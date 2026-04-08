@@ -133,8 +133,13 @@ export function elliottVendorCode(part: string, spec: string): string | null {
   if (/^PJ\d/.test(p)) return "EWD";
   // Eaton NEMA receptacles (1450R, etc.) — non-TR flush/range/dryer
   if (/^1[24]50R/.test(p)) return "EWD";
+  // LED retrofit lights (Eaton/Halo LT560 series)
+  if (/^LT5\d/.test(p) || /\bLED\s*retrofit\b/i.test(s) || /\bbaffle\s*trim\b/i.test(s)) return "EWD";
   // Smoke & CO detectors (Eaton SMI/SMIC series)
   if (/^SMI/.test(p) || /\bsmoke\b.*\bdetector\b/i.test(s) || /\bsmoke\/CO\b/i.test(s)) return "EWD";
+  // BRK smoke/CO detectors
+  if (/^(?:SC|SA|FG|HD|PR)/.test(p) && /\bBRK\b/i.test(s)) return "BRK";
+  if (/\bBRK\b/i.test(s) && /\b(smoke|CO|alarm|detector)\b/i.test(s)) return "BRK";
   // Leviton override
   if (/leviton/i.test(s) && /^(?:TR|GFTR|279|260|261|5262)/.test(p)) return "LEV";
   if (/^(?:DVCL|DVWCL|CTCL|MACL|MSCL|PD|RRD|STCL|MRF)/.test(p) || /lutron/i.test(s)) return "LUT";

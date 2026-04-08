@@ -9,12 +9,13 @@ export const diagram = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 340
 
   <!-- Bedroom Branch -->
   <line x1="145" y1="78" x2="60" y2="120" stroke="#facc15" stroke-width="1" stroke-dasharray="4,2"/>
-  <rect x="15" y="120" width="90" height="70" rx="4" fill="#1e293b" stroke="#3b82f6" stroke-width="1"/>
+  <rect x="15" y="120" width="90" height="80" rx="4" fill="#1e293b" stroke="#3b82f6" stroke-width="1"/>
   <text x="60" y="137" text-anchor="middle" fill="#3b82f6" font-size="9" font-weight="bold">BEDROOMS</text>
   <text x="60" y="151" text-anchor="middle" fill="#94a3b8" font-size="7">15A TR Receptacles</text>
   <text x="60" y="163" text-anchor="middle" fill="#94a3b8" font-size="7">Decora Switches</text>
-  <text x="60" y="175" text-anchor="middle" fill="#94a3b8" font-size="7">USB Outlets</text>
-  <text x="60" y="187" text-anchor="middle" fill="#a78bfa" font-size="6">AFCI Protected</text>
+  <text x="60" y="175" text-anchor="middle" fill="#94a3b8" font-size="7">6" LED Retrofit Trims</text>
+  <text x="60" y="187" text-anchor="middle" fill="#94a3b8" font-size="7">LT56079F51EWH</text>
+  <text x="60" y="197" text-anchor="middle" fill="#a78bfa" font-size="6">AFCI Protected</text>
 
   <!-- Kitchen / Wet Branch -->
   <line x1="195" y1="78" x2="280" y2="120" stroke="#facc15" stroke-width="1" stroke-dasharray="4,2"/>
@@ -26,13 +27,13 @@ export const diagram = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 340
   <text x="280" y="187" text-anchor="middle" fill="#a78bfa" font-size="6">GFCI Protected</text>
 
   <!-- Living Areas -->
-  <line x1="170" y1="78" x2="170" y2="220" stroke="#facc15" stroke-width="1" stroke-dasharray="4,2"/>
-  <rect x="105" y="220" width="130" height="70" rx="4" fill="#1e293b" stroke="#f97316" stroke-width="1"/>
-  <text x="170" y="237" text-anchor="middle" fill="#f97316" font-size="9" font-weight="bold">LIVING / DINING</text>
-  <text x="170" y="251" text-anchor="middle" fill="#94a3b8" font-size="7">15A TR Receptacles</text>
-  <text x="170" y="263" text-anchor="middle" fill="#94a3b8" font-size="7">Dimmer Switches</text>
-  <text x="170" y="275" text-anchor="middle" fill="#94a3b8" font-size="7">3-Way Switches</text>
-  <text x="170" y="287" text-anchor="middle" fill="#a78bfa" font-size="6">AFCI Protected</text>
+  <line x1="170" y1="78" x2="170" y2="230" stroke="#facc15" stroke-width="1" stroke-dasharray="4,2"/>
+  <rect x="105" y="230" width="130" height="70" rx="4" fill="#1e293b" stroke="#f97316" stroke-width="1"/>
+  <text x="170" y="247" text-anchor="middle" fill="#f97316" font-size="9" font-weight="bold">LIVING / DINING</text>
+  <text x="170" y="261" text-anchor="middle" fill="#94a3b8" font-size="7">15A TR Receptacles</text>
+  <text x="170" y="273" text-anchor="middle" fill="#94a3b8" font-size="7">Lutron DVCL153P Dimmers</text>
+  <text x="170" y="285" text-anchor="middle" fill="#94a3b8" font-size="7">3-Way Switches + LED Trims</text>
+  <text x="170" y="297" text-anchor="middle" fill="#a78bfa" font-size="6">AFCI Protected</text>
 
   <!-- Exterior -->
   <rect x="15" y="320" width="130" height="60" rx="4" fill="#1e293b" stroke="#eab308" stroke-width="1"/>

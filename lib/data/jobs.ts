@@ -21,6 +21,7 @@ import { job as whole_house_battery_solar } from "./jobs/whole-house-battery-sol
 import { job as span_panel_upgrade } from "./jobs/span-panel-upgrade";
 import { job as span_subpanel } from "./jobs/span-subpanel";
 import { job as residential_trim_out } from "./jobs/residential-trim-out";
+import { job as dc_temp_power } from "./jobs/dc-temp-power";
 
 export const JOBS: Job[] = [
   new_200a_residential,
@@ -45,6 +46,7 @@ export const JOBS: Job[] = [
   span_panel_upgrade,
   span_subpanel,
   residential_trim_out,
+  dc_temp_power,
 ];
 
 export const JOB_TYPES: { id: string; label: string }[] = JOBS.map((j) => ({

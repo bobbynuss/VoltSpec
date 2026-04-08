@@ -145,7 +145,7 @@ export function elliottVendorCode(part: string, spec: string): string | null {
   if (/^(?:DVCL|DVWCL|CTCL|MACL|MSCL|PD|RRD|STCL|MRF)/.test(p) || /lutron/i.test(s)) return "LUT";
 
   // ── Wire connectors (Ideal, Wago, Gardner Bender) → IDL ────────────────
-  if (/^30-/.test(p) || /\bideal\b/i.test(s) || /\bwire\s*nut\b/i.test(s)) return "IDL";
+  if (/^3[01]-/.test(p) || /\bideal\b/i.test(s) || /\bwire\s*nut\b/i.test(s)) return "IDL";
   if (/^221-/.test(p) || /\bwago\b/i.test(s) || /\blever.nut\b/i.test(s)) return "WAG";
 
   // ── Arlington (NM connectors, boxes, fittings) → ARL ──────────────────

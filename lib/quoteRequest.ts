@@ -46,8 +46,10 @@ export async function submitQuoteRequest(payload: QuoteRequestPayload): Promise<
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload),
   });
-  if (!res.ok) {
-    const msg = await res.text();
-    throw new Error(`Email failed: ${msg}`);
+  const resBody = await res.json().catch(() => null);
+
+  if (!res.ok || !resBody?.ok) {
+    const errMsg = resBody?.error || `Email failed (HTTP ${res.status})`;
+    throw new Error(errMsg);
   }
 }

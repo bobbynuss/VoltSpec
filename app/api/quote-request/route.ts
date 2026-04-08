@@ -27,10 +27,11 @@ export async function POST(request: Request) {
 
     const resendKey = process.env.RESEND_API_KEY;
     if (!resendKey) {
-      // If no email service configured, just log and return success
-      // (quote is already saved to Supabase)
-      console.log("[quote-request] No RESEND_API_KEY — quote saved to DB only");
-      return NextResponse.json({ ok: true, emailSent: false });
+      console.error("[quote-request] No RESEND_API_KEY configured");
+      return NextResponse.json(
+        { ok: false, error: "Email service not configured" },
+        { status: 500 }
+      );
     }
 
     // Build the BOM table as clean text
@@ -130,21 +131,26 @@ Reference pricing only. Please provide current cash-sale quote.
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        from: "VoltSpec <quotes@voltspec.online>",
-        to: [payload.userEmail], // Send to the user first — they can forward to Elliott
+        from: "VoltSpec <onboarding@resend.dev>",
+        to: [payload.userEmail],
         subject: `Quote Request – ${payload.jobName} – ${payload.city}`,
         text: emailBody,
         html: emailHtml,
       }),
     });
 
+    const resBody = await res.json();
+    console.log("[quote-request] Resend response:", res.status, JSON.stringify(resBody));
+
     if (!res.ok) {
-      const err = await res.text();
-      console.error("[quote-request] Resend error:", err);
-      return NextResponse.json({ ok: true, emailSent: false, error: err });
+      console.error("[quote-request] Resend error:", resBody);
+      return NextResponse.json(
+        { ok: false, error: resBody?.message || "Email send failed" },
+        { status: 502 }
+      );
     }
 
-    return NextResponse.json({ ok: true, emailSent: true });
+    return NextResponse.json({ ok: true, emailSent: true, id: resBody.id });
   } catch (err) {
     console.error("[quote-request] Error:", err);
     return NextResponse.json(

@@ -8,7 +8,7 @@ import type { SidebarHandle } from "@/components/Sidebar";
 import { ResultsPanel } from "@/components/ResultsPanel";
 import { ProjectsPanel } from "@/components/ProjectsPanel";
 import Image from "next/image";
-import { Menu, X, Calculator, FolderOpen } from "lucide-react";
+import { Menu, X, Calculator, FolderOpen, HelpCircle } from "lucide-react";
 import { UserButton } from "@/components/UserButton";
 import { Button } from "@/components/ui/button";
 import type { Job } from "@/lib/data";
@@ -154,6 +154,13 @@ function HomeContent() {
             <Calculator className="w-4 h-4 sm:w-3.5 sm:h-3.5" />
             <span className="hidden sm:inline">Load Calculator</span>
             <span className="sm:hidden">Calc</span>
+          </Link>
+          <Link
+            href="/help"
+            className="flex items-center gap-1.5 text-xs text-gray-400 hover:text-yellow-400 transition-colors font-medium min-h-[44px] px-2"
+          >
+            <HelpCircle className="w-4 h-4 sm:w-3.5 sm:h-3.5" />
+            <span className="hidden sm:inline">Help</span>
           </Link>
           <span className="text-xs text-gray-600 hidden md:block">
             ⚠️ Reference only — verify with AHJ

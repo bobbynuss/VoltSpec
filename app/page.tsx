@@ -26,6 +26,12 @@ export default function LandingPage() {
             Load Calculator
           </Link>
           <Link
+            href="/help"
+            className="text-sm text-gray-400 hover:text-yellow-400 transition-colors font-medium hidden sm:inline"
+          >
+            Help
+          </Link>
+          <Link
             href="/app"
             className="text-sm font-semibold text-[hsl(222,47%,7%)] bg-yellow-400 hover:bg-yellow-300 px-4 py-2 rounded-lg transition-colors"
           >

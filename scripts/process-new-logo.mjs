@@ -22,15 +22,18 @@ async function main() {
   const { data: orig } = await sharp(SOURCE).raw().toBuffer({ resolveWithObject: true });
   const ch = 3;
 
-  // Step 0: Erase the stray vertical line artifact on the left side (x=80-115)
-  // This is a thin blue line in the source that's not part of the logo
+  // Step 0: Erase stray artifacts and extended circuit traces that look like
+  // stray lines at small display sizes. Paint over with background color.
+  // Left side: everything left of x=130 (circuit traces extend too far)
+  // Right side: everything right of x=654 (mirror of left boundary: 784-130)
   for (let y = 0; y < H; y++) {
-    for (let x = 75; x < 120; x++) {
+    for (let x = 0; x < 130; x++) {
       const i = (y * W + x) * ch;
-      // Replace with background color
-      orig[i] = 13;
-      orig[i + 1] = 16;
-      orig[i + 2] = 40;
+      orig[i] = 13; orig[i + 1] = 16; orig[i + 2] = 40;
+    }
+    for (let x = 654; x < W; x++) {
+      const i = (y * W + x) * ch;
+      orig[i] = 13; orig[i + 1] = 16; orig[i + 2] = 40;
     }
   }
 

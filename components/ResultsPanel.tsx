@@ -147,10 +147,10 @@ export function ResultsPanel({ result, onSave }: ResultsPanelProps) {
   const effectiveSvgDiagram = showPOA && panelJob.svgDiagram
     ? (() => {
         const svg = panelJob.svgDiagram!;
-        // Extract viewBox height to position POA label near the bottom
-        const vbMatch = svg.match(/viewBox="[\d.]+\s+[\d.]+\s+[\d.]+\s+([\d.]+)"/);
-        const vbH = vbMatch ? parseFloat(vbMatch[1]) : 660;
-        const poaY = vbH - 4; // just above the SVG bottom edge
+        // Find the LEGEND box rect to position POA label just above it
+        const legendBoxMatch = svg.match(/<rect[^>]*y="(\d+)"[^>]*width="3[012]\d"[^>]*height="[67]\d"/);
+        const legendY = legendBoxMatch ? parseInt(legendBoxMatch[1]) : 572;
+        const poaY = legendY - 6; // just above the legend box
         return svg.replace(
           /<\/svg>\s*$/,
           `<text x="170" y="${poaY}" text-anchor="middle" fill="#a78bfa" font-size="8" font-style="italic">${poaOption.svgLabel}</text>\n</svg>`

@@ -122,7 +122,7 @@ function HomeContent() {
   return (
     <div className="min-h-screen flex flex-col bg-[hsl(222,47%,7%)]">
       {/* Top nav */}
-      <header className="no-print sticky top-0 z-40 border-b border-[hsl(217,33%,20%)] bg-[hsl(222,47%,8%)] px-4 py-3 flex items-center gap-3">
+      <header className="no-print sticky top-0 z-40 border-b border-[hsl(217,33%,20%)] bg-[hsl(222,47%,8%)] px-2 sm:px-4 py-2.5 sm:py-3 flex items-center gap-2 sm:gap-3">
         <Button
           variant="ghost"
           size="icon"
@@ -174,12 +174,12 @@ function HomeContent() {
         {/* Sidebar */}
         <aside
           className={`
-            fixed lg:static inset-y-0 left-0 z-40 w-72
+            fixed lg:static inset-y-0 left-0 z-40 w-[min(18rem,85vw)]
             transform transition-transform duration-200 ease-in-out
-            lg:transform-none
+            lg:transform-none lg:w-72
             ${sidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}
             bg-[hsl(222,47%,8%)] border-r border-[hsl(217,33%,18%)]
-            overflow-y-auto pt-16 lg:pt-0
+            overflow-y-auto pt-14 lg:pt-0
           `}
         >
           <Sidebar
@@ -192,7 +192,7 @@ function HomeContent() {
         </aside>
 
         {/* Main */}
-        <main className="flex-1 overflow-y-auto p-3 sm:p-4 lg:p-6">
+        <main className="flex-1 overflow-y-auto p-2 sm:p-4 lg:p-6">
           {result ? (
             <ResultsPanel result={result} onSave={handleSaveJob} />
           ) : (

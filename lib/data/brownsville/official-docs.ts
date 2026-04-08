@@ -2,16 +2,16 @@ import type { OfficialDoc } from "../types";
 
 export const BROWNSVILLE_OFFICIAL_DOCS: OfficialDoc[] = [
   {
-    title: "AEP Texas — Electric Service Standards",
-    url: "https://www.aeptexas.com/service/electric/contractors/",
+    title: "AEP Texas — Permit & Inspection Requirements",
+    url: "https://www.aeptexas.com/company/about/choice/permit-inspections",
     description:
-      "AEP Texas Central contractor resources — meter socket specifications, service entrance requirements, and new construction guidelines for the Brownsville / Rio Grande Valley service territory",
+      "AEP Texas permit and inspection requirements by city — select Brownsville to view local electrical service and inspection guidelines for Cameron County / Rio Grande Valley",
   },
   {
-    title: "City of Brownsville - Building & Codes",
-    url: "https://www.brownsvilletx.gov/638/Building-Codes",
+    title: "City of Brownsville — Building Permits & Inspections",
+    url: "https://www.brownsvilletx.gov/1914/Building-Permits-and-Inspections-Divisio",
     description:
-      "City of Brownsville Building & Codes — electrical permit applications, fee schedules, and inspection scheduling for Cameron County",
+      "City of Brownsville Building Permits & Inspections Division — electrical permit applications, fee schedules, and inspection scheduling for Cameron County",
   },
   {
     title: "NEC 2026 (NFPA 70)",

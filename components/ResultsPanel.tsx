@@ -322,7 +322,7 @@ export function ResultsPanel({ result, onSave }: ResultsPanelProps) {
           </div>
         </div>
         <div className="flex flex-col gap-2 no-print">
-          <div className="grid grid-cols-5 sm:flex gap-2">
+          <div className="grid grid-cols-3 sm:flex gap-2">
             <Button
               variant="outline"
               size="sm"
@@ -432,7 +432,7 @@ export function ResultsPanel({ result, onSave }: ResultsPanelProps) {
 
       {/* Tabs */}
       <Tabs defaultValue="requirements" className="!flex-col space-y-4 [&_[data-slot=tabs-content]]:min-h-[400px]">
-        <TabsList className="w-full bg-[hsl(217,33%,13%)] border border-[hsl(217,33%,22%)] h-12 sm:h-10 gap-0.5 p-1 rounded-lg overflow-x-auto scrollbar-none scroll-touch">
+        <TabsList className="w-full bg-[hsl(217,33%,13%)] border border-[hsl(217,33%,22%)] h-12 sm:h-10 gap-0 sm:gap-0.5 p-0.5 sm:p-1 rounded-lg overflow-x-auto scrollbar-none scroll-touch flex-nowrap">
           {[
             { value: "requirements", label: "Requirements", shortLabel: "Reqs", Icon: CheckCircle },
             { value: "materials", label: "Materials", shortLabel: "Parts", Icon: Package },
@@ -503,9 +503,12 @@ export function ResultsPanel({ result, onSave }: ResultsPanelProps) {
                   <span className="text-xs text-gray-400">{showPricing ? "Hide Pricing" : "Show Pricing"}</span>
                 </div>
               )}
-              <div className="mt-2 flex items-center gap-3 p-2.5 rounded-lg bg-yellow-400/8 border border-yellow-400/20">
+              <div className="mt-2 flex items-center gap-2 sm:gap-3 p-2 sm:p-2.5 rounded-lg bg-yellow-400/8 border border-yellow-400/20">
                 <Zap className="w-4 h-4 text-yellow-400 fill-yellow-400 shrink-0" />
-                <span className="text-xs text-gray-400 flex-1">Click <span className="text-yellow-400 font-semibold">Order on EES</span> to copy the list and open the Bulk Pad in one click. Each row also has direct Product and Search links.</span>
+                <span className="text-[11px] sm:text-xs text-gray-400 flex-1 leading-snug">
+                  <span className="hidden sm:inline">Click <span className="text-yellow-400 font-semibold">Order on EES</span> to copy the list and open the Bulk Pad in one click. Each row also has direct Product and Search links.</span>
+                  <span className="sm:hidden"><span className="text-yellow-400 font-semibold">Order on EES</span> copies list &amp; opens Bulk Pad.</span>
+                </span>
                 <a href="https://www.elliottelectric.com/P/Rapid" target="_blank" rel="noopener noreferrer" className="text-xs text-yellow-400 hover:text-yellow-300 font-semibold whitespace-nowrap flex items-center gap-1 transition-colors">Bulk Entry ↗<ExternalLink className="w-3 h-3" /></a>
               </div>
               {/* Panel Type selector — inside Materials tab for panel-eligible jobs */}
@@ -568,7 +571,7 @@ export function ResultsPanel({ result, onSave }: ResultsPanelProps) {
                     <span className="text-[10px] text-gray-600 ml-auto">{group.items.length} item{group.items.length !== 1 ? "s" : ""}</span>
                   </div>
                   <div className="overflow-x-auto -mx-4 sm:mx-0 px-4 sm:px-0 scroll-touch">
-                    <table className="w-full text-sm min-w-[600px]">
+                    <table className="w-full text-sm min-w-[520px]">
                       <thead>
                         <tr className="text-left">
                           <th className="pb-1.5 text-gray-600 font-medium text-[10px] uppercase tracking-wider pr-3 sm:pr-4">Item</th>
@@ -623,8 +626,10 @@ export function ResultsPanel({ result, onSave }: ResultsPanelProps) {
                 </div>
               )}
               <div className="mt-4 pt-4 border-t border-[hsl(217,33%,18%)] flex flex-col sm:flex-row items-start sm:items-center gap-3 no-print">
-                <p className="flex-1 text-xs text-gray-500">
-                  <span className="text-yellow-400 font-semibold">One-click workflow:</span> Hit the button → list is on your clipboard → EES Bulk Pad opens → paste &amp; submit.
+                <p className="flex-1 text-xs text-gray-500 leading-snug">
+                  <span className="text-yellow-400 font-semibold">One-click:</span>
+                  <span className="hidden sm:inline"> Hit the button → list is on your clipboard → EES Bulk Pad opens → paste &amp; submit.</span>
+                  <span className="sm:hidden"> Copy → Bulk Pad opens → paste.</span>
                 </p>
                 <div className="flex gap-2 shrink-0">
                   <Button

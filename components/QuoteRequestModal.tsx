@@ -105,8 +105,8 @@ export function QuoteRequestModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
-      <div className="bg-[hsl(222,47%,10%)] border border-[hsl(217,33%,20%)] rounded-xl w-full max-w-2xl max-h-[90vh] overflow-hidden shadow-2xl flex flex-col">
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/60 p-0 sm:p-4">
+      <div className="bg-[hsl(222,47%,10%)] border border-[hsl(217,33%,20%)] rounded-t-xl sm:rounded-xl w-full max-w-2xl max-h-[95vh] sm:max-h-[90vh] overflow-hidden shadow-2xl flex flex-col">
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-[hsl(217,33%,18%)]">
           <div>
@@ -161,8 +161,8 @@ export function QuoteRequestModal({
               </div>
 
               <h3 className="text-sm font-semibold text-gray-300 mb-2">Bill of Materials ({bom.length} items)</h3>
-              <div className="rounded-lg border border-[hsl(217,33%,18%)] overflow-hidden mb-4">
-                <table className="w-full text-xs">
+              <div className="rounded-lg border border-[hsl(217,33%,18%)] overflow-hidden mb-4 overflow-x-auto -mx-2 sm:mx-0 px-0">
+                <table className="w-full text-xs min-w-[440px]">
                   <thead>
                     <tr className="bg-[hsl(217,33%,14%)] text-gray-400">
                       <th className="text-left px-3 py-2 font-medium">Qty</th>

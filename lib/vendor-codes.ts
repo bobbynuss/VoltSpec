@@ -119,12 +119,29 @@ export function elliottVendorCode(part: string, spec: string): string | null {
   // ── Duct seal (PECO) ───────────────────────────────────────────────────
   if (/^DS\d/.test(p) || /\bpeco\b/i.test(s) || /\bduct\s+seal\b/i.test(s)) return "PEC";
 
-  // ── GFCI & TR receptacles ──────────────────────────────────────────────
+  // ── Wiring devices (switches, receptacles, dimmers, wall plates, smoke/CO) → EWD ──
+  // GFCI receptacles
   if (/^TWRGF/.test(p)) return "EWD";
   if (/^TRGF/.test(p)) return "EWD";
+  // TR receptacles & general devices
   if (/^(?:TRBR|TR\d|GFTR|5262|5352|1257|CR|TRS|1450)/.test(p)) return "EWD";
+  // Eaton Decora switches (7501W, 7503W, etc.)
+  if (/^7[0-9]{3}/.test(p)) return "EWD";
+  // Eaton dimmers (DAL, SGD, etc.)
+  if (/^(?:DAL|SGD|DI\d|SAL)/.test(p)) return "EWD";
+  // Eaton wall plates (PJ series)
+  if (/^PJ\d/.test(p)) return "EWD";
+  // Eaton NEMA receptacles (1450R, etc.) — non-TR flush/range/dryer
+  if (/^1[24]50R/.test(p)) return "EWD";
+  // Smoke & CO detectors (Eaton SMI/SMIC series)
+  if (/^SMI/.test(p) || /\bsmoke\b.*\bdetector\b/i.test(s) || /\bsmoke\/CO\b/i.test(s)) return "EWD";
+  // Leviton override
   if (/leviton/i.test(s) && /^(?:TR|GFTR|279|260|261|5262)/.test(p)) return "LEV";
   if (/lutron/i.test(s)) return "LUT";
+
+  // ── Wire connectors (Ideal, Wago, Gardner Bender) → IDL ────────────────
+  if (/^30-/.test(p) || /\bideal\b/i.test(s) || /\bwire\s*nut\b/i.test(s)) return "IDL";
+  if (/^221-/.test(p) || /\bwago\b/i.test(s) || /\blever.nut\b/i.test(s)) return "WAG";
 
   // ── Eaton Pow-R-Line panels & components → CHS ─────────────────────────
   if (/^PRL[123][AX]/.test(p)) return "CHS";

@@ -20,6 +20,7 @@ import { job as commercial_400a_3phase } from "./jobs/commercial-400a-3phase";
 import { job as whole_house_battery_solar } from "./jobs/whole-house-battery-solar";
 import { job as span_panel_upgrade } from "./jobs/span-panel-upgrade";
 import { job as span_subpanel } from "./jobs/span-subpanel";
+import { job as residential_trim_out } from "./jobs/residential-trim-out";
 
 export const JOBS: Job[] = [
   new_200a_residential,
@@ -43,6 +44,7 @@ export const JOBS: Job[] = [
   landscape_lighting,
   span_panel_upgrade,
   span_subpanel,
+  residential_trim_out,
 ];
 
 export const JOB_TYPES: { id: string; label: string }[] = JOBS.map((j) => ({

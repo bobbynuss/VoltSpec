@@ -27,8 +27,11 @@ import {
   Save,
   Check,
   Mail,
+  Send,
 } from "lucide-react";
 import type { Job } from "@/lib/data";
+import { useAuth } from "./AuthProvider";
+import { QuoteRequestModal } from "./QuoteRequestModal";
 import { JURISDICTIONS } from "@/lib/data";
 import { POA_OPTIONS, DEFAULT_POA_ID, isMeterJob } from "@/lib/data/pointOfAttachment";
 import type { POAOption } from "@/lib/data/pointOfAttachment";
@@ -97,8 +100,10 @@ function ElliottLinks({
 }
 
 export function ResultsPanel({ result, onSave }: ResultsPanelProps) {
+  const { user } = useAuth();
   const { job, jurisdiction, city, generatedAt, disclaimer } = result;
   const jurisdictionData = JURISDICTIONS.find((j) => j.id === city);
+  const [quoteModalOpen, setQuoteModalOpen] = useState(false);
   const utilityName = jurisdictionData?.utility ?? "Austin Energy";
   const [showOtherSuppliers, setShowOtherSuppliers] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -518,6 +523,17 @@ export function ResultsPanel({ result, onSave }: ResultsPanelProps) {
                 <><Mail className="w-4 h-4 sm:mr-1.5" /><span className="hidden sm:inline">Email</span></>
               )}
             </Button>
+            {user && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setQuoteModalOpen(true)}
+                className="border-emerald-500/40 text-emerald-400 hover:text-emerald-300 hover:border-emerald-400 active:bg-emerald-400/10 transition-colors duration-150 h-11 sm:h-9 text-xs sm:text-sm whitespace-nowrap"
+              >
+                <Send className="w-4 h-4 sm:mr-1.5" />
+                <span className="hidden sm:inline">Quote Request</span>
+              </Button>
+            )}
             {onSave && (
               <Button
                 variant="outline"
@@ -981,6 +997,15 @@ export function ResultsPanel({ result, onSave }: ResultsPanelProps) {
           </div>
         </TabsContent>
       </Tabs>
+
+      {/* Quote Request Modal */}
+      <QuoteRequestModal
+        open={quoteModalOpen}
+        onClose={() => setQuoteModalOpen(false)}
+        job={panelJob}
+        city={city ?? ""}
+        jurisdiction={jurisdiction}
+      />
     </div>
   );
 }

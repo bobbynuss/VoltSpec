@@ -7,6 +7,7 @@ import { useAuth } from "./AuthProvider";
 import { getProfile } from "@/lib/userProfile";
 import { submitQuoteRequest, type BOMItem } from "@/lib/quoteRequest";
 import type { Job } from "@/lib/data";
+import { extractPartNumber, elliottVendorCode } from "@/lib/vendor-codes";
 
 interface QuoteRequestModalProps {
   open: boolean;
@@ -16,16 +17,17 @@ interface QuoteRequestModalProps {
   jurisdiction: string;
 }
 
-/** Extract catalog number from a spec string */
+/** Extract catalog number from a spec string — uses shared vendor-code module */
 function extractCatalog(spec: string): string {
-  // Try to find a catalog number pattern: word after vendor code, before dash
-  const m = spec.match(
-    /\b((?:BRP|BR|CHP|CH|CHF|CHFP|SPAN|Eaton|Milbank|Bridgeport|Taymac|NSI|Thomas|Erico)\s+)?([A-Z0-9][A-Z0-9_-]{3,})/i
-  );
-  if (m) return m[2];
-  // Fallback: first all-caps token
-  const f = spec.match(/\b([A-Z][A-Z0-9]{2,}[A-Z0-9/-]*)\b/);
-  return f?.[1] ?? "";
+  return extractPartNumber(spec) ?? "";
+}
+
+/** Get vendor code prefix for Bulk Entry formatting */
+function getVendorPrefix(spec: string): string {
+  const part = extractPartNumber(spec);
+  if (!part) return "";
+  const vendor = elliottVendorCode(part, spec);
+  return vendor ?? "";
 }
 
 export function QuoteRequestModal({
@@ -66,9 +68,10 @@ export function QuoteRequestModal({
 
   if (!open) return null;
 
-  // Build BOM from job materials
+  // Build BOM from job materials — with vendor codes for Bulk Entry
   const bom: BOMItem[] = job.materials.map((mat) => ({
     catalog: extractCatalog(mat.spec),
+    vendorCode: getVendorPrefix(mat.spec),
     quantity: mat.quantity,
     description: `${mat.item} — ${mat.spec.split(" - ").slice(1).join(" - ").trim() || mat.spec}`,
     estCost: mat.unitPrice != null ? `$${mat.unitPrice.toFixed(2)}` : "Speak to sales",
@@ -163,6 +166,7 @@ export function QuoteRequestModal({
                   <thead>
                     <tr className="bg-[hsl(217,33%,14%)] text-gray-400">
                       <th className="text-left px-3 py-2 font-medium">Qty</th>
+                      <th className="text-left px-3 py-2 font-medium">Vendor</th>
                       <th className="text-left px-3 py-2 font-medium">Catalog #</th>
                       <th className="text-left px-3 py-2 font-medium">Description</th>
                       <th className="text-right px-3 py-2 font-medium">Est. Cost</th>
@@ -175,6 +179,7 @@ export function QuoteRequestModal({
                         className={i % 2 === 0 ? "bg-[hsl(217,33%,11%)]" : "bg-[hsl(217,33%,13%)]"}
                       >
                         <td className="px-3 py-1.5 text-gray-300">{item.quantity}</td>
+                        <td className="px-3 py-1.5 text-indigo-400 font-mono font-bold">{item.vendorCode || "—"}</td>
                         <td className="px-3 py-1.5 text-cyan-400 font-mono">{item.catalog || "—"}</td>
                         <td className="px-3 py-1.5 text-gray-400 max-w-[200px] truncate">{item.description}</td>
                         <td className="px-3 py-1.5 text-gray-300 text-right">{item.estCost}</td>

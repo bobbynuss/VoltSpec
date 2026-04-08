@@ -2,6 +2,7 @@ import { supabase } from "./supabase";
 
 export interface BOMItem {
   catalog: string;
+  vendorCode: string;
   quantity: string;
   description: string;
   estCost: string;

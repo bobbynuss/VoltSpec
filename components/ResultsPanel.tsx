@@ -43,6 +43,11 @@ import {
 } from "@/lib/data/panel-overrides";
 import type { PanelTypeId } from "@/lib/data/panel-overrides";
 import { groupMaterials } from "@/lib/data/material-groups";
+import {
+  extractPartNumber,
+  elliottVendorCode,
+  formatBulkEntryLine,
+} from "@/lib/vendor-codes";
 import type { MaterialGroup } from "@/lib/data/material-groups";
 
 interface GenerateResult {
@@ -163,170 +168,9 @@ export function ResultsPanel({ result, onSave }: ResultsPanelProps) {
       })()
     : panelJob.svgDiagram;
 
-  // Extract part number from spec string
-  const extractPartNumber = (spec: string): string | null => {
-    // Pattern 1: after a known vendor/brand prefix
-    const vendorMatch = spec.match(
-      /(?:Eaton|Carlon|Erico|Leviton|Southwire|Bridgeport|Burndy|Polaris|Taymac|Pentair|NSI|Generac|Kohler|SolarEdge|Enphase|ChargePoint|Midnite Solar|Allied|Regal|Thomas\s*&\s*Betts|Crouse-Hinds|Kichler|Brady|Gardner\s*Bender|PECO|ALU|COP|CON|BRI|CRS|TAM|GNR|AMF|ALF|PVC|PVF|PEC|M-W|MIB)\s+([A-Z0-9][A-Z0-9\-]{1,})/i
-    );
-    if (vendorMatch) return vendorMatch[1].replace(/-+$/, "");
-    // Pattern 2: after " - " separator
-    const dashMatch = spec.match(/\s-\s([A-Z0-9][A-Z0-9\-]{3,})\b/i);
-    if (dashMatch) return dashMatch[1].replace(/-+$/, "");
-    // Pattern 3: standalone alphanumeric part number
-    // Covers: PVC34, 34ELL90, TA34, CPL34, DS1, 1006352CCH, 615880, etc.
-    const standaloneMatch = spec.match(/\b([A-Z]{1,6}[0-9]{2,}[A-Z0-9\-]*|[0-9]{1,3}[A-Z]{2,}[0-9A-Z\-]*|[0-9]{4,}[A-Z0-9]{2,})\b/);
-    if (standaloneMatch) return standaloneMatch[1];
-    return null;
-  };
+  // extractPartNumber imported from @/lib/vendor-codes
 
-  // Determine Elliott vendor code from part number and spec context
-  const elliottVendorCode = (part: string, spec: string): string | null => {
-    const p = part.toUpperCase();
-    const s = spec.toUpperCase();
-
-    // ── Wire / Cable ──────────────────────────────────────────────────────────
-    // THHN/THWN copper (THHN12STBK500, THHN6STBK500, etc.)
-    if (/^(?:BARE|THHN|THWN|RX\d)/.test(p)) return "COP";
-    if (/\bTHHN\b|\bTHWN\b/.test(s) && !/\bALUMINUM\b/.test(s)) return "COP";
-    // AL XHHW, SER, SEU
-    if (/^(?:XHHW|URD|SER\d|SEU\d)/.test(p)) return "ALU";
-    // MC / Armor clad cable
-    if (/^(?:MC|AC|BX|ACWU|MCAP)/.test(p) || /\bMC CABLE\b|\bARMOR.CLAD\b/.test(s)) return "ALF";
-
-    // ── Liquidtight flex conduit & connectors ─────────────────────────────────
-    // Liquidtight connectors (STR50, STR75, STR100, STR5090, etc.) → AMF
-    if (/^STR\d/.test(p) || /\bLIQUIDTIGHT\b.*\b(CONNECTOR|FITTING|STRAIGHT|ANGLE|90)\b/.test(s)) return "AMF";
-    // Liquidtight conduit sticks (LT12, LT34, LT1, LT112, LT2 etc.) → ALF
-    if (/^LT(?:12|34|38|1\b|112|2\b|3\b)/.test(p)) return "ALF";
-    if (/\bLIQUIDTIGHT\b/.test(s) && /\bCONDUIT\b|\bFLEX\b/.test(s) && !/\bCONNECTOR\b|\bFITTING\b/.test(s)) return "ALF";
-    // Carflex / non-metallic liquidtight
-    if (/carflex|carlon.*flex|ltfca/i.test(s)) return "SPX";
-    // Generic metal flex (non-liquidtight FMC)
-    if (/\bFLEX(IBLE)?\s+METAL\b|\bFMC\b/.test(s)) return "ALF";
-
-    // ── EMT conduit & fittings ─────────────────────────────────────────────────
-    // EMT conduit sticks (EMT12, EMT34, EMT1, EMT114, EMT112, EMT2) → CON
-    if (/^EMT\d/.test(p) || (/\bEMT\b/.test(s) && /\bCONDUIT\b/.test(s) && !/\bFITTING\b|\bCONNECTOR\b|\bCOUPLING\b|\bSTRAP\b/.test(s))) return "CON";
-    // RMC/IMC rigid conduit → CON
-    if (/^GAL/.test(p) || (/\bRIGID\b|\bRMC\b|\bIMC\b/.test(s) && /\bCONDUIT\b/.test(s) && !/\bPVC\b/.test(s))) return "CON";
-    // EMT connectors — Bridgeport numeric codes (230=1/2, 231=3/4, 232=1, 233=1-1/4, 234=1-1/2, 235=2)
-    if (/^(?:230|231|232|233|234|235|290|291|292|293|294|295)$/.test(p)) return "BRI";
-    // EMT couplings (240=1/2, 241=3/4, 242=1, 243=1-1/4, 244=1-1/2, 245=2)
-    if (/^(?:240|241|242|243|244|245)$/.test(p)) return "BRI";
-    // EMT one-hole straps (920S=1/2, 921S=3/4, 922S=1, 923S=1-1/4, 924S=1-1/2)
-    if (/^(?:920S|921S|922S|923S|924S|930S|931S|932S|933S|934S)$/.test(p)) return "BRI";
-    // Any other Bridgeport reference
-    if (/^MWH\d/.test(p)) return "BRI";   // mast wire holders (BRI)
-    if (/bridgeport/i.test(s) || /\bBRI\b/.test(s)) return "BRI";
-
-    // ── M-W (porcelain brackets, bolts, square washers for service hardware) ──
-    if (/^(?:MWK|MW\d|SW\d)/.test(p) || /\bM-W\b/.test(s)) return "M-W";
-    // ── Milbank meter sockets → MIB ──────────────────────────────────────────
-    if (/^U\d{3,4}/.test(p) || /\bmilbank\b/i.test(s)) return "MIB";
-
-    // ── PVC conduit sticks ────────────────────────────────────────────────────
-    // 10 ft: PVC12, PVC34, PVC1, PVC114, PVC112, PVC2 → PVC
-    // 20 ft: PVC220, PVC320, PVC420 → PVC
-    if (/^PVC\d/.test(p)) return "PVC";
-    // Legacy Carlon/generic PVC conduit patterns
-    if (/^(?:80PVC|40PVC|DB\d|EB\d)/.test(p) || (/\bPVC\b/.test(s) && /\bCONDUIT\b/.test(s) && !/\bELBOW\b|\bFITTING\b|\bCOUPLING\b|\bADAPTER\b/.test(s))) return "PVC";
-
-    // ── PVC fittings (elbows, adapters, couplings) ────────────────────────────
-    // PVC 90° elbows: 12ELL90, 34ELL90, 1ELL90, 114ELL90, 2ELL90
-    if (/^\d{1,3}ELL9/.test(p)) return "PVF";
-    // PVC 45° elbows: 12ELL45, 34ELL45, 1ELL45
-    if (/^\d{1,3}ELL4/.test(p)) return "PVF";
-    // PVC terminal/male adapters: TA12, TA34, TA1, TA114
-    if (/^TA\d/.test(p)) return "PVF";
-    // PVC female adapters: FA12, FA34, FA1
-    if (/^FA\d/.test(p)) return "PVF";
-    // PVC couplings: CPL12, CPL34, CPL1, CPL114
-    if (/^CPL\d/.test(p)) return "PVF";
-    // Legacy Carlon PVC fitting patterns and generic PVC fitting references
-    if (/^(?:LB\d|LL\d|LR\d|E\d{3}|A\d{2,3}|CP\d|UA\d)/.test(p)) return "PVF";
-    if (/\bPVC\b/.test(s) && /\b(FITTING|ELBOW|ELL|LB|LL|LR|COUPLING|ADAPTER|SWEEP)\b/.test(s)) return "PVF";
-
-    // ── Condulet bodies, 4-square boxes (Crouse-Hinds / CRS) ─────────────────
-    // Metal LB condulet bodies (LB15, LB25, LB35, LB50, LB75, LB100)
-    if (/^LB\d{2,3}$/.test(p)) return "CRS";
-    // 4-square boxes and covers: TP403, TP404, TP510, TP516, TP60 etc.
-    if (/^TP\d/.test(p)) return "CRS";
-    if (/crouse.hinds/i.test(s)) return "CRS";
-
-    // ── In-use / weatherproof covers (Taymac) ────────────────────────────────
-    if (/^(?:MM\d|MX\d|MID\d|MMKD|MM2)/.test(p) || /\btaymac\b/i.test(s)) return "TAM";
-
-    // ── Duct seal (PECO) ──────────────────────────────────────────────────────
-    if (/^DS\d/.test(p) || /\bpeco\b/i.test(s) || /\bduct\s+seal\b/i.test(s)) return "PEC";
-
-    // ── GFCI & TR receptacles ─────────────────────────────────────────────────
-    if (/^TWRGF/.test(p)) return "EWD";   // outdoor WR-GFCI
-    if (/^TRGF/.test(p)) return "EWD";    // indoor TR-GFCI
-    if (/^(?:TRBR|TR\d|GFTR|5262|5352|1257|CR|TRS|1450)/.test(p)) return "EWD";
-    if (/leviton/i.test(s) && /^(?:TR|GFTR|279|260|261|5262)/.test(p)) return "LEV";
-    if (/lutron/i.test(s)) return "LUT";
-
-    // ── Eaton Pow-R-Line panels & components → CHS ────────────────────────────
-    // Interiors: PRL1X, PRL2X (Pow-R-Xpress) and legacy PRL1A, PRL2A, PRL3A series
-    if (/^PRL[123][AX]/.test(p)) return "CHS";
-    // Lug kits: LUGKIT series
-    if (/^LUGKIT/.test(p)) return "CHS";
-    // PDG frame breakers (Pow-R-Line main breaker kits)
-    if (/^PDG/.test(p)) return "CHS";
-    // EZB enclosures, EZT trim/covers
-    if (/^EZ[BT]\d/.test(p)) return "CHS";
-    // Ground bars: 5158C series
-    if (/^5158C/.test(p)) return "CHS";
-    // Main breaker kits: BKD (240V), BKG (480V) series
-    if (/^BK[DG]\d/.test(p)) return "CHS";
-    // Ground bus kits: CUGROUND, ISOGROUND
-    if (/^(?:CUGROUND|ISOGROUND)$/.test(p)) return "CHS";
-    // NEMA 3R enclosures: GWPBQ series
-    if (/^GWPBQ/.test(p)) return "CHS";
-    // Sub-feed breaker covers: SFBCVR series
-    if (/^SFBCVR/.test(p)) return "CHS";
-    // 200% neutral kits: 2NK series
-    if (/^[12]NK\d/.test(p)) return "CHS";
-    // Any explicit "Pow-R-Line" or "Pow-R-Xpress" reference in spec
-    if (/pow.r.(?:line|xpress)/i.test(s)) return "CHS";
-
-    // ── Eaton BR-series loadcenters & breakers → ETN ────────────────────────
-    // BR breakers (BR120, BR230, BR250, BR260, BR2100, etc.)
-    // BRP plug-on-neutral loadcenters & breakers (BRP20B200R, BRP24L125G, BRP120DF, BRP115AF, etc.)
-    // BRN GFCI breakers & surge (BRN230GF, BRN250GF, BRNSURGE10)
-    // BRB, BRSPT surge arresters (BRSPT2ULTRA)
-    if (/^BR/.test(p)) return "ETN";
-
-    // ── Eaton CH-series panels, breakers, meter-mains → CHD ──────────────────
-    // MLO indoor subpanels (CHP12L, CHP24L, CHP32L, CHP42L series)
-    if (/^CHP\d{2}L/.test(p)) return "CHD";
-    // Eaton numeric meter base part numbers (1006352CCH, 1006353CCH, etc.)
-    if (/^1006\d{3}CCH$/.test(p)) return "CHD";
-    // CH breakers, meter-mains, ATS, surge, interlock kits
-    if (/^(?:CHP|CHB|CHF|CHFP|MBP|CHSPT|CHGEN|EHD|GHB|BAB|HQP|DH|DG|CH2|CHW)/.test(p)) return "CHD";
-    if (/\beaten\b/i.test(s) && !/\b(CONDUIT|WIRE|CABLE|COPPER|ALUMINUM|POW.R.LINE)\b/.test(s)) return "CHD";
-
-    // ── Grounding hardware ────────────────────────────────────────────────────
-    if (/^615\d{3}/.test(p)) return "CDW";
-    if (/^GRC/.test(p) || /^GLC/.test(p) || /^IPLD/.test(p) || /\bnsi\b/i.test(s)) return "NSI";
-    if (/^ERITECH/.test(p) || /\berico\b/i.test(s)) return "ERI";
-
-    // ── Burndy lugs ───────────────────────────────────────────────────────────
-    if (/^YA/.test(p) || /\bburndy\b/i.test(s)) return "BUR";
-
-    // ── Generac ───────────────────────────────────────────────────────────────
-    if (/\bgenerac\b/i.test(s) || /^(?:7043|7042|6729|6730|10000)/.test(p)) return "GNR";
-
-    // ── Solar / PV ────────────────────────────────────────────────────────────
-    if (/solaredge/i.test(s)) return "SED";
-    if (/enphase/i.test(s)) return "ENP";
-
-    // ── Pentair pool equipment ────────────────────────────────────────────────
-    if (/\bpentair\b/i.test(s)) return "PEN";
-
-    return null; // fall back to search
-  };
+  // elliottVendorCode imported from @/lib/vendor-codes
 
   const elliottUrls = (item: string, spec?: string): { direct: string | null; search: string } => {
     const part = spec ? extractPartNumber(spec) : null;
@@ -373,12 +217,9 @@ export function ResultsPanel({ result, onSave }: ResultsPanelProps) {
   const hasPricing = effectiveMaterials.some((m) => m.unitPrice != null);
 
   const handleCopyMaterials = () => {
-    const rows = effectiveMaterials.map((m) => {
-      const part = extractPartNumber(m.spec);
-      const qty = extractQty(m.quantity);
-      const identifier = part ?? m.item.replace(/[^A-Za-z0-9\-\/. ]/g, "").substring(0, 30).trim();
-      return `${qty} ${identifier}`;
-    });
+    const rows = effectiveMaterials.map((m) =>
+      formatBulkEntryLine(m.quantity, m.spec, m.item)
+    );
     navigator.clipboard.writeText(rows.join("\n")).then(() => {
       setCopied(true);
       setTimeout(() => setCopied(false), 2500);

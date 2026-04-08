@@ -10,6 +10,7 @@ import {
 import type { Job } from "@/lib/data";
 import { JURISDICTIONS } from "@/lib/data";
 import { VOLTSPEC_LOGO_BASE64 } from "@/lib/logo-base64";
+import { extractPartNumber as sharedExtractPartNumber } from "@/lib/vendor-codes";
 
 // Rasterise an inline SVG string to a PNG data-URI via an off-screen canvas.
 // @react-pdf/renderer <Image> doesn't reliably handle SVG data URIs, but PNG
@@ -55,20 +56,8 @@ function clean(str: string): string {
     .replace(/[^\x00-\x7F]/g, "");
 }
 
-// Extract part number from spec string (same logic as ResultsPanel)
-function extractPartNumber(spec: string): string | null {
-  const vendorMatch = spec.match(
-    /(?:Eaton|Carlon|Erico|Leviton|Southwire|Bridgeport|Burndy|Polaris|Taymac|Pentair|NSI|Generac|Kohler|SolarEdge|Enphase|ChargePoint|Midnite Solar|Allied|Regal|Thomas\s*&\s*Betts|Crouse-Hinds|Kichler|Brady|Gardner\s*Bender|PECO|ALU|COP|CON|BRI|CRS|TAM|GNR|AMF|ALF|PVC|PVF|PEC|MIB)\s+([A-Z0-9][A-Z0-9\-]{1,})/i
-  );
-  if (vendorMatch) return vendorMatch[1].replace(/-+$/, "");
-  const dashMatch = spec.match(/\s-\s([A-Z0-9][A-Z0-9\-]{3,})\b/i);
-  if (dashMatch) return dashMatch[1].replace(/-+$/, "");
-  const standaloneMatch = spec.match(
-    /\b([A-Z]{1,6}[0-9]{2,}[A-Z0-9\-]*|[0-9]{1,3}[A-Z]{2,}[0-9A-Z\-]*|[0-9]{4,}[A-Z0-9]{2,})\b/
-  );
-  if (standaloneMatch) return standaloneMatch[1];
-  return null;
-}
+// extractPartNumber imported from @/lib/vendor-codes
+const extractPartNumber = sharedExtractPartNumber;
 
 /* ── Design Tokens ──────────────────────────────────────────────────── */
 

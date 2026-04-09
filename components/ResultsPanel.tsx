@@ -126,7 +126,15 @@ export function ResultsPanel({ result, onSave, zip }: ResultsPanelProps) {
     localStorage.setItem("voltspec-show-pricing", String(showPricing));
   }, [showPricing]);
   const rawSuppliers = job.suppliers ?? [];
-  const suppliers = zip ? reorderSuppliersForZip(rawSuppliers, zip) : rawSuppliers;
+  const [suppliers, setSuppliers] = useState(() =>
+    zip ? reorderSuppliersForZip(rawSuppliers, zip) : rawSuppliers
+  );
+
+  // Re-run zip-to-branch reordering whenever zip or job suppliers change
+  useEffect(() => {
+    const raw = job.suppliers ?? [];
+    setSuppliers(zip ? reorderSuppliersForZip(raw, zip) : raw);
+  }, [zip, job.suppliers]);
 
   // --- Point of Attachment dropdown state ---
   const showPOA = isMeterJob(job.id);

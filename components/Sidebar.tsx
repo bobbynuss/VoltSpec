@@ -1,9 +1,11 @@
 "use client";
 
-import { useState, useEffect, useImperativeHandle, forwardRef } from "react";
+import { useState, useRef, useImperativeHandle, forwardRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Zap, MapPin, Briefcase, Building2, Calculator, FolderOpen } from "lucide-react";
+
+
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -35,6 +37,15 @@ export const Sidebar = forwardRef<SidebarHandle, SidebarProps>(function Sidebar(
   const [city, setCity] = useState("austin");
   const [zip, setZip] = useState("78744");
   const [jobId, setJobId] = useState("");
+  const [zipUpdated, setZipUpdated] = useState(false);
+  const zipUpdatedTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const flashZipUpdated = () => {
+    if (zipUpdatedTimer.current) clearTimeout(zipUpdatedTimer.current);
+    setZipUpdated(true);
+    zipUpdatedTimer.current = setTimeout(() => setZipUpdated(false), 3000);
+  };
+
 
   useImperativeHandle(ref, () => ({
     getState: () => ({ city, zip, jobId }),
@@ -116,6 +127,11 @@ export const Sidebar = forwardRef<SidebarHandle, SidebarProps>(function Sidebar(
           <label className="flex items-center gap-1.5 text-xs font-semibold text-gray-400 uppercase tracking-wider">
             <MapPin className="w-3.5 h-3.5 text-yellow-400" />
             ZIP Code
+            {zipUpdated && (
+              <span className="ml-auto text-emerald-400 font-bold tracking-normal normal-case" style={{ animation: "zipToastIn 0.2s ease-out" }}>
+                ✅ ZIP UPDATED
+              </span>
+            )}
           </label>
           <input
             type="text"
@@ -125,7 +141,19 @@ export const Sidebar = forwardRef<SidebarHandle, SidebarProps>(function Sidebar(
             onChange={(e) => {
               const v = e.target.value.slice(0, 5);
               setZip(v);
-              if (v.length >= 3) onZipChange?.(v);
+              onZipChange?.(v);
+              if (v.length >= 3) flashZipUpdated();
+            }}
+            onBlur={() => {
+              onZipChange?.(zip);
+              if (zip.length >= 3) flashZipUpdated();
+            }}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                e.preventDefault();
+                onZipChange?.(zip);
+                if (zip.length >= 3) flashZipUpdated();
+              }
             }}
             placeholder={selectedJurisdiction?.defaultZip ?? "78744"}
             maxLength={5}
@@ -137,6 +165,7 @@ export const Sidebar = forwardRef<SidebarHandle, SidebarProps>(function Sidebar(
               transition-colors h-11 sm:h-9
             "
           />
+
         </div>
 
         {/* Job Type */}

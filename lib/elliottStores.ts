@@ -17,5 +17,4 @@ export const ELLIOTT_STORES: ElliottStore[] = [
   { id: "58", name: "Abilene (58)", city: "Abilene", phone: "(325) 677-2558" },
   { id: "115", name: "Odessa (115)", city: "Odessa/Midland", phone: "(432) 332-0249" },
   { id: "63", name: "San Angelo (63)", city: "San Angelo", phone: "(325) 653-3594" },
-  { id: "42", name: "Corpus Christi (42)", city: "Corpus Christi", phone: "(361) 884-8032" },
 ];

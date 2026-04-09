@@ -11,6 +11,15 @@ import { ELPASO_JOBS } from "./elpaso/jobs";
 import { BROWNSVILLE_JOBS } from "./brownsville/jobs";
 import { ABILENE_JOBS } from "./abilene/jobs";
 import { ODESSA_JOBS } from "./odessa/jobs";
+import { WACO_JOBS } from "./waco/jobs";
+import { TEMPLE_KILLEEN_JOBS } from "./temple-killeen/jobs";
+import { WICHITA_FALLS_JOBS } from "./wichita-falls/jobs";
+import { LUBBOCK_JOBS } from "./lubbock/jobs";
+import { BRYAN_JOBS } from "./bryan/jobs";
+import { TYLER_JOBS } from "./tyler/jobs";
+import { LUFKIN_JOBS } from "./lufkin/jobs";
+import { SAN_ANGELO_JOBS } from "./san-angelo/jobs";
+import { LAREDO_JOBS } from "./laredo/jobs";
 
 export interface Jurisdiction {
   id: string;
@@ -143,6 +152,96 @@ export const JURISDICTIONS: Jurisdiction[] = [
     defaultZip: "79761",
     zipPrefixes: ["797", "795"],
     jobs: ODESSA_JOBS,
+  },
+  {
+    id: "waco",
+    label: "Waco, TX (McLennan County)",
+    shortLabel: "Waco, TX",
+    utility: "Oncor Electric Delivery",
+    county: "McLennan County",
+    defaultZip: "76701",
+    zipPrefixes: ["767"],
+    jobs: WACO_JOBS,
+  },
+  {
+    id: "temple-killeen",
+    label: "Temple/Killeen, TX (Bell County)",
+    shortLabel: "Temple/Killeen, TX",
+    utility: "Oncor Electric Delivery",
+    county: "Bell County",
+    defaultZip: "76504",
+    zipPrefixes: ["765"],
+    jobs: TEMPLE_KILLEEN_JOBS,
+  },
+  {
+    id: "wichita-falls",
+    label: "Wichita Falls, TX (Wichita County)",
+    shortLabel: "Wichita Falls, TX",
+    utility: "Oncor Electric Delivery",
+    county: "Wichita County",
+    defaultZip: "76301",
+    zipPrefixes: ["763"],
+    jobs: WICHITA_FALLS_JOBS,
+  },
+  {
+    id: "lubbock",
+    label: "Lubbock, TX (Lubbock County)",
+    shortLabel: "Lubbock, TX",
+    utility: "Lubbock Power & Light",
+    county: "Lubbock County",
+    defaultZip: "79401",
+    zipPrefixes: ["794"],
+    jobs: LUBBOCK_JOBS,
+  },
+  {
+    id: "bryan",
+    label: "Bryan/College Station, TX (Brazos County)",
+    shortLabel: "Bryan/College Station, TX",
+    utility: "Bryan Texas Utilities",
+    county: "Brazos County",
+    defaultZip: "77801",
+    zipPrefixes: ["778"],
+    jobs: BRYAN_JOBS,
+  },
+  {
+    id: "tyler",
+    label: "Tyler/Longview, TX (Smith County)",
+    shortLabel: "Tyler/Longview, TX",
+    utility: "SWEPCO",
+    county: "Smith County",
+    defaultZip: "75701",
+    zipPrefixes: ["757"],
+    jobs: TYLER_JOBS,
+  },
+  {
+    id: "lufkin",
+    label: "Lufkin/East TX (Angelina County)",
+    shortLabel: "Lufkin/East TX",
+    utility: "Entergy Texas",
+    county: "Angelina County",
+    defaultZip: "75901",
+    zipPrefixes: ["759"],
+    jobs: LUFKIN_JOBS,
+  },
+  {
+    id: "san-angelo",
+    label: "San Angelo, TX (Tom Green County)",
+    shortLabel: "San Angelo, TX",
+    utility: "AEP Texas",
+    county: "Tom Green County",
+    defaultZip: "76901",
+    zipPrefixes: ["769"],
+    jobs: SAN_ANGELO_JOBS,
+  },
+  {
+    id: "laredo",
+    label: "Laredo, TX (Webb County)",
+    shortLabel: "Laredo, TX",
+    utility: "AEP Texas",
+    county: "Webb County",
+    defaultZip: "78040",
+    zipPrefixes: ["7804"],
+    jobs: LAREDO_JOBS,
   },
 ];
 

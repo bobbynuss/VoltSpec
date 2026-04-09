@@ -46,10 +46,12 @@ function HomeContent() {
   const [authModalOpen, setAuthModalOpen] = useState(false);
   const [tourActive, setTourActive] = useState(false);
   const [tourStartStep, setTourStartStep] = useState(0);
+  const [currentZip, setCurrentZip] = useState("78744");
   const sidebarRef = useRef<SidebarHandle>(null);
 
   const handleGenerate = async (jobId: string, zip: string, city?: string) => {
     setLoading(true);
+    if (zip) setCurrentZip(zip);
     try {
       const res = await fetch("/api/generate", {
         method: "POST",
@@ -229,6 +231,7 @@ function HomeContent() {
             ref={sidebarRef}
             onGenerate={handleGenerate}
             onOpenProjects={() => setProjectsOpen(true)}
+            onZipChange={setCurrentZip}
             loading={loading}
             jobContext={result?.job?.label}
           />
@@ -237,7 +240,7 @@ function HomeContent() {
         {/* Main */}
         <main className="flex-1 overflow-y-auto p-2 sm:p-4 lg:p-6">
           {result ? (
-            <ResultsPanel result={result} onSave={handleSaveJob} />
+            <ResultsPanel result={result} onSave={handleSaveJob} zip={currentZip} />
           ) : (
             <div className="flex flex-col items-center justify-center h-full min-h-[60vh] text-center px-4">
               <Image src="/logo-transparent.png" alt="VoltSpec" width={64} height={64} className="w-16 h-16 mb-4 opacity-20" />

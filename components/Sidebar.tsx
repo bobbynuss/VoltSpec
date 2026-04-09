@@ -23,12 +23,13 @@ export interface SidebarHandle {
 interface SidebarProps {
   onGenerate: (jobId: string, zip: string, city: string) => void;
   onOpenProjects: () => void;
+  onZipChange?: (zip: string) => void;
   loading: boolean;
   jobContext?: string;
 }
 
 export const Sidebar = forwardRef<SidebarHandle, SidebarProps>(function Sidebar(
-  { onGenerate, onOpenProjects, loading, jobContext },
+  { onGenerate, onOpenProjects, onZipChange, loading, jobContext },
   ref,
 ) {
   const [city, setCity] = useState("austin");
@@ -52,6 +53,7 @@ export const Sidebar = forwardRef<SidebarHandle, SidebarProps>(function Sidebar(
     const jur = JURISDICTIONS.find((j) => j.id === newCity);
     if (jur) {
       setZip(jur.defaultZip);
+      onZipChange?.(jur.defaultZip);
     }
   };
 
@@ -120,7 +122,11 @@ export const Sidebar = forwardRef<SidebarHandle, SidebarProps>(function Sidebar(
             inputMode="numeric"
             pattern="[0-9]*"
             value={zip}
-            onChange={(e) => setZip(e.target.value.slice(0, 5))}
+            onChange={(e) => {
+              const v = e.target.value.slice(0, 5);
+              setZip(v);
+              if (v.length >= 3) onZipChange?.(v);
+            }}
             placeholder={selectedJurisdiction?.defaultZip ?? "78744"}
             maxLength={5}
             className="

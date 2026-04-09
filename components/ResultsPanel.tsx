@@ -48,6 +48,7 @@ import {
   elliottVendorCode,
   formatBulkEntryLine,
 } from "@/lib/vendor-codes";
+import { reorderSuppliersForZip } from "@/lib/zip-to-branch";
 import type { MaterialGroup } from "@/lib/data/material-groups";
 
 interface GenerateResult {
@@ -61,6 +62,7 @@ interface GenerateResult {
 interface ResultsPanelProps {
   result: GenerateResult;
   onSave?: (name: string) => void;
+  zip?: string;
 }
 
 function ElliottLinks({
@@ -104,7 +106,7 @@ function ElliottLinks({
   );
 }
 
-export function ResultsPanel({ result, onSave }: ResultsPanelProps) {
+export function ResultsPanel({ result, onSave, zip }: ResultsPanelProps) {
   const { user } = useAuth();
   const { job, jurisdiction, city, generatedAt, disclaimer } = result;
   const jurisdictionData = JURISDICTIONS.find((j) => j.id === city);
@@ -123,7 +125,8 @@ export function ResultsPanel({ result, onSave }: ResultsPanelProps) {
   useEffect(() => {
     localStorage.setItem("voltspec-show-pricing", String(showPricing));
   }, [showPricing]);
-  const suppliers = job.suppliers ?? [];
+  const rawSuppliers = job.suppliers ?? [];
+  const suppliers = zip ? reorderSuppliersForZip(rawSuppliers, zip) : rawSuppliers;
 
   // --- Point of Attachment dropdown state ---
   const showPOA = isMeterJob(job.id);

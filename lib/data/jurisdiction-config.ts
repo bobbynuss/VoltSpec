@@ -37,11 +37,20 @@ export interface JurisdictionConfig {
   meterSocket?: MeterSocketConfig;
 
   /**
-   * Text replacements applied to requirements, blueprint notes, and SVG diagrams.
+   * Text replacements applied to requirements, blueprint notes, SVG diagrams,
+   * and (if patchMaterialText is true) material item names and spec strings.
    * Each entry is [searchString, replacement]. Applied in order.
    * Use these for utility names, city names, phone numbers, catalog refs, etc.
    */
   textReplacements: [string, string][];
+
+  /**
+   * If true, textReplacements are also applied to material item/spec strings.
+   * Useful for co-ops and jurisdictions that need catalog number and utility
+   * name swaps directly in material descriptions (e.g. PEC, GVEC, BEC).
+   * Default: false (only requirements/notes/SVGs are patched).
+   */
+  patchMaterialText?: boolean;
 
   /** Pricing overlay: catalog number → unit price. Undefined = use baseline pricing. */
   pricing?: Record<string, number>;

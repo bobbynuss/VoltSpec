@@ -78,8 +78,17 @@ function processMaterials(
       return buildMeterSocketItem(config.meterSocket);
     }
 
-    // 2. Pricing overlay
+    // 2. Text replacements on material item/spec (for co-ops etc.)
     let result = mat;
+    if (config.patchMaterialText && config.textReplacements.length > 0) {
+      result = {
+        ...result,
+        item: applyTextReplacements(result.item, config.textReplacements),
+        spec: applyTextReplacements(result.spec, config.textReplacements),
+      };
+    }
+
+    // 3. Pricing overlay
     if (config.pricing) {
       result = applyPricingOverlay(result, config.pricing);
     }

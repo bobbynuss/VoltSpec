@@ -27,43 +27,37 @@ export const job: Job = {
     {
       item: "4 in. PVC Sch 40 Conduit",
       quantity: "500 ft",
-      spec: "PVF PVC4040 - 4 in. Schedule 40 PVC conduit, 10 ft sticks, UL listed, main duct bank runs",
+      spec: "PVC PVC4 - 4 in. Schedule 40 PVC conduit, 10 ft sticks, UL listed, main duct bank runs",
     },
     {
       item: "4 in. PVC Sch 40 90\u00b0 Elbow",
       quantity: "12",
-      spec: "PVF PVC40490 - 4 in. Schedule 40 PVC 90\u00b0 long-radius elbow, direction changes and risers",
+      spec: "PVF 4ELL90 - 4 in. Schedule 40 PVC 90\u00b0 long-radius elbow, non-bell end (requires couplings), direction changes and risers",
       unitPrice: 28.50,
     },
     {
       item: "4 in. PVC Sch 40 Coupling",
-      quantity: "50",
-      spec: "PVF PVC404CPL - 4 in. Schedule 40 PVC coupling, stick-to-stick connections",
+      quantity: "75",
+      spec: "PVF CPL4 - 4 in. PVC coupling, stick-to-stick and elbow connections (non-bell end elbows need couplings)",
       unitPrice: 5.75,
-    },
-    {
-      item: "4 in. PVC End Bell",
-      quantity: "24",
-      spec: "PVF PVC4EB - 4 in. PVC end bell adapter, conduit entry at manholes and pull boxes",
-      unitPrice: 8.25,
     },
     // ── PVC Conduit (Schedule 80 — High Traffic / Damage Areas) ─────
     {
       item: "4 in. PVC Sch 80 Conduit",
       quantity: "100 ft",
-      spec: "PVF PVC4080 - 4 in. Schedule 80 PVC conduit, 10 ft sticks, high-impact areas, road crossings, under driveways",
+      spec: "PVC 80PVC4 - 4 in. Schedule 80 PVC conduit, 10 ft sticks, high-impact areas, road crossings, under driveways",
     },
     {
       item: "4 in. PVC Sch 80 90\u00b0 Elbow",
       quantity: "4",
-      spec: "PVF PVC80490 - 4 in. Schedule 80 PVC 90\u00b0 long-radius elbow",
+      spec: "PVF 804ELL90 - 4 in. Schedule 80 PVC 90\u00b0 long-radius elbow, non-bell end (requires couplings)",
       unitPrice: 42.00,
     },
     {
       item: "4 in. PVC Sch 80 Coupling",
       quantity: "10",
-      spec: "PVF PVC804CPL - 4 in. Schedule 80 PVC coupling",
-      unitPrice: 9.50,
+      spec: "PVF CPL4 - 4 in. PVC coupling (Sch 80 connections)",
+      unitPrice: 5.75,
     },
     // ── Rigid Metal Conduit (RMC — Risers & Building Entry) ─────────
     {
@@ -74,7 +68,7 @@ export const job: Job = {
     {
       item: "4 in. RMC 90\u00b0 Elbow",
       quantity: "6",
-      spec: "CON 4ELL90RIG - 4 in. rigid 90\u00b0 elbow, PVC-to-RMC transition at grade",
+      spec: "ROB GAL490 - 4 in. rigid galvanized 90\u00b0 elbow, PVC-to-RMC transition at grade",
       unitPrice: 62.00,
     },
     {
@@ -86,7 +80,7 @@ export const job: Job = {
     {
       item: "4 in. PVC-to-RMC Adapter",
       quantity: "12",
-      spec: "PVF PVC4MA - 4 in. PVC male adapter, PVC-to-rigid transition fittings at risers",
+      spec: "PVF TA4 - 4 in. PVC male adapter, PVC-to-rigid transition fittings at risers",
       unitPrice: 7.80,
     },
     {
@@ -98,14 +92,14 @@ export const job: Job = {
     {
       item: "4 in. Rigid Locknut",
       quantity: "24",
-      spec: "CON 4LN - 4 in. steel locknut, two per termination point",
+      spec: "BRI 110S - 4 in. steel locknut, two per termination point",
       unitPrice: 3.25,
     },
     // ── Fiber Optic / Low Voltage Innerduct ─────────────────────────
     {
       item: "2 in. PVC Sch 40 Conduit (Fiber)",
       quantity: "500 ft",
-      spec: "PVF PVC2040 - 2 in. Schedule 40 PVC conduit, 10 ft sticks, dedicated fiber optic / low-voltage path",
+      spec: "PVC PVC2 - 2 in. Schedule 40 PVC conduit, 10 ft sticks, dedicated fiber optic / low-voltage path",
     },
     {
       item: "1 in. Corrugated Innerduct",
@@ -224,13 +218,13 @@ export const job: Job = {
     {
       item: "PVC Cement (quart)",
       quantity: "6",
-      spec: "Oatey 31014 - PVC heavy-duty cement, quart, for 4 in. Schedule 40/80 joints",
+      spec: "REC 55985 - PVC heavy-duty cement, quart, for 4 in. Schedule 40/80 joints",
       unitPrice: 18.50,
     },
     {
       item: "PVC Primer (quart)",
       quantity: "6",
-      spec: "Oatey 30757 - purple PVC primer, quart, required before cementing per code \u2014 purple stain confirms primed joint at inspection",
+      spec: "REC 55981 - purple PVC primer, quart, required before cementing per code \u2014 purple stain confirms primed joint at inspection (verify PN)",
       unitPrice: 10.25,
     },
     // ── Miscellaneous ───────────────────────────────────────────────

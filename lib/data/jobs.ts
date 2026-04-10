@@ -27,6 +27,7 @@ import { job as dc_switchgear } from "./jobs/dc-switchgear";
 import { job as dc_generator_ups } from "./jobs/dc-generator-ups";
 import { job as dc_critical_dist } from "./jobs/dc-critical-dist";
 import { job as dc_structured_cabling } from "./jobs/dc-structured-cabling";
+import { job as dc_final_commissioning } from "./jobs/dc-final-commissioning";
 
 export const JOBS: Job[] = [
   new_200a_residential,
@@ -57,6 +58,7 @@ export const JOBS: Job[] = [
   dc_generator_ups,
   dc_critical_dist,
   dc_structured_cabling,
+  dc_final_commissioning,
 ];
 
 export const JOB_TYPES: { id: string; label: string }[] = JOBS.map((j) => ({

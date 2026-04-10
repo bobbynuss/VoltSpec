@@ -31,12 +31,30 @@ export const LITTLE_ROCK_CONFIG: JurisdictionConfig = {
     ["Milbank U5135-XL-200", "Eaton UTE7213TCH"],
     ["Milbank U5135", "Eaton UTE7213TCH"],
     // Pass & Seymour device swaps (AR stocks PAS instead of EWD)
+    // Receptacles
     ["Eaton TR270W", "PAS 15WRTRWCC"],
     ["Eaton TWR270W", "PAS 15WRTRWRWCC"],
     ["Eaton TR1877WBXSP", "PAS TR5361WCC"],
+    ["Eaton TR1107W", "PAS TR15WCC"],
+    ["Eaton TR1307W", "PAS TR20WCC"],
+    // GFCI / Dual Function
     ["Eaton TRGF15W", "PAS 1597TRWRWCC4"],
     ["Eaton GFD20W", "PAS 2097TRWRW"],
     ["Eaton TWRGF20W", "PAS 2097TRWRWCC"],
+    // Switches
+    ["Eaton 7501W", "PAS TM870WCC"],
+    ["Eaton 7503W", "PAS TM873WCC"],
+    // Wall plates
+    ["Eaton PJ263W", "PAS TP263WCC"],
+    ["Eaton PJ262W", "PAS TP262WCC"],
+    ["Eaton PJ26W", "PAS TP26WCC"],
+    // LED retrofit
+    ["Eaton LT56079F51EWH", "PAS S9R6940CTK5"],
+    // NEMA receptacles (EV charger / temp power)
+    ["Eaton AH1258BKF", "PAS 3804CC"],
+    ["Eaton AH1257BKF", "PAS 3830CC"],
+    ["Eaton 1230R", "PAS 3830CC"],
+    ["Eaton 1250R", "PAS 3804CC"],
     // Utility / city
     ["CPS Energy Residential Service Application required", "Entergy Arkansas service application required"],
     ["CPS Energy", "Entergy Arkansas"],

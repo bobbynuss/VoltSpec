@@ -97,7 +97,7 @@ export function elliottVendorCode(part: string, spec: string): string | null {
 
   // ── Pass & Seymour / Legrand (PAS) — wiring devices ────────────────────
   if (/\bpass\s*[&+]\s*seymour\b|\blegrand\b/i.test(s)) return "PAS";
-  if (/^(?:1597|2097|15WRTR|TR5|PS15|PS20|TP26|TP826|SPC|880)/.test(p)) return "PAS";
+  if (/^(?:1597|2097|15WRTR|TR5|TR15|TR20|PS15|PS20|TP26|TP262|TP263|TM87|S9R|3804|3830|SPC|880)/.test(p)) return "PAS";
 
   // ── American Polymer (AMY) — pull boxes, handholes, vault covers ────────
   // Must be before PVC/PVF — AMY part numbers (CP173018U..., HP121212U..., etc.)

@@ -23,6 +23,8 @@ import { job as span_subpanel } from "./jobs/span-subpanel";
 import { job as residential_trim_out } from "../jobs/residential-trim-out";
 import { job as dc_temp_power } from "../jobs/dc-temp-power";
 import { job as dc_duct_bank } from "../jobs/dc-duct-bank";
+import { job as dc_switchgear } from "../jobs/dc-switchgear";
+import { job as dc_generator_ups } from "../jobs/dc-generator-ups";
 
 export const SA_JOBS: Job[] = [
   new_200a_residential,
@@ -49,4 +51,6 @@ export const SA_JOBS: Job[] = [
   residential_trim_out,
   dc_temp_power,
   dc_duct_bank,
+  dc_switchgear,
+  dc_generator_ups,
 ];

@@ -30,7 +30,7 @@ export const job: Job = {
     { item: "3 in. Steel Locknut", quantity: "2", spec: "Bridgeport 108S - 3 in. steel locknut for conduit connections", unitPrice: 5.38 },
     { item: "2 in. Steel Locknut", quantity: "4", spec: "Bridgeport 106S - 2 in. steel locknut for conduit connections", unitPrice: 1.86 },
     { item: "2 in. Plastic Bushing", quantity: "2", spec: "Bridgeport 326 - 2 in. plastic insulating bushing for conduit entries", unitPrice: 0.78 },
-    { item: "3/0 AWG AL XHHW-2", quantity: "30 ft", spec: "ALU XHHW3001000 - 3/0 AWG AL XHHW-2 600V black, sold per ft", unitPrice: 2.85 },
+    { item: "4/0 AWG AL XHHW-2", quantity: "30 ft", spec: "ALU XHHW401000 - 4/0 AWG AL XHHW-2 600V black, sold per ft", unitPrice: 2.85 },
     { item: "4 AWG Bare Copper GEC", quantity: "20 ft", spec: "COP BARE4SOL500 - 4 AWG solid bare copper GEC, sold per ft, per NEC 250.66", unitPrice: 2.1 },
     { item: "5/8 x 8 ft Ground Rod", quantity: "2", spec: "Erico 615880 - 5/8 in. x 8 ft copper-bonded ground rod, 6 ft spacing minimum", unitPrice: 29.81 },
     { item: "Ground Rod Clamp", quantity: "2", spec: "Thomas & Betts G5 - 1/2 in. x 5/8 in. ground rod clamp", unitPrice: 4.5 },

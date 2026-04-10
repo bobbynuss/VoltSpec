@@ -23,7 +23,7 @@ export const job: Job = {
     { item: "3 in. Schedule 40 PVC Conduit", quantity: "8 ft", spec: "PVC PVC3 - Schedule 40 3 in. PVC conduit, meter to panel run on pole", unitPrice: 2.44 },
     { item: "3 in. PVC Male Adapter", quantity: "2", spec: "PVF TA3 - 3 in. PVC male adapter", unitPrice: 4.51 },
     { item: "2 in. RMC Weatherhead", quantity: "1", spec: "Bridgeport 1256 - 2 in. service entrance weatherhead", unitPrice: 20.82 },
-    { item: "3/0 AWG AL XHHW-2", quantity: "20 ft", spec: "ALU XHHW3001000 - 3/0 AWG AL XHHW-2 600V, service entrance conductors", unitPrice: 2.85 },
+    { item: "4/0 AWG AL XHHW-2", quantity: "20 ft", spec: "ALU XHHW401000 - 4/0 AWG AL XHHW-2 600V, service entrance conductors", unitPrice: 2.85 },
     { item: "5/8 x 8 ft Ground Rod", quantity: "2", spec: "Erico 615880 - 5/8 in. x 8 ft copper-bonded ground rod", unitPrice: 29.81 },
     { item: "Ground Rod Clamp", quantity: "2", spec: "Thomas & Betts G5 - 1/2 in. x 5/8 in. ground rod clamp", unitPrice: 4.5 },
     { item: "4 AWG Bare Copper GEC", quantity: "15 ft", spec: "COP BARE4SOL500 - 4 AWG solid bare copper GEC, sold per ft", unitPrice: 2.1 },

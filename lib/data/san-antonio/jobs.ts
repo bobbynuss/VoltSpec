@@ -26,6 +26,7 @@ import { job as dc_duct_bank } from "../jobs/dc-duct-bank";
 import { job as dc_switchgear } from "../jobs/dc-switchgear";
 import { job as dc_generator_ups } from "../jobs/dc-generator-ups";
 import { job as dc_critical_dist } from "../jobs/dc-critical-dist";
+import { job as dc_structured_cabling } from "../jobs/dc-structured-cabling";
 
 export const SA_JOBS: Job[] = [
   new_200a_residential,
@@ -55,4 +56,5 @@ export const SA_JOBS: Job[] = [
   dc_switchgear,
   dc_generator_ups,
   dc_critical_dist,
+  dc_structured_cabling,
 ];

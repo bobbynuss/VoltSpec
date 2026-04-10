@@ -122,7 +122,7 @@ export const ELLIOTT_BRANCHES: ElliottBranch[] = [
   { store: 42,  name: "Waco",                      city: "Waco",             address: "3325 Clay Avenue, Waco, TX 76711",                     phone: "(254) 752-3331", zip: "76711", lat: 31.5310, lng: -97.1550 },
   { store: 72,  name: "Temple",                    city: "Temple",           address: "2703 Hancock Dr, Temple, TX 76504",                    phone: "(254) 899-2800", zip: "76504", lat: 31.0720, lng: -97.3650 },
   { store: 48,  name: "Killeen",                   city: "Killeen",          address: "2501 S Fort Hood St, Killeen, TX 76542",               phone: "(254) 554-5958", zip: "76542", lat: 31.0860, lng: -97.7290 },
-  { store: 47,  name: "Bryan",                     city: "Bryan",            address: "2501 Cavitt Avenue, Bryan, TX 77801",                  phone: "(979) 779-6630", zip: "77801", lat: 30.6740, lng: -96.3700 },
+  { store: 47,  name: "Bryan",                     city: "Bryan",            address: "10101 SH 30, College Station, TX 77845",                  phone: "(979) 779-6630", zip: "77801", lat: 30.6740, lng: -96.3700 },
   { store: 10,  name: "Huntsville",                city: "Huntsville",       address: "926 Hwy 19, Huntsville, TX 77320",                     phone: "(936) 439-0658", zip: "77320", lat: 30.7230, lng: -95.5510 },
   { store: 84,  name: "Stephenville",              city: "Stephenville",     address: "1035 S Graham St, Stephenville, TX 76401",             phone: "(254) 965-8083", zip: "76401", lat: 32.2180, lng: -98.2020 },
 

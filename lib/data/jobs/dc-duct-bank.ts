@@ -120,7 +120,32 @@ export const job: Job = {
       spec: "CDW DBS42 - 4 in. 2-conduit duct bank spacer, branch runs and riser transitions",
       unitPrice: 2.75,
     },
-    // ── Manholes & Handholes ────────────────────────────────────────
+    // ── Pull Boxes & Handholes (American Polymer) ─────────────────
+    {
+      item: "Composite Pull Box 17×30×18 w/ Hex Plates",
+      quantity: "4",
+      spec: "AMY CP173018U2299HS - Unit C/P 1730-18-T22 Plates Installed Hex, polymer concrete, H-20 traffic rated, underground duct bank junction points",
+      unitPrice: 700.00,
+    },
+    {
+      item: "Composite Handhole 12×12×12 w/ Hex & EMS",
+      quantity: "8",
+      spec: "AMY HP121212U2299HSE - Unit H/P 1212-12-T22 Plate Installed Hex W/ Ems, polymer concrete, branch pull points and fiber splice locations",
+      unitPrice: 266.00,
+    },
+    {
+      item: '9×10" Round Light Duty Cover',
+      quantity: "12",
+      spec: "AMY L091010UT0301HS - 9X10 in. RND LT Duty T CVR Unit, polymer concrete, ground-level access for secondary pull points and test wells",
+      unitPrice: 56.00,
+    },
+    {
+      item: "Composite Pull Box 13×24×18 w/ Hex & EMS",
+      quantity: "4",
+      spec: "AMY P132418U1599HSE - Unit 1324-18-T15 Plates Installed Hex W/Ems, polymer concrete, H-15 rated, intermediate duct bank pull points",
+      unitPrice: 564.00,
+    },
+    // ── Precast Manholes ────────────────────────────────────────────
     {
       item: "Precast Manhole 6\u2019\u00d78\u2019\u00d77\u2019",
       quantity: "2",

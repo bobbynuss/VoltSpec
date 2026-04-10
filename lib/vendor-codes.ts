@@ -17,7 +17,7 @@
 export function extractPartNumber(spec: string): string | null {
   // Pattern 1: after a known vendor/brand prefix
   const vendorMatch = spec.match(
-    /(?:Eaton|Carlon|Erico|Leviton|Southwire|Bridgeport|Burndy|Polaris|Taymac|Pentair|NSI|Generac|Kohler|SolarEdge|Enphase|ChargePoint|Midnite Solar|Allied|Regal|Thomas\s*&\s*Betts|Crouse-Hinds|Kichler|Brady|Gardner\s*Bender|PECO|ALU|COP|CON|BRI|CRS|TAM|GNR|AMF|ALF|PVC|PVF|PEC|M-W|MIB)\s+([A-Z0-9][A-Z0-9\-]{1,})/i
+    /(?:Eaton|Carlon|Erico|Leviton|Southwire|Bridgeport|Burndy|Polaris|Taymac|Pentair|NSI|Generac|Kohler|SolarEdge|Enphase|ChargePoint|Midnite Solar|Allied|Regal|Thomas\s*&\s*Betts|Crouse-Hinds|Kichler|Brady|Gardner\s*Bender|PECO|ALU|COP|CON|BRI|CRS|TAM|GNR|AMF|ALF|PVC|PVF|PEC|M-W|MIB|AMY)\s+([A-Z0-9][A-Z0-9\-]{1,})/i
   );
   if (vendorMatch) return vendorMatch[1].replace(/-+$/, "");
   // Pattern 2: after " - " separator
@@ -94,6 +94,13 @@ export function elliottVendorCode(part: string, spec: string): string | null {
 
   // ── Milbank meter sockets → MIB ─────────────────────────────────────────
   if (/^U\d{3,4}/.test(p) || /\bmilbank\b/i.test(s)) return "MIB";
+
+  // ── American Polymer (AMY) — pull boxes, handholes, vault covers ────────
+  // Must be before PVC/PVF — AMY part numbers (CP173018U..., HP121212U..., etc.)
+  // are long alphanumeric strings that would otherwise match PVF's short CP\d prefix.
+  if (/\bamerican\s*polymer\b/i.test(s)) return "AMY";
+  if (/^(?:CP|HP|P)\d{4,}.*U\d{2,}/.test(p)) return "AMY";
+  if (/^L\d{5,}.*U[T]?\d{2,}/.test(p)) return "AMY";
 
   // ── PVC conduit sticks → PVC ────────────────────────────────────────────
   if (/^PVC\d/.test(p)) return "PVC";
@@ -205,7 +212,7 @@ export function resolveVendorAndPart(
   return { part, vendor };
 }
 
-// ── Format a Bulk Entry line: "qty vendorCode partNumber" ───────────────────
+// ── Format a Bulk Entry line: "qty partNumber vendorCode" ───────────────────
 
 export function formatBulkEntryLine(
   qty: string,
@@ -216,7 +223,7 @@ export function formatBulkEntryLine(
   const resolved = resolveVendorAndPart(spec);
   if (resolved) {
     const { part, vendor } = resolved;
-    return vendor ? `${numQty} ${vendor} ${part}` : `${numQty} ${part}`;
+    return vendor ? `${numQty} ${part} ${vendor}` : `${numQty} ${part}`;
   }
   // Fallback: clean item name
   const fallback = itemFallback

@@ -37,6 +37,16 @@ export interface JurisdictionConfig {
   meterSocket?: MeterSocketConfig;
 
   /**
+   * If set, meter socket line items matching these catalog numbers are REMOVED
+   * from the BOM entirely (utility provides the meter socket).
+   * Mutually exclusive with meterSocket — use one or the other.
+   */
+  removeMeterSocket?: {
+    /** Catalog numbers from the baseline to match and remove */
+    replaces: string[];
+  };
+
+  /**
    * Text replacements applied to requirements, blueprint notes, SVG diagrams,
    * and (if patchMaterialText is true) material item names and spec strings.
    * Each entry is [searchString, replacement]. Applied in order.
@@ -63,6 +73,9 @@ export interface JurisdictionConfig {
 
   /** Extra requirements to append for specific job IDs */
   extraRequirements?: Record<string, string[]>;
+
+  /** Extra blueprint notes to append for specific job IDs */
+  extraBlueprintNotes?: Record<string, string[]>;
 
   /** Job IDs that need meter socket swaps. Defaults to standard set if meterSocket is defined. */
   meterSwapJobs?: string[];

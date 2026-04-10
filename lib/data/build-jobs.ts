@@ -72,7 +72,15 @@ function processMaterials(
   config: JurisdictionConfig,
   needsMeterSwap: boolean,
 ): MaterialItem[] {
-  return materials.map((mat) => {
+  // 0. Filter out meter socket items when utility provides them
+  let filtered = materials;
+  if (needsMeterSwap && config.removeMeterSocket) {
+    filtered = materials.filter(
+      (mat) => !isMeterSocketMatch(mat, config.removeMeterSocket!.replaces),
+    );
+  }
+
+  return filtered.map((mat) => {
     // 1. Meter socket swap
     if (needsMeterSwap && config.meterSocket && isMeterSocketMatch(mat, config.meterSocket.replaces)) {
       return buildMeterSocketItem(config.meterSocket);
@@ -118,9 +126,18 @@ function processRequirements(
 function processBlueprintNotes(
   notes: string[] | undefined,
   config: JurisdictionConfig,
+  jobId: string,
 ): string[] | undefined {
   if (!notes) return notes;
-  return notes.map((n) => applyTextReplacements(n, config.textReplacements));
+  let result = notes.map((n) => applyTextReplacements(n, config.textReplacements));
+
+  // Append extra blueprint notes for this job
+  const extras = config.extraBlueprintNotes?.[jobId];
+  if (extras) {
+    result = [...result, ...extras];
+  }
+
+  return result;
 }
 
 function processSvgDiagram(
@@ -146,13 +163,13 @@ export function buildJobs(config: JurisdictionConfig): Job[] {
   const meterSwapJobs = new Set(config.meterSwapJobs ?? DEFAULT_METER_SWAP_JOBS);
 
   return baselineJobs.map((job) => {
-    const needsMeterSwap = config.meterSocket != null && meterSwapJobs.has(job.id);
+    const needsMeterSwap = (config.meterSocket != null || config.removeMeterSocket != null) && meterSwapJobs.has(job.id);
 
     return {
       ...job,
       materials: processMaterials(job.materials, config, needsMeterSwap),
       requirements: processRequirements(job.requirements, config, job.id),
-      blueprintNotes: processBlueprintNotes(job.blueprintNotes, config),
+      blueprintNotes: processBlueprintNotes(job.blueprintNotes, config, job.id),
       svgDiagram: processSvgDiagram(job.svgDiagram, config),
       suppliers: [],  // Suppliers now come from ZIP-to-branch dynamically
       officialDocs: processOfficialDocs(config, job.id),

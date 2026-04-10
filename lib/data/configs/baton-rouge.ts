@@ -1,7 +1,7 @@
 /**
  * Baton Rouge/Gonzales, LA — Entergy Louisiana territory
  * Covers stores: #102 Baton Rouge, #170 Gonzales
- * BR series, Eaton UTRS213BE meter
+ * BR series, Milbank U7021DLTG meter (built-in hub)
  */
 
 import type { JurisdictionConfig } from "../jurisdiction-config";
@@ -18,16 +18,16 @@ export const BATON_ROUGE_CONFIG: JurisdictionConfig = {
   zipPrefixes: ["708", "709"],
   baseline: "san-antonio",
   meterSocket: {
-    catalog: "UTRS213BE",
-    description: "200A ringless single-phase OH/UG meter socket, Entergy Louisiana approved",
+    catalog: "U7021DLTG",
+    description: "200A single-phase OH/UG meter socket w/ built-in hub, Entergy Louisiana approved",
     replaces: ["1009874ACH", "U5135-XL-200", "U5135", "1006352CCH"],
   },
   textReplacements: [
-    ["Eaton 1009874ACH", "Eaton UTRS213BE"],
-    ["1009874ACH", "UTRS213BE"],
-    ["1006352CCH", "UTRS213BE"],
-    ["Milbank U5135-XL-200", "Eaton UTRS213BE"],
-    ["Milbank U5135", "Eaton UTRS213BE"],
+    ["Eaton 1009874ACH", "Milbank U7021DLTG"],
+    ["1009874ACH", "U7021DLTG"],
+    ["1006352CCH", "U7021DLTG"],
+    ["Milbank U5135-XL-200", "Milbank U7021DLTG"],
+    ["Milbank U5135", "Milbank U7021DLTG"],
     ["CPS Energy Residential Service Application required", "Entergy Louisiana service application required"],
     ["CPS Energy", "Entergy Louisiana"],
     ["CPS", "Entergy"],

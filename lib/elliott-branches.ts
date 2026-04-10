@@ -1,5 +1,5 @@
 /**
- * Elliott Electric Supply — Complete Texas Branch Database
+ * Elliott Electric Supply — TX, LA, OK, AR Branch Database
  *
  * Source: https://www.eesnet.com/storeinformation/storelist.aspx
  * Last refreshed: 2026-04-09
@@ -173,4 +173,41 @@ export const ELLIOTT_BRANCHES: ElliottBranch[] = [
   { store: 170, name: "Gonzales",                  city: "Gonzales",         address: "1617 W Highway 30, Gonzales, LA 70737",                phone: "(225) 960-6273", zip: "70737", lat: 30.2380, lng: -90.9340 },
   { store: 111, name: "New Orleans",               city: "Harahan",          address: "221 Hord St, Harahan, LA 70123",                       phone: "(504) 264-9995", zip: "70123", lat: 29.9560, lng: -90.2020 },
   { store: 137, name: "Covington",                 city: "Covington",        address: "1026 N Collins Blvd, Covington, LA 70433",             phone: "(985) 302-3016", zip: "70433", lat: 30.4850, lng: -90.1010 },
+
+  // ── Oklahoma ──────────────────────────────────────────────────────
+  { store: 122, name: "Oklahoma City",             city: "Oklahoma City",    address: "1800 S May Ave, Oklahoma City, OK 73108",              phone: "(405) 896-3723", zip: "73108", lat: 35.4510, lng: -97.5370 },
+  { store: 128, name: "Edmond",                    city: "Edmond",           address: "308 Centennial Blvd, Edmond, OK 73013",                phone: "(405) 562-6283", zip: "73013", lat: 35.6530, lng: -97.4780 },
+  { store: 132, name: "Moore",                     city: "Moore",            address: "2101 S Eastern Ave, Moore, OK 73160",                  phone: "(405) 759-4139", zip: "73160", lat: 35.3260, lng: -97.4550 },
+  { store: 184, name: "Yukon",                     city: "Yukon",            address: "1011 First Place Blvd, Yukon, OK 73099",               phone: "(405) 265-8424", zip: "73099", lat: 35.5070, lng: -97.7620 },
+  { store: 179, name: "Midwest City",              city: "Midwest City",     address: "2830 Global Pkwy, Midwest City, OK 73110",             phone: "(405) 622-4254", zip: "73110", lat: 35.4490, lng: -97.3710 },
+  { store: 134, name: "Tulsa",                     city: "Tulsa",            address: "10131 E 21st St, Tulsa, OK 74129",                     phone: "(918) 948-7825", zip: "74129", lat: 36.1380, lng: -95.8990 },
+  { store: 176, name: "Bartlesville",              city: "Bartlesville",     address: "2646 SE Washington Blvd, Bartlesville, OK 74006",      phone: "(918) 876-3357", zip: "74006", lat: 36.7260, lng: -95.9380 },
+  { store: 147, name: "Stillwater",                city: "Stillwater",       address: "303 East Harned Ave, Stillwater, OK 74075",            phone: "(405) 880-8633", zip: "74075", lat: 36.1160, lng: -97.0580 },
+  { store: 162, name: "Pryor",                     city: "Pryor",            address: "1315 2nd Street MAIP, Pryor, OK 74361",                phone: "(918) 803-0063", zip: "74361", lat: 36.3080, lng: -95.3160 },
+  { store: 109, name: "Lawton",                    city: "Lawton",           address: "1010 SE 1st Street, Lawton, OK 73501",                 phone: "(580) 581-7270", zip: "73501", lat: 34.6040, lng: -98.3860 },
+  { store: 118, name: "Duncan",                    city: "Duncan",           address: "5668 N Hwy 81, Duncan, OK 73533",                     phone: "(580) 252-2582", zip: "73533", lat: 34.5270, lng: -97.9470 },
+  { store: 133, name: "Enid",                      city: "Enid",             address: "3507 N Van Buren Bypass, Enid, OK 73701",              phone: "(580) 701-6818", zip: "73701", lat: 36.4190, lng: -97.8780 },
+  { store: 115, name: "Shawnee",                   city: "Shawnee",          address: "37489 45th Street, Shawnee, OK 74804",                 phone: "(405) 585-0428", zip: "74804", lat: 35.3270, lng: -96.9250 },
+  { store: 190, name: "Durant",                    city: "Durant",           address: "5018 W Main Street, Durant, OK 74701",                 phone: "(580) 745-5448", zip: "74701", lat: 33.9940, lng: -96.4270 },
+
+  // ── Arkansas ──────────────────────────────────────────────────────
+  { store: 91,  name: "Little Rock",               city: "Little Rock",      address: "5510 West 65th Street, Little Rock, AR 72209",         phone: "(501) 565-1785", zip: "72209", lat: 34.6810, lng: -92.3580 },
+  { store: 86,  name: "N Little Rock",             city: "N. Little Rock",   address: "1501 North Cypress Street, N. Little Rock, AR 72114",  phone: "(501) 945-9398", zip: "72114", lat: 34.7770, lng: -92.2640 },
+  { store: 94,  name: "Cabot",                     city: "Cabot",            address: "132 Professional Dr, Cabot, AR 72023",                 phone: "(501) 605-1780", zip: "72023", lat: 34.9540, lng: -92.0160 },
+  { store: 131, name: "Benton",                    city: "Benton",           address: "2114 Military Rd, Benton, AR 72015",                   phone: "(501) 303-4983", zip: "72015", lat: 34.5640, lng: -92.5870 },
+  { store: 99,  name: "Conway",                    city: "Conway",           address: "520 Equity Ave, Conway, AR 72032",                     phone: "(501) 336-8444", zip: "72032", lat: 35.0930, lng: -92.4420 },
+  { store: 149, name: "Pine Bluff",                city: "Pine Bluff",       address: "1701 Commerce Rd, Pine Bluff, AR 71601",               phone: "(870) 671-4805", zip: "71601", lat: 34.2290, lng: -92.0030 },
+  { store: 89,  name: "Searcy",                    city: "Searcy",           address: "1612 E Booth Road, Searcy, AR 72143",                  phone: "(501) 368-0309", zip: "72143", lat: 35.2480, lng: -91.7060 },
+  { store: 114, name: "Hot Springs",               city: "Hot Springs",      address: "411 Autumn Street, Hot Springs, AR 71901",             phone: "(501) 762-8210", zip: "71901", lat: 34.4870, lng: -93.0560 },
+  { store: 37,  name: "Hope",                      city: "Hope",             address: "1615 North Hazel St, Hope, AR 71801",                  phone: "(870) 777-4225", zip: "71801", lat: 33.6770, lng: -93.5910 },
+  { store: 138, name: "El Dorado",                 city: "El Dorado",        address: "805 South Timberlane Drive, El Dorado, AR 71730",      phone: "(870) 639-6289", zip: "71730", lat: 33.2070, lng: -92.6660 },
+  { store: 107, name: "Stuttgart",                 city: "Stuttgart",        address: "310 West 22nd St, Stuttgart, AR 72160",                phone: "(870) 672-7082", zip: "72160", lat: 34.4900, lng: -91.5560 },
+  { store: 194, name: "Jonesboro",                 city: "Jonesboro",        address: "4712 E Highland Dr, Jonesboro, AR 72401",              phone: "(870) 604-1924", zip: "72401", lat: 35.8120, lng: -90.6640 },
+  { store: 105, name: "Fort Smith",                city: "Fort Smith",       address: "5500 Wheeler Avenue, Fort Smith, AR 72901",            phone: "(479) 648-1902", zip: "72901", lat: 35.3460, lng: -94.3680 },
+  { store: 104, name: "Russellville",              city: "Russellville",     address: "1715 South Knoxville, Russellville, AR 72802",         phone: "(479) 967-2303", zip: "72802", lat: 35.2580, lng: -93.1370 },
+  { store: 106, name: "Springdale",                city: "Springdale",       address: "537 N 40th St, Springdale, AR 72762",                  phone: "(479) 361-2266", zip: "72762", lat: 36.1830, lng: -94.1290 },
+  { store: 112, name: "Bentonville",               city: "Bentonville",      address: "320 SW 28th St, Bentonville, AR 72712",                phone: "(479) 250-1930", zip: "72712", lat: 36.3440, lng: -94.2200 },
+  { store: 124, name: "Rogers",                    city: "Rogers",           address: "2214 South 8th Street, Rogers, AR 72758",              phone: "(479) 636-4190", zip: "72758", lat: 36.3170, lng: -94.1180 },
+  { store: 125, name: "Fayetteville",              city: "Fayetteville",     address: "555 E 15th Street, Fayetteville, AR 72701",            phone: "(479) 443-4948", zip: "72701", lat: 36.0660, lng: -94.1570 },
+  { store: 126, name: "Siloam Springs",            city: "Siloam Springs",   address: "320 N Simon Sager Ave, Siloam Springs, AR 72761",      phone: "(479) 238-1561", zip: "72761", lat: 36.1880, lng: -94.5400 },
 ];

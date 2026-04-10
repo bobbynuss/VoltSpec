@@ -27,6 +27,12 @@ import { LAFAYETTE_JOBS } from "./lafayette/jobs";
 import { LAKE_CHARLES_JOBS } from "./lake-charles/jobs";
 import { BATON_ROUGE_JOBS } from "./baton-rouge/jobs";
 import { NEW_ORLEANS_JOBS } from "./new-orleans/jobs";
+import { OKC_JOBS } from "./oklahoma-city/jobs";
+import { TULSA_JOBS } from "./tulsa/jobs";
+import { LAWTON_JOBS } from "./lawton/jobs";
+import { LITTLE_ROCK_JOBS } from "./little-rock/jobs";
+import { FORT_SMITH_JOBS } from "./fort-smith/jobs";
+import { SPRINGDALE_JOBS } from "./springdale/jobs";
 
 export interface Jurisdiction {
   id: string;
@@ -320,6 +326,68 @@ export const JURISDICTIONS: Jurisdiction[] = [
     defaultZip: "70123",
     zipPrefixes: ["700", "701", "703"],
     jobs: NEW_ORLEANS_JOBS,
+  },
+  // ── Oklahoma ───────────────────────────────────────────────────────
+  {
+    id: "oklahoma-city",
+    label: "Oklahoma City, OK (Oklahoma County)",
+    shortLabel: "Oklahoma City, OK",
+    utility: "OG&E (Oklahoma Gas & Electric)",
+    county: "Oklahoma County",
+    defaultZip: "73108",
+    zipPrefixes: ["730", "731", "733", "734"],
+    jobs: OKC_JOBS,
+  },
+  {
+    id: "tulsa",
+    label: "Tulsa, OK (Tulsa County)",
+    shortLabel: "Tulsa, OK",
+    utility: "PSO (AEP Oklahoma)",
+    county: "Tulsa County",
+    defaultZip: "74129",
+    zipPrefixes: ["740", "741", "743", "744"],
+    jobs: TULSA_JOBS,
+  },
+  {
+    id: "lawton",
+    label: "Lawton, OK (Comanche County)",
+    shortLabel: "Lawton, OK",
+    utility: "PSO / OG&E",
+    county: "Comanche County",
+    defaultZip: "73501",
+    zipPrefixes: ["735"],
+    jobs: LAWTON_JOBS,
+  },
+  // ── Arkansas ──────────────────────────────────────────────────────
+  {
+    id: "little-rock",
+    label: "Little Rock, AR (Pulaski County)",
+    shortLabel: "Little Rock, AR",
+    utility: "Entergy Arkansas",
+    county: "Pulaski County",
+    defaultZip: "72209",
+    zipPrefixes: ["720", "721", "722"],
+    jobs: LITTLE_ROCK_JOBS,
+  },
+  {
+    id: "fort-smith",
+    label: "Fort Smith, AR (Sebastian County)",
+    shortLabel: "Fort Smith, AR",
+    utility: "OG&E / AEP SWEPCO",
+    county: "Sebastian County",
+    defaultZip: "72901",
+    zipPrefixes: ["729", "728"],
+    jobs: FORT_SMITH_JOBS,
+  },
+  {
+    id: "springdale",
+    label: "Springdale/NW Arkansas (Washington County)",
+    shortLabel: "NW Arkansas",
+    utility: "OG&E / SWEPCO / Carroll Electric",
+    county: "Washington County",
+    defaultZip: "72762",
+    zipPrefixes: ["727", "726"],
+    jobs: SPRINGDALE_JOBS,
   },
 ];
 

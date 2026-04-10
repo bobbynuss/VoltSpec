@@ -20,6 +20,13 @@ import { TYLER_JOBS } from "./tyler/jobs";
 import { LUFKIN_JOBS } from "./lufkin/jobs";
 import { SAN_ANGELO_JOBS } from "./san-angelo/jobs";
 import { LAREDO_JOBS } from "./laredo/jobs";
+import { SHREVEPORT_JOBS } from "./shreveport/jobs";
+import { MONROE_JOBS } from "./monroe-la/jobs";
+import { ALEXANDRIA_JOBS as ALEXANDRIA_LA_JOBS } from "./alexandria-la/jobs";
+import { LAFAYETTE_JOBS } from "./lafayette/jobs";
+import { LAKE_CHARLES_JOBS } from "./lake-charles/jobs";
+import { BATON_ROUGE_JOBS } from "./baton-rouge/jobs";
+import { NEW_ORLEANS_JOBS } from "./new-orleans/jobs";
 
 export interface Jurisdiction {
   id: string;
@@ -242,6 +249,77 @@ export const JURISDICTIONS: Jurisdiction[] = [
     defaultZip: "78040",
     zipPrefixes: ["7804"],
     jobs: LAREDO_JOBS,
+  },
+  // ── Louisiana ─────────────────────────────────────────────────────
+  {
+    id: "shreveport",
+    label: "Shreveport/Bossier City, LA (Caddo Parish)",
+    shortLabel: "Shreveport, LA",
+    utility: "SWEPCO",
+    county: "Caddo Parish",
+    defaultZip: "71106",
+    zipPrefixes: ["711", "710"],
+    jobs: SHREVEPORT_JOBS,
+  },
+  {
+    id: "monroe-la",
+    label: "Monroe/West Monroe, LA (Ouachita Parish)",
+    shortLabel: "Monroe, LA",
+    utility: "Entergy Louisiana",
+    county: "Ouachita Parish",
+    defaultZip: "71203",
+    zipPrefixes: ["712"],
+    jobs: MONROE_JOBS,
+  },
+  {
+    id: "alexandria-la",
+    label: "Alexandria/Central LA (Rapides Parish)",
+    shortLabel: "Alexandria, LA",
+    utility: "CLECO / Entergy Louisiana",
+    county: "Rapides Parish",
+    defaultZip: "71302",
+    zipPrefixes: ["713", "714"],
+    jobs: ALEXANDRIA_LA_JOBS,
+  },
+  {
+    id: "lafayette",
+    label: "Lafayette, LA (Lafayette Parish)",
+    shortLabel: "Lafayette, LA",
+    utility: "Entergy Louisiana / LUS",
+    county: "Lafayette Parish",
+    defaultZip: "70507",
+    zipPrefixes: ["705", "704"],
+    jobs: LAFAYETTE_JOBS,
+  },
+  {
+    id: "lake-charles",
+    label: "Lake Charles/Sulphur, LA (Calcasieu Parish)",
+    shortLabel: "Lake Charles, LA",
+    utility: "Entergy Louisiana",
+    county: "Calcasieu Parish",
+    defaultZip: "70601",
+    zipPrefixes: ["706", "707"],
+    jobs: LAKE_CHARLES_JOBS,
+  },
+  {
+    id: "baton-rouge",
+    label: "Baton Rouge, LA (East Baton Rouge Parish)",
+    shortLabel: "Baton Rouge, LA",
+    utility: "Entergy Louisiana",
+    county: "East Baton Rouge Parish",
+    defaultZip: "70816",
+    zipPrefixes: ["708", "709"],
+    jobs: BATON_ROUGE_JOBS,
+  },
+  {
+    id: "new-orleans",
+    label: "New Orleans, LA (Orleans Parish)",
+    shortLabel: "New Orleans, LA",
+    utility: "Entergy New Orleans",
+    county: "Orleans Parish",
+    defaultZip: "70123",
+    zipPrefixes: ["700", "701", "703"],
+    jobs: NEW_ORLEANS_JOBS,
   },
 ];
 

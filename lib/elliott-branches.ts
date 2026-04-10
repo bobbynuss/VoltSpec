@@ -155,4 +155,22 @@ export const ELLIOTT_BRANCHES: ElliottBranch[] = [
   { store: 144, name: "McAllen",                   city: "McAllen",          address: "1701 N Jackson, Ste E, McAllen, TX 78501",             phone: "(956) 331-2410", zip: "78501", lat: 26.2230, lng: -98.2340 },
   { store: 151, name: "Brownsville",               city: "Brownsville",      address: "5575 Ruben M Torres Blvd, Brownsville, TX 78526",      phone: "(956) 295-3007", zip: "78526", lat: 25.9640, lng: -97.4680 },
   { store: 185, name: "Laredo",                    city: "Laredo",           address: "8420 Tejas Loop, Laredo, TX 78045",                    phone: "(956) 462-0607", zip: "78045", lat: 27.5610, lng: -99.4570 },
+
+  // ── Louisiana ───────────────────────────────────────────────────────
+  { store: 14,  name: "Shreveport",                city: "Shreveport",       address: "9139 Linwood Ave, Shreveport, LA 71106",               phone: "(318) 688-9822", zip: "71106", lat: 32.4270, lng: -93.6970 },
+  { store: 3,   name: "Bossier City",              city: "Bossier City",     address: "2414 Montgomery Ln, Bossier City, LA 71111",           phone: "(318) 746-5712", zip: "71111", lat: 32.5160, lng: -93.7120 },
+  { store: 79,  name: "Monroe",                    city: "Monroe",           address: "801 Sterlington Rd, Monroe, LA 71203",                 phone: "(318) 387-1621", zip: "71203", lat: 32.5350, lng: -92.0690 },
+  { store: 55,  name: "West Monroe",               city: "West Monroe",      address: "106 Industrial Drive, West Monroe, LA 71292",          phone: "(318) 398-9757", zip: "71292", lat: 32.5130, lng: -92.1470 },
+  { store: 67,  name: "Ruston",                    city: "Ruston",           address: "2020 Farmerville Highway, Ruston, LA 71270",           phone: "(318) 251-9393", zip: "71270", lat: 32.5350, lng: -92.6200 },
+  { store: 20,  name: "Natchitoches",              city: "Natchitoches",     address: "500 Rapides Drive, Natchitoches, LA 71457",            phone: "(318) 352-7414", zip: "71457", lat: 31.7600, lng: -93.0860 },
+  { store: 54,  name: "Alexandria",                city: "Alexandria",       address: "3705 Lee Street, Alexandria, LA 71302",                phone: "(318) 445-1336", zip: "71302", lat: 31.3110, lng: -92.4450 },
+  { store: 35,  name: "Pineville",                 city: "Pineville",        address: "4406 Highway 28 East, Pineville, LA 71360",            phone: "(318) 767-0900", zip: "71360", lat: 31.3410, lng: -92.3800 },
+  { store: 57,  name: "Leesville",                 city: "Leesville",        address: "206 Stanton St, Leesville, LA 71446",                  phone: "(337) 238-1624", zip: "71446", lat: 31.1430, lng: -93.2610 },
+  { store: 74,  name: "Vidalia",                   city: "Vidalia",          address: "6 South Hickory, Vidalia, LA 71373",                   phone: "(318) 336-5113", zip: "71373", lat: 31.5650, lng: -91.4260 },
+  { store: 59,  name: "Lafayette",                 city: "Lafayette",        address: "1811 N University, Ste 100, Lafayette, LA 70507",      phone: "(337) 235-7681", zip: "70507", lat: 30.2340, lng: -92.0190 },
+  { store: 80,  name: "Sulphur",                   city: "Sulphur",          address: "1336 Swisco Road, Sulphur, LA 70665",                  phone: "(337) 533-8019", zip: "70665", lat: 30.2360, lng: -93.3770 },
+  { store: 102, name: "Baton Rouge",               city: "Baton Rouge",      address: "10440 Airline Highway, Baton Rouge, LA 70816",         phone: "(225) 292-7746", zip: "70816", lat: 30.4670, lng: -91.0740 },
+  { store: 170, name: "Gonzales",                  city: "Gonzales",         address: "1617 W Highway 30, Gonzales, LA 70737",                phone: "(225) 960-6273", zip: "70737", lat: 30.2380, lng: -90.9340 },
+  { store: 111, name: "New Orleans",               city: "Harahan",          address: "221 Hord St, Harahan, LA 70123",                       phone: "(504) 264-9995", zip: "70123", lat: 29.9560, lng: -90.2020 },
+  { store: 137, name: "Covington",                 city: "Covington",        address: "1026 N Collins Blvd, Covington, LA 70433",             phone: "(985) 302-3016", zip: "70433", lat: 30.4850, lng: -90.1010 },
 ];

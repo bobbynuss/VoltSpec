@@ -24,7 +24,7 @@ const steps = [
     icon: Building2,
     color: "text-blue-400",
     bg: "bg-blue-400/10 border-blue-400/25 hover:border-blue-400/50",
-    body: "Open the sidebar and pick your city from the dropdown \u2014 VoltSpec loads the right utility, panel series, and pricing for that jurisdiction. Then choose a job type like 200A Service Upgrade or Residential Final Trim-Out. Enter your ZIP code and you\u2019re ready.",
+    body: "Use the Search bar at the top of the sidebar to quickly find any city or job type \u2014 just start typing. Or pick from the dropdowns manually. VoltSpec covers 28 jurisdictions across Texas and Louisiana, each with the right utility, panel series, and pricing. Choose a job type like 200A Service Upgrade, Data Center Build-Out, or Residential Final Trim-Out. Enter your ZIP code and you\u2019re ready.",
   },
   {
     num: 2,

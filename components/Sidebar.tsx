@@ -106,6 +106,7 @@ export const Sidebar = forwardRef<SidebarHandle, SidebarProps>(function Sidebar(
             onChange={(e) => setSearch(e.target.value)}
             onFocus={() => setSearchFocused(true)}
             onBlur={() => setTimeout(() => setSearchFocused(false), 200)}
+            data-tour="search-bar"
             placeholder="Search jobs or cities…"
             className="
               w-full pl-9 pr-8 py-2.5 sm:py-2 rounded-lg text-sm

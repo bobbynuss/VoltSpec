@@ -8,10 +8,16 @@ import type { TourStep } from "@/components/TourOverlay";
 
 export const TOUR_STEPS: Omit<TourStep, "beforeShow">[] = [
   {
+    id: "search",
+    target: "search-bar",
+    title: "Search Bar",
+    body: "Quickly find any city or job type \u2014 just start typing. VoltSpec covers 28 jurisdictions across Texas and Louisiana with 29 job types each. Search is the fastest way to find what you need.",
+  },
+  {
     id: "city",
     target: "city-selector",
     title: "Choose Your City",
-    body: "Pick your city or jurisdiction from this dropdown. VoltSpec loads the correct utility, panel series (CH or BR), and local pricing for that area.",
+    body: "Or pick your city from this dropdown. VoltSpec loads the correct utility, panel series (CH or BR), and local pricing for that area.",
   },
   {
     id: "job-type",

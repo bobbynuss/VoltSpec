@@ -130,9 +130,9 @@ function HomeContent() {
   const tourSteps: TourStep[] = TOUR_STEPS.map((s) => ({
     ...s,
     beforeShow:
-      s.id === "city" || s.id === "job-type" || s.id === "generate"
+      s.id === "search" || s.id === "city" || s.id === "job-type" || s.id === "generate"
         ? () => setSidebarOpen(true)
-        : s.id === "devices"
+        : s.id === "materials"
           ? () => {
               setSidebarOpen(false);
               // Switch to materials tab if possible

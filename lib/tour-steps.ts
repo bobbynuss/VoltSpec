@@ -41,12 +41,12 @@ export const TOUR_STEPS: Omit<TourStep, "beforeShow">[] = [
     id: "export",
     target: "pdf-btn",
     title: "Export PDF or Job Sheet",
-    body: "PDF Package generates a multi-page professional document. Job Sheet is a one-page condensed version. Both include your logo, requirements, materials, and blueprint.",
+    body: "PDF Package generates a multi-page professional document. Job Sheet is a one-page condensed version. Both include NEC requirements, materials list, and schematic blueprint.",
   },
   {
-    id: "devices",
+    id: "materials",
     target: "group-devices-lighting",
-    title: "Devices & Lighting",
-    body: "The Materials tab auto-groups items. This section collects all switches, receptacles, GFCI, dimmers, wall plates, smoke detectors, and LED fixtures \u2014 each with the correct Elliott vendor code.",
+    title: "Materials Tab",
+    body: "The Materials tab auto-groups items into sections \u2014 Panels & Breakers, Service Entrance, Grounding, Conduit & Fittings, Devices & Lighting, and more. Each item includes the Elliott part number with direct Product and Search links. Hit \u201cOrder on EES\u201d to copy the full list and open Elliott\u2019s Bulk Entry pad.",
   },
 ];

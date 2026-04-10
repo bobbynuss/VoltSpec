@@ -15,6 +15,7 @@ export interface QuoteRequestPayload {
   zip: string;
   elliottStore: string | null;
   elliottRep: string | null;
+  repEmail: string | null;
   bom: BOMItem[];
   notes: string;
   userEmail: string;

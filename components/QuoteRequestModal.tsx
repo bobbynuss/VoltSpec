@@ -22,6 +22,13 @@ function extractCatalog(spec: string): string {
   return extractPartNumber(spec) ?? "";
 }
 
+/** Auto-generate Elliott rep email from name: "John Smith" → "johnsmith@elliottelectric.com" */
+function repEmailFromName(name: string | null): string | null {
+  if (!name || !name.trim()) return null;
+  const clean = name.trim().toLowerCase().replace(/[^a-z]/g, "");
+  return clean ? `${clean}@elliottelectric.com` : null;
+}
+
 /** Get vendor code prefix for Bulk Entry formatting */
 function getVendorPrefix(spec: string): string {
   const part = extractPartNumber(spec);
@@ -68,6 +75,9 @@ export function QuoteRequestModal({
 
   if (!open) return null;
 
+  // Auto-generate rep email from name
+  const repEmail = repEmailFromName(elliottRep);
+
   // Build BOM from job materials — with vendor codes for Bulk Entry
   const bom: BOMItem[] = job.materials.map((mat) => ({
     catalog: extractCatalog(mat.spec),
@@ -90,6 +100,7 @@ export function QuoteRequestModal({
         zip: "",
         elliottStore,
         elliottRep,
+        repEmail,
         bom,
         notes,
         userEmail: user.email,
@@ -125,8 +136,9 @@ export function QuoteRequestModal({
             </div>
             <h3 className="text-lg font-bold text-white mb-2">Quote Request Sent!</h3>
             <p className="text-gray-400 text-sm text-center max-w-sm">
-              Your BOM has been saved and a copy sent to <strong className="text-white">{user?.email}</strong>.
-              Forward it to your Elliott rep or bring it to the counter.
+              Your BOM has been saved and sent to <strong className="text-white">{user?.email}</strong>.
+              {repEmail && <> A copy was also sent to your Elliott rep at <strong className="text-yellow-400">{repEmail}</strong>.</>}
+              {!repEmail && <> Set your sales rep in Profile to auto-send to your Elliott rep.</>}
             </p>
             <Button onClick={onClose} className="mt-6 bg-yellow-400 text-gray-900 hover:bg-yellow-300">
               Done
@@ -207,21 +219,27 @@ export function QuoteRequestModal({
             </div>
 
             {/* Footer */}
-            <div className="px-6 py-4 border-t border-[hsl(217,33%,18%)] flex items-center justify-between">
-              <p className="text-xs text-gray-600">
-                A copy will be sent to {user?.email}
-              </p>
-              <Button
-                onClick={handleSend}
-                disabled={sending}
-                className="bg-yellow-400 text-gray-900 hover:bg-yellow-300 font-semibold gap-2"
-              >
-                {sending ? (
-                  <><Loader2 className="w-4 h-4 animate-spin" /> Sending...</>
-                ) : (
-                  <><Send className="w-4 h-4" /> Send Quote Request</>
-                )}
-              </Button>
+            <div className="px-6 py-4 border-t border-[hsl(217,33%,18%)] flex flex-col gap-2">
+              <div className="flex items-center justify-between text-xs text-gray-500">
+                <div className="flex flex-col gap-0.5">
+                  <span>To: {user?.email}</span>
+                  {repEmail && <span>CC: <span className="text-yellow-400 font-medium">{repEmail}</span> ({elliottRep})</span>}
+                  {!repEmail && <span className="text-gray-600">Set your sales rep in Profile to CC them automatically</span>}
+                </div>
+              </div>
+              <div className="flex justify-end">
+                <Button
+                  onClick={handleSend}
+                  disabled={sending}
+                  className="bg-yellow-400 text-gray-900 hover:bg-yellow-300 font-semibold gap-2"
+                >
+                  {sending ? (
+                    <><Loader2 className="w-4 h-4 animate-spin" /> Sending...</>
+                  ) : (
+                    <><Send className="w-4 h-4" /> Send Quote Request</>
+                  )}
+                </Button>
+              </div>
             </div>
           </>
         )}

@@ -15,6 +15,7 @@ interface QuotePayload {
   zip: string;
   elliottStore: string | null;
   elliottRep: string | null;
+  repEmail: string | null;
   bom: BOMItem[];
   notes: string;
   userEmail: string;
@@ -156,7 +157,10 @@ Reference pricing only. Please provide current cash-sale quote.
       body: JSON.stringify({
         from: "VoltSpec <quotes@voltspec.online>",
         to: [payload.userEmail],
-        subject: `Quote Request – ${payload.jobName} – ${payload.city}`,
+        ...(payload.repEmail ? { cc: [payload.repEmail] } : {}),
+        subject: payload.repEmail
+          ? `VoltSpec Quote Request for ${payload.elliottRep} – ${payload.jobName} – ${payload.city}`
+          : `VoltSpec Quote Request – ${payload.jobName} – ${payload.city}`,
         text: emailBody,
         html: emailHtml,
       }),

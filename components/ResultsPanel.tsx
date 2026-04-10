@@ -234,11 +234,8 @@ export function ResultsPanel({ result, onSave, zip }: ResultsPanelProps) {
     navigator.clipboard.writeText(rows.join("\n")).then(() => {
       setCopied(true);
       setTimeout(() => setCopied(false), 2500);
-      // Open Elliott Bulk Entry / Rapid Order in a new tab
-      window.open("https://www.elliottelectric.com/P/Rapid", "_blank", "noopener,noreferrer");
-      // Show toast
-      setToast("List copied to clipboard and EES Bulk Entry opened in new tab. Paste into the Bulk Pad.");
-      setTimeout(() => setToast(null), 5000);
+      setToast("Bulk Entry list copied to clipboard.");
+      setTimeout(() => setToast(null), 4000);
     });
   };
 
@@ -501,8 +498,8 @@ export function ResultsPanel({ result, onSave, zip }: ResultsPanelProps) {
                 </CardTitle>
                 <Button size="sm" onClick={handleCopyMaterials} className="bg-yellow-400 hover:bg-yellow-300 active:bg-yellow-500 text-gray-900 font-semibold text-xs transition-colors duration-150 no-print">
                   {copied
-                    ? <><ClipboardCheck className="w-3.5 h-3.5 mr-1.5" />Copied — paste into Bulk Pad!</>
-                    : <><Zap className="w-3.5 h-3.5 mr-1.5 fill-gray-900" />Order on EES — Copy &amp; Open</>}
+                    ? <><ClipboardCheck className="w-3.5 h-3.5 mr-1.5" />Copied!</>
+                    : <><ClipboardCopy className="w-3.5 h-3.5 mr-1.5" />Copy Bulk Entry</>}
                 </Button>
               </div>
               {hasPricing && (
@@ -519,12 +516,11 @@ export function ResultsPanel({ result, onSave, zip }: ResultsPanelProps) {
                 </div>
               )}
               <div className="mt-2 flex items-center gap-2 sm:gap-3 p-2 sm:p-2.5 rounded-lg bg-yellow-400/8 border border-yellow-400/20">
-                <Zap className="w-4 h-4 text-yellow-400 fill-yellow-400 shrink-0" />
+                <ClipboardCopy className="w-4 h-4 text-yellow-400 shrink-0" />
                 <span className="text-[11px] sm:text-xs text-gray-400 flex-1 leading-snug">
-                  <span className="hidden sm:inline">Click <span className="text-yellow-400 font-semibold">Order on EES</span> to copy the list and open the Bulk Pad in one click. Each row also has direct Product and Search links.</span>
-                  <span className="sm:hidden"><span className="text-yellow-400 font-semibold">Order on EES</span> copies list &amp; opens Bulk Pad.</span>
+                  <span className="hidden sm:inline">Click <span className="text-yellow-400 font-semibold">Copy Bulk Entry</span> to copy the materials list. Use <span className="text-yellow-400 font-semibold">Send Quote Request</span> to email your BOM directly to your Elliott sales rep.</span>
+                  <span className="sm:hidden"><span className="text-yellow-400 font-semibold">Copy Bulk Entry</span> copies the list. <span className="text-yellow-400 font-semibold">Quote Request</span> emails your rep.</span>
                 </span>
-                <a href="https://www.elliottelectric.com/P/Rapid" target="_blank" rel="noopener noreferrer" className="text-xs text-yellow-400 hover:text-yellow-300 font-semibold whitespace-nowrap flex items-center gap-1 transition-colors">Bulk Entry ↗<ExternalLink className="w-3 h-3" /></a>
               </div>
               {/* Panel Type selector — inside Materials tab for panel-eligible jobs */}
               {showPanelSelector && (
@@ -642,9 +638,7 @@ export function ResultsPanel({ result, onSave, zip }: ResultsPanelProps) {
               )}
               <div className="mt-4 pt-4 border-t border-[hsl(217,33%,18%)] flex flex-col sm:flex-row items-start sm:items-center gap-3 no-print">
                 <p className="flex-1 text-xs text-gray-500 leading-snug">
-                  <span className="text-yellow-400 font-semibold">One-click:</span>
-                  <span className="hidden sm:inline"> Hit the button → list is on your clipboard → EES Bulk Pad opens → paste &amp; submit.</span>
-                  <span className="sm:hidden"> Copy → Bulk Pad opens → paste.</span>
+                  <span className="text-yellow-400 font-semibold">Copy Bulk Entry</span> copies the full materials list to your clipboard.
                 </p>
                 <div className="flex gap-2 shrink-0">
                   <Button
@@ -653,8 +647,8 @@ export function ResultsPanel({ result, onSave, zip }: ResultsPanelProps) {
                     className="bg-yellow-400 hover:bg-yellow-300 active:bg-yellow-500 text-gray-900 font-semibold text-xs transition-colors duration-150"
                   >
                     {copied
-                      ? <><ClipboardCheck className="w-3.5 h-3.5 mr-1.5" />Paste into Bulk Pad</>
-                      : <><Zap className="w-3.5 h-3.5 mr-1.5 fill-gray-900" />Order on EES<ExternalLink className="w-3 h-3 ml-1.5" /></>}
+                      ? <><ClipboardCheck className="w-3.5 h-3.5 mr-1.5" />Copied!</>
+                      : <><ClipboardCopy className="w-3.5 h-3.5 mr-1.5" />Copy Bulk Entry</>}
                   </Button>
                 </div>
               </div>
@@ -752,9 +746,9 @@ export function ResultsPanel({ result, onSave, zip }: ResultsPanelProps) {
                     className="mt-1 bg-yellow-400/10 text-yellow-400 border border-yellow-400/30 hover:bg-yellow-400/20 active:bg-yellow-400/30 text-xs transition-colors duration-150"
                   >
                     {copied ? (
-                      <><ClipboardCheck className="w-3.5 h-3.5 mr-1.5" />Paste into EES Bulk Pad</>
+                      <><ClipboardCheck className="w-3.5 h-3.5 mr-1.5" />Copied!</>
                     ) : (
-                      <><Zap className="w-3.5 h-3.5 mr-1.5 fill-current" />Order on EES — Copy &amp; Open Bulk Pad</>
+                      <><ClipboardCopy className="w-3.5 h-3.5 mr-1.5" />Copy Bulk Entry</>
                     )}
                   </Button>
                 </CardContent>

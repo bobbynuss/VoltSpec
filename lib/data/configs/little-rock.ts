@@ -22,12 +22,22 @@ export const LITTLE_ROCK_CONFIG: JurisdictionConfig = {
     description: "200A single-phase OH/UG meter socket, Entergy Arkansas approved",
     replaces: ["1009874ACH", "U5135-XL-200", "U5135", "1006352CCH"],
   },
+  patchMaterialText: true,
   textReplacements: [
+    // Meter socket
     ["Eaton 1009874ACH", "Eaton UTE7213TCH"],
     ["1009874ACH", "UTE7213TCH"],
     ["1006352CCH", "UTE7213TCH"],
     ["Milbank U5135-XL-200", "Eaton UTE7213TCH"],
     ["Milbank U5135", "Eaton UTE7213TCH"],
+    // Pass & Seymour device swaps (AR stocks PAS instead of EWD)
+    ["Eaton TR270W", "PAS 15WRTRWCC"],
+    ["Eaton TWR270W", "PAS 15WRTRWRWCC"],
+    ["Eaton TR1877WBXSP", "PAS TR5361WCC"],
+    ["Eaton TRGF15W", "PAS 1597TRWRWCC4"],
+    ["Eaton GFD20W", "PAS 2097TRWRW"],
+    ["Eaton TWRGF20W", "PAS 2097TRWRWCC"],
+    // Utility / city
     ["CPS Energy Residential Service Application required", "Entergy Arkansas service application required"],
     ["CPS Energy", "Entergy Arkansas"],
     ["CPS", "Entergy"],

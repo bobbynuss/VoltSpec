@@ -17,7 +17,7 @@
 export function extractPartNumber(spec: string): string | null {
   // Pattern 1: after a known vendor/brand prefix
   const vendorMatch = spec.match(
-    /(?:Eaton|Carlon|Erico|Leviton|Southwire|Bridgeport|Burndy|Polaris|Taymac|Pentair|NSI|Generac|Kohler|SolarEdge|Enphase|ChargePoint|Midnite Solar|Allied|Regal|Thomas\s*&\s*Betts|Crouse-Hinds|Kichler|Brady|Gardner\s*Bender|PECO|ALU|COP|CON|BRI|CRS|TAM|GNR|AMF|ALF|PVC|PVF|PEC|M-W|MIB|AMY)\s+([A-Z0-9][A-Z0-9\-]{1,})/i
+    /(?:Eaton|Carlon|Erico|Leviton|Southwire|Bridgeport|Burndy|Polaris|Taymac|Pentair|NSI|Generac|Kohler|SolarEdge|Enphase|ChargePoint|Midnite Solar|Allied|Regal|Thomas\s*&\s*Betts|Crouse-Hinds|Kichler|Brady|Gardner\s*Bender|PECO|ALU|COP|CON|BRI|CRS|TAM|GNR|AMF|ALF|PVC|PVF|PEC|M-W|MIB|AMY|PAS)\s+([A-Z0-9][A-Z0-9\-]{1,})/i
   );
   if (vendorMatch) return vendorMatch[1].replace(/-+$/, "");
   // Pattern 2: after " - " separator
@@ -94,6 +94,10 @@ export function elliottVendorCode(part: string, spec: string): string | null {
 
   // ── Milbank meter sockets → MIB ─────────────────────────────────────────
   if (/^U\d{3,4}/.test(p) || /\bmilbank\b/i.test(s)) return "MIB";
+
+  // ── Pass & Seymour / Legrand (PAS) — wiring devices ────────────────────
+  if (/\bpass\s*[&+]\s*seymour\b|\blegrand\b/i.test(s)) return "PAS";
+  if (/^(?:1597|2097|15WRTR|TR5|PS15|PS20|TP26|TP826|SPC|880)/.test(p)) return "PAS";
 
   // ── American Polymer (AMY) — pull boxes, handholes, vault covers ────────
   // Must be before PVC/PVF — AMY part numbers (CP173018U..., HP121212U..., etc.)

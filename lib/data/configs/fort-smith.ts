@@ -35,12 +35,22 @@ export const FORT_SMITH_CONFIG: JurisdictionConfig = {
       ["Meter socket often provided by local utility — confirm with utility before ordering"],
     ]),
   ),
+  patchMaterialText: true,
   textReplacements: [
+    // Meter socket
     ["Eaton 1009874ACH", "Eaton UTRS213BE"],
     ["1009874ACH", "UTRS213BE"],
     ["1006352CCH", "UTRS213BE"],
     ["Milbank U5135-XL-200", "Eaton UTRS213BE"],
     ["Milbank U5135", "Eaton UTRS213BE"],
+    // Pass & Seymour device swaps (AR stocks PAS instead of EWD)
+    ["Eaton TR270W", "PAS 15WRTRWCC"],
+    ["Eaton TWR270W", "PAS 15WRTRWRWCC"],
+    ["Eaton TR1877WBXSP", "PAS TR5361WCC"],
+    ["Eaton TRGF15W", "PAS 1597TRWRWCC4"],
+    ["Eaton GFD20W", "PAS 2097TRWRW"],
+    ["Eaton TWRGF20W", "PAS 2097TRWRWCC"],
+    // Utility / city
     ["CPS Energy Residential Service Application required", "OG&E / SWEPCO service application required"],
     ["CPS Energy", "OG&E / SWEPCO"],
     ["CPS", "OG&E"],

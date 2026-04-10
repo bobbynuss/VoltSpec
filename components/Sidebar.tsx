@@ -3,7 +3,7 @@
 import { useState, useRef, useImperativeHandle, forwardRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Zap, MapPin, Briefcase, Building2, Calculator, FolderOpen } from "lucide-react";
+import { Zap, MapPin, Briefcase, Building2, Calculator, FolderOpen, Search, X } from "lucide-react";
 
 
 import { Button } from "@/components/ui/button";
@@ -37,6 +37,9 @@ export const Sidebar = forwardRef<SidebarHandle, SidebarProps>(function Sidebar(
   const [city, setCity] = useState("austin");
   const [zip, setZip] = useState("78744");
   const [jobId, setJobId] = useState("");
+  const [search, setSearch] = useState("");
+  const [searchFocused, setSearchFocused] = useState(false);
+  const searchRef = useRef<HTMLInputElement>(null);
   const [zipUpdated, setZipUpdated] = useState(false);
   const zipUpdatedTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -90,6 +93,103 @@ export const Sidebar = forwardRef<SidebarHandle, SidebarProps>(function Sidebar(
           <FolderOpen className="w-3.5 h-3.5" />
           <span>Projects</span>
         </button>
+      </div>
+
+      {/* Unified Search */}
+      <div className="relative">
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 pointer-events-none" />
+          <input
+            ref={searchRef}
+            type="text"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            onFocus={() => setSearchFocused(true)}
+            onBlur={() => setTimeout(() => setSearchFocused(false), 200)}
+            placeholder="Search jobs or cities…"
+            className="
+              w-full pl-9 pr-8 py-2.5 sm:py-2 rounded-lg text-sm
+              bg-[hsl(217,33%,13%)] border border-[hsl(217,33%,22%)]
+              text-white placeholder-gray-500
+              focus:outline-none focus:ring-1 focus:ring-yellow-400 focus:border-yellow-400
+              transition-colors h-11 sm:h-9
+            "
+          />
+          {search && (
+            <button
+              type="button"
+              onClick={() => { setSearch(""); searchRef.current?.focus(); }}
+              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300 transition-colors"
+            >
+              <X className="w-3.5 h-3.5" />
+            </button>
+          )}
+        </div>
+        {search.length >= 2 && searchFocused && (() => {
+          const q = search.toLowerCase();
+          const matchedCities = JURISDICTIONS.filter(
+            (j) =>
+              j.shortLabel.toLowerCase().includes(q) ||
+              j.label.toLowerCase().includes(q) ||
+              j.utility.toLowerCase().includes(q) ||
+              j.county.toLowerCase().includes(q)
+          ).slice(0, 5);
+          const matchedJobs = JOB_TYPES.filter(
+            (j) => j.label.toLowerCase().includes(q)
+          ).slice(0, 8);
+          if (matchedCities.length === 0 && matchedJobs.length === 0) return null;
+          return (
+            <div className="absolute z-50 top-full mt-1 left-0 right-0 bg-[hsl(222,47%,10%)] border border-[hsl(217,33%,22%)] rounded-lg shadow-xl overflow-hidden max-h-[320px] overflow-y-auto">
+              {matchedCities.length > 0 && (
+                <div>
+                  <div className="px-3 py-1.5 text-[10px] font-bold text-gray-500 uppercase tracking-wider bg-[hsl(217,33%,12%)]">
+                    Cities / Jurisdictions
+                  </div>
+                  {matchedCities.map((j) => (
+                    <button
+                      key={j.id}
+                      type="button"
+                      onMouseDown={(e) => e.preventDefault()}
+                      onClick={() => {
+                        handleCityChange(j.id);
+                        setSearch("");
+                        setSearchFocused(false);
+                      }}
+                      className="w-full text-left px-3 py-2 text-sm text-gray-300 hover:bg-yellow-400/10 hover:text-yellow-300 transition-colors flex items-center gap-2"
+                    >
+                      <Building2 className="w-3.5 h-3.5 text-yellow-400 shrink-0" />
+                      <span className="flex-1 truncate">{j.shortLabel}</span>
+                      <span className="text-[10px] text-gray-600 truncate">{j.utility}</span>
+                    </button>
+                  ))}
+                </div>
+              )}
+              {matchedJobs.length > 0 && (
+                <div>
+                  <div className="px-3 py-1.5 text-[10px] font-bold text-gray-500 uppercase tracking-wider bg-[hsl(217,33%,12%)]">
+                    Job Types
+                  </div>
+                  {matchedJobs.map((j) => (
+                    <button
+                      key={j.id}
+                      type="button"
+                      onMouseDown={(e) => e.preventDefault()}
+                      onClick={() => {
+                        setJobId(j.id);
+                        setSearch("");
+                        setSearchFocused(false);
+                      }}
+                      className="w-full text-left px-3 py-2 text-sm text-gray-300 hover:bg-yellow-400/10 hover:text-yellow-300 transition-colors flex items-center gap-2"
+                    >
+                      <Briefcase className="w-3.5 h-3.5 text-yellow-400 shrink-0" />
+                      <span className="flex-1 truncate">{j.label}</span>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+          );
+        })()}
       </div>
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-5">

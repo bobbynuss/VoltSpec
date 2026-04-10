@@ -223,7 +223,7 @@ export function formatBulkEntryLine(
   const resolved = resolveVendorAndPart(spec);
   if (resolved) {
     const { part, vendor } = resolved;
-    return vendor ? `${numQty} ${part} ${vendor}` : `${numQty} ${part}`;
+    return `${numQty} ${part}`;
   }
   // Fallback: clean item name
   const fallback = itemFallback

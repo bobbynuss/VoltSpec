@@ -48,9 +48,7 @@ export async function POST(request: Request) {
       .filter((item) => item.catalog)
       .map((item) => {
         const qty = item.quantity.match(/^[\d]+/)?.[0] ?? "1";
-        return item.vendorCode
-          ? `${qty} ${item.catalog} ${item.vendorCode}`
-          : `${qty} ${item.catalog}`;
+        return `${qty} ${item.catalog}`;
       });
 
     const storeInfo = payload.elliottStore

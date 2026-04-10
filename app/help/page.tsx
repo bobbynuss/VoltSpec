@@ -20,15 +20,15 @@ const steps = [
   {
     num: 1,
     tourIndex: 0,
-    title: "Choose Your City & Job Type",
+    title: "Search for Cities & Jobs",
     icon: Building2,
     color: "text-blue-400",
     bg: "bg-blue-400/10 border-blue-400/25 hover:border-blue-400/50",
-    body: "Use the Search bar at the top of the sidebar to quickly find any city or job type \u2014 just start typing. Or pick from the dropdowns manually. VoltSpec covers 28 jurisdictions across Texas and Louisiana, each with the right utility, panel series, and pricing. Choose a job type like 200A Service Upgrade, Data Center Build-Out, or Residential Final Trim-Out. Enter your ZIP code and you\u2019re ready.",
+    body: "Use the Search bar at the top of the sidebar to quickly find any city or job type \u2014 just start typing. VoltSpec covers 28 jurisdictions across Texas and Louisiana with 29 job types each. Or pick from the dropdowns below the search bar. Enter your ZIP code and the nearest Elliott store auto-populates.",
   },
   {
     num: 2,
-    tourIndex: 2,
+    tourIndex: 3,
     title: "Generate the Full Package",
     icon: Zap,
     color: "text-yellow-400",
@@ -37,7 +37,7 @@ const steps = [
   },
   {
     num: 3,
-    tourIndex: 3,
+    tourIndex: 4,
     title: "Save Your Job to the Cloud",
     icon: CloudUpload,
     color: "text-cyan-400",
@@ -46,7 +46,7 @@ const steps = [
   },
   {
     num: 4,
-    tourIndex: 4,
+    tourIndex: 5,
     title: "Send a Quote Request to Elliott",
     icon: Send,
     color: "text-emerald-400",
@@ -55,7 +55,7 @@ const steps = [
   },
   {
     num: 5,
-    tourIndex: 5,
+    tourIndex: 6,
     title: "Export PDF or Job Sheet",
     icon: FileDown,
     color: "text-orange-400",
@@ -64,12 +64,12 @@ const steps = [
   },
   {
     num: 6,
-    tourIndex: 6,
-    title: "Devices & Lighting Section",
+    tourIndex: 7,
+    title: "Materials Tab",
     icon: Lightbulb,
     color: "text-purple-400",
     bg: "bg-purple-400/10 border-purple-400/25 hover:border-purple-400/50",
-    body: "The Materials tab groups items automatically. The Devices & Lighting section (\ud83d\udca1) collects all your switches, receptacles, GFCI outlets, dimmers, wall plates, smoke detectors, and LED fixtures \u2014 each with the correct Elliott vendor code (EWD, LUT, BRK).",
+    body: "The Materials tab auto-groups items into sections \u2014 Gear (for large commercial), Panels & Breakers, Wire, Conduit, Devices & Lighting, and more. Each item includes the Elliott part number with direct Product and Search links. Hit \u201cOrder on EES\u201d to copy the full list and open Elliott\u2019s Bulk Entry pad.",
   },
 ];
 

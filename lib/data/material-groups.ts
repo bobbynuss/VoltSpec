@@ -4,6 +4,7 @@ import type { MaterialItem } from "./types";
  * Material group categories in display order
  */
 export type MaterialGroupId =
+  | "gear"
   | "panel-breakers"
   | "wire-conductors"
   | "conduit-raceway"
@@ -19,6 +20,49 @@ export interface MaterialGroup {
 }
 
 // ── Classification patterns ────────────────────────────────────────
+
+// ── Gear (large commercial / data center equipment) ────────────────
+const GEAR_PATTERNS = [
+  /\bswitchgear\b/i,
+  /\bPow-R-Line\b/i,
+  /\bMagnum\s*DS\b/i,
+  /\bbus\s*duct\b/i,
+  /\bbusway\b/i,
+  /\bPow-R-Way\b/i,
+  /\bbus\s*duct\s*(elbow|tee|end\s*closure|section)\b/i,
+  /\bgenerator\b/i,
+  /\bgenset\b/i,
+  /\bGNR\b.*\bSDMD\b/i,
+  /\bUPS\b/i,
+  /\bbattery\s*(cabinet|string|room)\b/i,
+  /\bPDU\b/i,
+  /\bpower\s*distribution\s*unit\b/i,
+  /\bRPP\b.*\b(panel|remote)\b/i,
+  /\bparalleling\b/i,
+  /\bATC-\d/i,
+  /\bCT\s*cabinet\b/i,
+  /\brevenue.*CT\b/i,
+  /\b(4000|3000|2500|2000|1600)A\b.*\b(switchgear|lineup|breaker|busway|bus\s*duct|MLO|main)\b/i,
+  /\bfuel\s*(tank|storage|transfer|piping)\b/i,
+  /\bday\s*tank\b/i,
+  /\bexhaust\s*(silencer|stack)\b/i,
+  /\bload\s*bank\b/i,
+  /\bconcrete\s*pad\b/i,
+  /\bgenerator.*cable\b/i,
+  /\bmanhole\b/i,
+  /\bhandhole\b/i,
+  /\bpull\s*box\b/i,
+  /\bduct\s*bank\s*spacer\b/i,
+  /\bcable\s*tray\b/i,
+  /\bladder\s*tray\b/i,
+  /\bcable\s*rack\b/i,
+  /\bpulling\s*iron\b/i,
+  /\bhydrogen\s*detect/i,
+  /\bspill\s*containment\b/i,
+  /\beyewash\b/i,
+  /\bexothermic\b/i,
+  /\bCadweld\b/i,
+];
 
 const PANEL_BREAKER_PATTERNS = [
   // Panels / loadcenters
@@ -234,6 +278,9 @@ const PANEL_EXCLUDE_PATTERNS = [
 function classifyMaterial(mat: MaterialItem): MaterialGroupId {
   const combined = `${mat.item} ${mat.spec}`;
 
+  // Priority 0: Gear — large commercial/data center equipment (before panels grab switchgear/ATS)
+  if (matchesAny(combined, GEAR_PATTERNS)) return "gear";
+
   // Priority 1: Conduit overrides — catch ENT/flex/liquidtight before panel patterns grab them
   if (matchesAny(combined, CONDUIT_OVERRIDE_PATTERNS)) return "conduit-raceway";
 
@@ -265,6 +312,7 @@ function classifyMaterial(mat: MaterialItem): MaterialGroupId {
 }
 
 const GROUP_META: Record<MaterialGroupId, { label: string; icon: string }> = {
+  gear: { label: "Gear", icon: "🏗️" },
   "panel-breakers": { label: "Panel & Breakers", icon: "⚡" },
   "wire-conductors": { label: "Wire / Service Entrance Conductors", icon: "🔌" },
   "conduit-raceway": { label: "Conduit & Raceway", icon: "🔧" },
@@ -274,6 +322,7 @@ const GROUP_META: Record<MaterialGroupId, { label: string; icon: string }> = {
 };
 
 const GROUP_ORDER: MaterialGroupId[] = [
+  "gear",
   "panel-breakers",
   "wire-conductors",
   "conduit-raceway",

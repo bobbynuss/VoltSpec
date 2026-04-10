@@ -27,7 +27,7 @@ export const job: Job = {
     {
       item: "2000kW Diesel Generator",
       quantity: "3",
-      spec: "Caterpillar C32 or Cummins QSK60 \u2014 2000kW standby, 480/277V 3-phase, 60Hz, EPA Tier 4 Final, weatherproof enclosure, sub-base fuel tank (1000 gal), digital paralleling controls \u2014 N+1 configuration (2 active + 1 redundant)",
+      spec: "GNR SDMD2250 - Generac 2250kW standby diesel generator, 480/277V 3-phase, 60Hz, EPA Tier 4 Final, weatherproof enclosure, sub-base fuel tank (1000 gal), digital paralleling controls \u2014 N+1 configuration (2 active + 1 redundant)",
     },
     {
       item: "Generator Concrete Pad",

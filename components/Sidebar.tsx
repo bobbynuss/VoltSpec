@@ -14,7 +14,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { JOB_TYPES, JURISDICTIONS } from "@/lib/data";
+import { JOB_TYPES, JURISDICTIONS, STATE_OPTIONS } from "@/lib/data";
 import { ChatWidget } from "@/components/ChatWidget";
 
 export interface SidebarHandle {
@@ -34,10 +34,16 @@ export const Sidebar = forwardRef<SidebarHandle, SidebarProps>(function Sidebar(
   { onGenerate, onOpenProjects, onZipChange, loading, jobContext },
   ref,
 ) {
+  const [stateFilter, setStateFilter] = useState("ALL");
   const [city, setCity] = useState("austin");
   const [zip, setZip] = useState("78744");
   const [jobId, setJobId] = useState("");
   const [search, setSearch] = useState("");
+
+  // Filter jurisdictions by selected state
+  const filteredJurisdictions = stateFilter === "ALL"
+    ? JURISDICTIONS
+    : JURISDICTIONS.filter((j) => j.state === stateFilter);
   const [searchFocused, setSearchFocused] = useState(false);
   const searchRef = useRef<HTMLInputElement>(null);
   const [zipUpdated, setZipUpdated] = useState(false);
@@ -194,6 +200,43 @@ export const Sidebar = forwardRef<SidebarHandle, SidebarProps>(function Sidebar(
       </div>
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-5">
+        {/* State */}
+        <div className="flex flex-col gap-2">
+          <label className="flex items-center gap-1.5 text-xs font-semibold text-gray-400 uppercase tracking-wider">
+            <MapPin className="w-3.5 h-3.5 text-yellow-400" />
+            State
+          </label>
+          <Select
+            onValueChange={(v) => {
+              if (!v) return;
+              setStateFilter(v);
+              // If the current city isn't in the new filtered list, auto-select the first one
+              if (v !== "ALL") {
+                const filtered = JURISDICTIONS.filter((j) => j.state === v);
+                if (!filtered.some((j) => j.id === city) && filtered.length > 0) {
+                  handleCityChange(filtered[0].id);
+                }
+              }
+            }}
+            value={stateFilter}
+          >
+            <SelectTrigger className="bg-[hsl(217,33%,13%)] border-[hsl(217,33%,22%)] text-white focus:ring-yellow-400 !h-11 sm:!h-9">
+              <SelectValue placeholder="All States" />
+            </SelectTrigger>
+            <SelectContent className="bg-[hsl(222,47%,10%)] border-[hsl(217,33%,22%)] text-white">
+              {STATE_OPTIONS.map((s) => (
+                <SelectItem
+                  key={s.value}
+                  value={s.value}
+                  className="focus:bg-yellow-400/10 focus:text-yellow-300 cursor-pointer"
+                >
+                  {s.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
         {/* City / Jurisdiction */}
         <div className="flex flex-col gap-2" data-tour="city-selector">
           <label className="flex items-center gap-1.5 text-xs font-semibold text-gray-400 uppercase tracking-wider">
@@ -205,7 +248,7 @@ export const Sidebar = forwardRef<SidebarHandle, SidebarProps>(function Sidebar(
               <SelectValue placeholder="Select city…" />
             </SelectTrigger>
             <SelectContent className="bg-[hsl(222,47%,10%)] border-[hsl(217,33%,22%)] text-white">
-              {JURISDICTIONS.map((j) => (
+              {filteredJurisdictions.map((j) => (
                 <SelectItem
                   key={j.id}
                   value={j.id}

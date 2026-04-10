@@ -8,6 +8,7 @@ export { JOBS, JOB_TYPES, getJobById } from "./jobs";
 export type { Jurisdiction } from "./jurisdictions";
 export {
   JURISDICTIONS,
+  STATE_OPTIONS,
   DEFAULT_JURISDICTION,
   getJurisdictionById,
   getJurisdictionByZip,

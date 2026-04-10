@@ -535,7 +535,13 @@ export function ResultsPanel({ result, onSave, zip }: ResultsPanelProps) {
                     className="flex-1 text-xs bg-[hsl(222,47%,12%)] border border-cyan-500/30 text-gray-200 rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-cyan-400/50 cursor-pointer transition-colors hover:border-cyan-400/50 appearance-none"
                     style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2322d3ee' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E")`, backgroundRepeat: "no-repeat", backgroundPosition: "right 10px center" }}
                   >
-                    {PANEL_TYPE_OPTIONS.map((opt) => (
+                    {PANEL_TYPE_OPTIONS
+                      .filter((opt) => {
+                        // MBT combo only makes sense on full 200A service jobs, not subpanels
+                        if (opt.id === "mbt" && (job.id === "100a-subpanel" || job.id === "detached-garage-subpanel")) return false;
+                        return true;
+                      })
+                      .map((opt) => (
                       <option key={opt.id} value={opt.id}>
                         {opt.label}{opt.id === defaultPanelType ? " (recommended)" : ""}
                       </option>

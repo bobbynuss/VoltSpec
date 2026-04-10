@@ -5,7 +5,7 @@ import { diagram as spanSubpanelDiagram } from "./diagrams/span-subpanel";
 /**
  * Panel type identifiers
  */
-export type PanelTypeId = "ch" | "br" | "prl" | "span";
+export type PanelTypeId = "ch" | "br" | "prl" | "span" | "mbt";
 
 export interface PanelTypeOption {
   id: PanelTypeId;
@@ -19,6 +19,7 @@ export const PANEL_TYPE_OPTIONS: PanelTypeOption[] = [
   { id: "br", label: "Eaton BR Series", shortLabel: "Eaton BR", description: "Plug-on residential, SA/Houston standard" },
   { id: "prl", label: "Pow-R-Line (PRL) Bolt-On", shortLabel: "Pow-R-Line", description: "Commercial bolt-on panelboards" },
   { id: "span", label: "SPAN Smart Panel", shortLabel: "SPAN", description: "Wi-Fi enabled, per-circuit control" },
+  { id: "mbt", label: "Eaton MBT Meter-Breaker Combo", shortLabel: "MBT Combo", description: "All-in-one 200A meter + main breaker panel" },
 ];
 
 /**
@@ -52,6 +53,14 @@ const JURISDICTION_DEFAULTS: Record<string, PanelTypeId> = {
   brownsville: "br",
   abilene: "ch",
   odessa: "br",
+  // Oklahoma — BR series
+  "oklahoma-city": "br",
+  tulsa: "br",
+  lawton: "br",
+  // Arkansas — BR series
+  "little-rock": "br",
+  "fort-smith": "br",
+  springdale: "br",
 };
 
 export function getDefaultPanelType(jurisdictionId: string): PanelTypeId {
@@ -111,6 +120,15 @@ function isEnclosureTrimItem(mat: MaterialItem): boolean {
 
 function isGroundBusItem(mat: MaterialItem): boolean {
   return /\bCUGROUND\b|\bground\s*bus\b/i.test(`${mat.item} ${mat.spec}`);
+}
+
+function isMeterSocketItem(mat: MaterialItem): boolean {
+  const combined = `${mat.item} ${mat.spec}`;
+  return /\bmeter\s*(socket|base)\b/i.test(combined) && !(/\bseal\s*kit\b/i.test(combined));
+}
+
+function isFeedThroughPanel(mat: MaterialItem): boolean {
+  return /\bfeed-through\b|\bfeed\s*through\b/i.test(`${mat.item} ${mat.spec}`);
 }
 
 // ── Extract breaker info ───────────────────────────────────────────
@@ -262,6 +280,17 @@ function spanBreaker(info: BreakerInfo): MaterialItem {
   return { item: `SPAN 1-Pole ${info.amps}A Breaker`, quantity: info.quantity, spec: `SPAN BRK-1${info.amps} - SPAN-compatible 1-pole ${info.amps}A breaker`, unitPrice: 35 };
 }
 
+// ── MBT (Meter-Breaker Combo) materials ────────────────────────────
+
+function mbtComboUnit(): MaterialItem {
+  return {
+    item: "200A Meter-Breaker Combo Panel",
+    quantity: "1",
+    spec: "Eaton MBT48B200BTS - 200A all-in-one meter socket + main breaker + 48-space loadcenter, BR series plug-on neutral, outdoor rated, eliminates separate meter socket and feed-through panel",
+    unitPrice: 850,
+  };
+}
+
 // ── Main override function ─────────────────────────────────────────
 
 export function applyPanelOverride(job: Job, targetType: PanelTypeId): Job {
@@ -281,6 +310,12 @@ export function applyPanelOverride(job: Job, targetType: PanelTypeId): Job {
     // Skip ground bus items (PRL-specific)
     if (isGroundBusItem(mat)) continue;
 
+    // MBT combo replaces meter socket + panel + feed-through with single unit
+    if (targetType === "mbt") {
+      if (isMeterSocketItem(mat)) continue; // absorbed into combo
+      if (isFeedThroughPanel(mat)) continue; // absorbed into combo
+    }
+
     // Replace panel
     if (isPanelItem(mat) && !panelReplaced) {
       switch (targetType) {
@@ -295,6 +330,9 @@ export function applyPanelOverride(job: Job, targetType: PanelTypeId): Job {
           break;
         case "span":
           newMaterials.push(...spanPanel(job.id));
+          break;
+        case "mbt":
+          newMaterials.push(mbtComboUnit());
           break;
       }
       panelReplaced = true;
@@ -314,12 +352,13 @@ export function applyPanelOverride(job: Job, targetType: PanelTypeId): Job {
           newMaterials.push(brSurge());
           break;
         case "prl":
-          // PRL typically uses a dedicated SPD breaker, skip for simplicity
           newMaterials.push({ item: "Panel Surge Protector", quantity: "1", spec: "Eaton PRLSPD - Pow-R-Line compatible Type 2 SPD per NEC 242", unitPrice: 150 });
           break;
         case "span":
-          // SPAN has built-in monitoring; no separate surge needed but add one for code compliance
           newMaterials.push({ item: "Surge Protective Device", quantity: "1", spec: "Whole-panel SPD per NEC 242 - install upstream of SPAN panel", unitPrice: 85 });
+          break;
+        case "mbt":
+          newMaterials.push(brSurge()); // MBT uses BR breakers
           break;
       }
       surgeReplaced = true;
@@ -342,6 +381,9 @@ export function applyPanelOverride(job: Job, targetType: PanelTypeId): Job {
         case "span":
           newMaterials.push(spanBreaker(info));
           break;
+        case "mbt":
+          newMaterials.push(brBreaker(info)); // MBT uses BR breakers
+          break;
       }
       continue;
     }
@@ -357,6 +399,7 @@ export function applyPanelOverride(job: Job, targetType: PanelTypeId): Job {
       case "br": newMaterials.unshift(brPanel(job.id)); break;
       case "prl": newMaterials.unshift(...prlPanel(job.id)); break;
       case "span": newMaterials.unshift(...spanPanel(job.id)); break;
+      case "mbt": newMaterials.unshift(mbtComboUnit()); break;
     }
   }
 
@@ -401,6 +444,27 @@ export function applyPanelOverride(job: Job, targetType: PanelTypeId): Job {
     }
   }
 
+  // Add MBT-specific notes
+  if (targetType === "mbt") {
+    const mbtReqs = [
+      "MBT48B200BTS is an all-in-one meter socket + main breaker + loadcenter — eliminates separate meter base and feed-through panel",
+      "Verify utility approval for meter-breaker combo unit before ordering — not all utilities accept combo units",
+      "48-space BR plug-on neutral panel built in — uses standard Type BR breakers",
+    ];
+    for (const r of mbtReqs) {
+      if (!requirements.includes(r)) requirements.push(r);
+    }
+
+    const mbtNotes = [
+      "MBT48B200BTS combo unit: mount at meter location — single enclosure replaces meter socket + panel",
+      "No separate feed-through panel or meter-to-panel SE cable needed — all internal to combo unit",
+      "Uses Type BR plug-on breakers — 48 spaces available for branch circuits",
+    ];
+    for (const n of mbtNotes) {
+      if (!blueprintNotes.includes(n)) blueprintNotes.push(n);
+    }
+  }
+
   // Add PRL-specific notes
   if (targetType === "prl") {
     const prlNote = "Branch breakers: QBH series bolt-on for PRL1X interiors — do NOT use CH or BR plug-on breakers";
@@ -427,7 +491,7 @@ export function applyPanelOverride(job: Job, targetType: PanelTypeId): Job {
       requirements[i] = chReplace(requirements[i]);
     }
     if (svgDiagram) svgDiagram = chReplace(svgDiagram);
-  } else if (targetType === "br") {
+  } else if (targetType === "br" || targetType === "mbt") {
     const brReplace = (s: string) =>
       s
         .replace(/CHP32B200R|CHP42B200R|CHP42B200X7/g, "BRP20B200R")

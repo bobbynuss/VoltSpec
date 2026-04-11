@@ -8,8 +8,9 @@ import type { SidebarHandle } from "@/components/Sidebar";
 import { ResultsPanel } from "@/components/ResultsPanel";
 import { ProjectsPanel } from "@/components/ProjectsPanel";
 import { QuickList } from "@/components/QuickList";
+import { PlanTakeoff } from "@/components/PlanTakeoff";
 import Image from "next/image";
-import { Menu, X, Calculator, FolderOpen, HelpCircle, ShoppingCart } from "lucide-react";
+import { Menu, X, Calculator, FolderOpen, HelpCircle, ShoppingCart, FileImage } from "lucide-react";
 import { TourOverlay } from "@/components/TourOverlay";
 import type { TourStep } from "@/components/TourOverlay";
 import { TOUR_STEPS } from "@/lib/tour-steps";
@@ -52,6 +53,7 @@ function HomeContent() {
   const [tourStartStep, setTourStartStep] = useState(0);
   const [currentZip, setCurrentZip] = useState("78744");
   const [quickListMode, setQuickListMode] = useState(false);
+  const [takeoffMode, setTakeoffMode] = useState(false);
   const sidebarRef = useRef<SidebarHandle>(null);
 
   const handleGenerate = async (jobId: string, zip: string, city?: string) => {
@@ -183,7 +185,7 @@ function HomeContent() {
         </span>
         <div className="ml-auto flex items-center gap-3 sm:gap-4">
           <button
-            onClick={() => setQuickListMode(!quickListMode)}
+            onClick={() => { setQuickListMode(!quickListMode); setTakeoffMode(false); }}
             className={`flex items-center gap-1.5 text-xs font-medium min-h-[44px] px-2 cursor-pointer transition-colors ${
               quickListMode ? "text-yellow-400" : "text-gray-400 hover:text-yellow-400"
             }`}
@@ -191,6 +193,16 @@ function HomeContent() {
           >
             <ShoppingCart className="w-4 h-4 sm:w-3.5 sm:h-3.5" />
             <span className="hidden sm:inline">Quick List</span>
+          </button>
+          <button
+            onClick={() => { setTakeoffMode(!takeoffMode); setQuickListMode(false); }}
+            className={`flex items-center gap-1.5 text-xs font-medium min-h-[44px] px-2 cursor-pointer transition-colors ${
+              takeoffMode ? "text-yellow-400" : "text-gray-400 hover:text-yellow-400"
+            }`}
+            title="AI Plan Takeoff — upload plans, get a BOM"
+          >
+            <FileImage className="w-4 h-4 sm:w-3.5 sm:h-3.5" />
+            <span className="hidden sm:inline">AI Takeoff</span>
           </button>
           <button
             onClick={() => setProjectsOpen(true)}
@@ -254,7 +266,27 @@ function HomeContent() {
 
         {/* Main */}
         <main className="flex-1 overflow-y-auto p-2 sm:p-4 lg:p-6">
-          {quickListMode ? (
+          {takeoffMode ? (
+            <div className="max-w-2xl mx-auto">
+              <PlanTakeoff
+                onAddToList={(items) => {
+                  // Switch to Quick List with the takeoff results
+                  setTakeoffMode(false);
+                  setQuickListMode(true);
+                  // Store items in sessionStorage so QuickList can pick them up
+                  const existing = JSON.parse(localStorage.getItem("voltspec-quicklist") ?? "[]");
+                  const newItems = items.map((t) => ({
+                    id: crypto.randomUUID(),
+                    item: t.item,
+                    spec: t.spec,
+                    quantity: t.quantity,
+                  }));
+                  localStorage.setItem("voltspec-quicklist", JSON.stringify([...existing, ...newItems]));
+                }}
+                onClose={() => setTakeoffMode(false)}
+              />
+            </div>
+          ) : quickListMode ? (
             <QuickList onBack={() => setQuickListMode(false)} zip={currentZip} />
           ) : result ? (
             <ResultsPanel result={result} onSave={handleSaveJob} zip={currentZip} />

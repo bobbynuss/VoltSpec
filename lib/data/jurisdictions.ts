@@ -34,6 +34,18 @@ import { LITTLE_ROCK_JOBS } from "./little-rock/jobs";
 import { FORT_SMITH_JOBS } from "./fort-smith/jobs";
 import { SPRINGDALE_JOBS } from "./springdale/jobs";
 import { CORPUS_CHRISTI_JOBS } from "./corpus-christi/jobs";
+import { LONGVIEW_JOBS } from "./longview/jobs";
+import { CORSICANA_JOBS } from "./corsicana/jobs";
+import { PARIS_TX_JOBS } from "./paris-tx/jobs";
+import { GREENVILLE_TX_JOBS } from "./greenville-tx/jobs";
+import { PALESTINE_JOBS } from "./palestine/jobs";
+import { KERRVILLE_JOBS } from "./kerrville/jobs";
+import { BROWNWOOD_JOBS } from "./brownwood/jobs";
+import { DURANT_JOBS } from "./durant/jobs";
+import { SHAWNEE_JOBS } from "./shawnee/jobs";
+import { PINE_BLUFF_JOBS } from "./pine-bluff/jobs";
+import { EL_DORADO_JOBS } from "./el-dorado/jobs";
+import { HOPE_JOBS } from "./hope/jobs";
 import { BEAUMONT_JOBS } from "./beaumont/jobs";
 import { TEXARKANA_JOBS } from "./texarkana/jobs";
 import { JONESBORO_JOBS } from "./jonesboro/jobs";
@@ -81,7 +93,7 @@ export const JURISDICTIONS: Jurisdiction[] = [
     county: "Bexar County",
     state: "TX",
     defaultZip: "78216",
-    zipPrefixes: ["782", "781"],
+    zipPrefixes: ["782", "781", "788"],
     jobs: SA_JOBS,
   },
   {
@@ -224,7 +236,7 @@ export const JURISDICTIONS: Jurisdiction[] = [
     county: "Wichita County",
     state: "TX",
     defaultZip: "76301",
-    zipPrefixes: ["763"],
+    zipPrefixes: ["763", "7642", "7643"],
     jobs: WICHITA_FALLS_JOBS,
   },
   {
@@ -325,6 +337,83 @@ export const JURISDICTIONS: Jurisdiction[] = [
     defaultZip: "75501",
     zipPrefixes: ["755"],
     jobs: TEXARKANA_JOBS,
+  },
+  {
+    id: "longview",
+    label: "Longview/Kilgore, TX (Gregg County)",
+    shortLabel: "Longview, TX",
+    utility: "SWEPCO",
+    county: "Gregg County",
+    state: "TX",
+    defaultZip: "75604",
+    zipPrefixes: ["756", "753"],
+    jobs: LONGVIEW_JOBS,
+  },
+  {
+    id: "corsicana",
+    label: "Corsicana/Navarro County, TX",
+    shortLabel: "Corsicana, TX",
+    utility: "Oncor Electric Delivery",
+    county: "Navarro County",
+    state: "TX",
+    defaultZip: "75110",
+    zipPrefixes: ["7511"],
+    jobs: CORSICANA_JOBS,
+  },
+  {
+    id: "paris-tx",
+    label: "Paris, TX (Lamar County)",
+    shortLabel: "Paris, TX",
+    utility: "SWEPCO",
+    county: "Lamar County",
+    state: "TX",
+    defaultZip: "75462",
+    zipPrefixes: ["7546", "7545"],
+    jobs: PARIS_TX_JOBS,
+  },
+  {
+    id: "greenville-tx",
+    label: "Greenville/Hunt County, TX",
+    shortLabel: "Greenville, TX",
+    utility: "Oncor Electric Delivery",
+    county: "Hunt County",
+    state: "TX",
+    defaultZip: "75402",
+    zipPrefixes: ["7540", "7548"],
+    jobs: GREENVILLE_TX_JOBS,
+  },
+  {
+    id: "palestine",
+    label: "Palestine/East TX (Anderson County)",
+    shortLabel: "Palestine, TX",
+    utility: "Oncor Electric Delivery",
+    county: "Anderson County",
+    state: "TX",
+    defaultZip: "75803",
+    zipPrefixes: ["758"],
+    jobs: PALESTINE_JOBS,
+  },
+  {
+    id: "kerrville",
+    label: "Kerrville/Hill Country, TX (Kerr County)",
+    shortLabel: "Kerrville, TX",
+    utility: "KPUB (Kerrville Public Utility Board)",
+    county: "Kerr County",
+    state: "TX",
+    defaultZip: "78028",
+    zipPrefixes: ["780"],
+    jobs: KERRVILLE_JOBS,
+  },
+  {
+    id: "brownwood",
+    label: "Brownwood, TX (Brown County)",
+    shortLabel: "Brownwood, TX",
+    utility: "AEP Texas",
+    county: "Brown County",
+    state: "TX",
+    defaultZip: "76801",
+    zipPrefixes: ["768", "7640"],
+    jobs: BROWNWOOD_JOBS,
   },
   // ── Louisiana ─────────────────────────────────────────────────────
   {
@@ -449,6 +538,28 @@ export const JURISDICTIONS: Jurisdiction[] = [
     zipPrefixes: ["737"],
     jobs: ENID_JOBS,
   },
+  {
+    id: "durant",
+    label: "Durant, OK (Bryan County)",
+    shortLabel: "Durant, OK",
+    utility: "OG&E / PSO",
+    county: "Bryan County",
+    state: "OK",
+    defaultZip: "74701",
+    zipPrefixes: ["747"],
+    jobs: DURANT_JOBS,
+  },
+  {
+    id: "shawnee",
+    label: "Shawnee, OK (Pottawatomie County)",
+    shortLabel: "Shawnee, OK",
+    utility: "OG&E (Oklahoma Gas & Electric)",
+    county: "Pottawatomie County",
+    state: "OK",
+    defaultZip: "74804",
+    zipPrefixes: ["748"],
+    jobs: SHAWNEE_JOBS,
+  },
   // ── Arkansas ──────────────────────────────────────────────────────
   {
     id: "little-rock",
@@ -504,6 +615,39 @@ export const JURISDICTIONS: Jurisdiction[] = [
     defaultZip: "71901",
     zipPrefixes: ["719"],
     jobs: HOT_SPRINGS_JOBS,
+  },
+  {
+    id: "pine-bluff",
+    label: "Pine Bluff, AR (Jefferson County)",
+    shortLabel: "Pine Bluff, AR",
+    utility: "Entergy Arkansas",
+    county: "Jefferson County",
+    state: "AR",
+    defaultZip: "71601",
+    zipPrefixes: ["716"],
+    jobs: PINE_BLUFF_JOBS,
+  },
+  {
+    id: "el-dorado",
+    label: "El Dorado, AR (Union County)",
+    shortLabel: "El Dorado, AR",
+    utility: "Entergy Arkansas",
+    county: "Union County",
+    state: "AR",
+    defaultZip: "71730",
+    zipPrefixes: ["717"],
+    jobs: EL_DORADO_JOBS,
+  },
+  {
+    id: "hope",
+    label: "Hope, AR (Hempstead County)",
+    shortLabel: "Hope, AR",
+    utility: "Entergy Arkansas",
+    county: "Hempstead County",
+    state: "AR",
+    defaultZip: "71801",
+    zipPrefixes: ["718"],
+    jobs: HOPE_JOBS,
   },
 ];
 

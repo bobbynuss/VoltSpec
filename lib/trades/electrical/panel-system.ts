@@ -67,8 +67,21 @@ const JURISDICTION_DEFAULTS: Record<string, PanelTypeId> = {
   "corpus-christi": "br",
   beaumont: "br",
   texarkana: "br",
+  longview: "br",
+  corsicana: "br",
+  "paris-tx": "br",
+  "greenville-tx": "br",
+  palestine: "br",
+  kerrville: "br",
+  brownwood: "br",
   // New OK — BR series
   enid: "br",
+  durant: "br",
+  shawnee: "br",
+  // New AR — BR series
+  "pine-bluff": "br",
+  "el-dorado": "br",
+  hope: "br",
 };
 
 export function getDefaultPanelType(jurisdictionId: string): PanelTypeId {

@@ -42,8 +42,8 @@ export function PlanTakeoff({ onAddToList, onClose }: PlanTakeoffProps) {
       setError("Please upload an image (JPG, PNG, WebP) or a PDF file.");
       return;
     }
-    if (f.size > 30 * 1024 * 1024) {
-      setError("File too large. Max 30MB.");
+    if (f.size > 25 * 1024 * 1024) {
+      setError(`File is ${(f.size / 1024 / 1024).toFixed(1)}MB — too large for AI analysis. Please upload just the electrical sheets (E-pages) from the permit set, not the full document.`);
       return;
     }
     setFile(f);
@@ -87,7 +87,13 @@ export function PlanTakeoff({ onAddToList, onClose }: PlanTakeoffProps) {
       });
       clearTimeout(timeout);
 
-      const data = await res.json();
+      let data;
+      try {
+        data = await res.json();
+      } catch {
+        setError("Server returned an invalid response. The plan may be too large — try uploading just the electrical sheets.");
+        return;
+      }
 
       if (!res.ok || data.error) {
         setError(data.error || "Analysis failed");
@@ -206,7 +212,7 @@ export function PlanTakeoff({ onAddToList, onClose }: PlanTakeoffProps) {
                     Drop an electrical plan here, or <span className="text-yellow-400">click to browse</span>
                   </p>
                   <p className="text-xs text-gray-600">
-                    PDF, JPG, PNG, or WebP · Max 30MB
+                    PDF, JPG, PNG, or WebP · Max 25MB · For large permit sets, upload just the E-sheets
                   </p>
                 </div>
               )}

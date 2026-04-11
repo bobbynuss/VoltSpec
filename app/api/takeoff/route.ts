@@ -111,6 +111,14 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "No file uploaded" }, { status: 400 });
     }
 
+    // Check file size — Anthropic has limits on document size
+    const maxSize = 25 * 1024 * 1024; // 25MB raw (base64 will be ~33% larger)
+    if (file.size > maxSize) {
+      return NextResponse.json({
+        error: `File is ${(file.size / 1024 / 1024).toFixed(1)}MB — too large for AI analysis. Please upload just the electrical sheets (E-pages) from the permit set, not the full document. Most PDF viewers can export individual pages.`,
+      }, { status: 400 });
+    }
+
     // Convert file to base64
     const bytes = await file.arrayBuffer();
     const base64 = Buffer.from(bytes).toString("base64");
@@ -188,6 +196,19 @@ export async function POST(req: NextRequest) {
   } catch (error: unknown) {
     console.error("Takeoff API error:", error);
     const message = error instanceof Error ? error.message : "Internal server error";
+
+    // Provide helpful messages for common failures
+    if (message.includes("timeout") || message.includes("ETIMEDOUT") || message.includes("aborted")) {
+      return NextResponse.json({
+        error: "Analysis timed out — this plan is too large to process in one shot. Try uploading just the electrical sheets (E-pages), not the full permit set.",
+      }, { status: 504 });
+    }
+    if (message.includes("too large") || message.includes("maximum") || message.includes("exceeded")) {
+      return NextResponse.json({
+        error: "File exceeds the AI processing limit. Please extract just the electrical plan pages and upload those separately.",
+      }, { status: 413 });
+    }
+
     return NextResponse.json({ error: message }, { status: 500 });
   }
 }

@@ -21,6 +21,7 @@ import { Button } from "@/components/ui/button";
 import { getDistributor } from "@/lib/registry";
 import { CATALOG_CATEGORIES, STARTER_TEMPLATES } from "@/lib/quicklist-catalog";
 import type { CatalogItem, CatalogCategory, StarterTemplate } from "@/lib/quicklist-catalog";
+import { PlanTakeoff } from "./PlanTakeoff";
 
 const distributor = getDistributor();
 
@@ -121,6 +122,7 @@ export function QuickList({ onBack, zip }: QuickListProps) {
   const [showCatalog, setShowCatalog] = useState(false);
   const [catalogCategory, setCatalogCategory] = useState<string | null>(null);
   const [showTemplates, setShowTemplates] = useState(() => items.length === 0);
+  const [showTakeoff, setShowTakeoff] = useState(false);
 
   const loadTemplate = (template: StarterTemplate) => {
     const newItems: QuickListItem[] = template.items.map((t) => ({
@@ -247,6 +249,16 @@ export function QuickList({ onBack, zip }: QuickListProps) {
           >
             📦 Browse Parts
           </button>
+          <button
+            onClick={() => setShowTakeoff(!showTakeoff)}
+            className={`text-xs transition-colors px-2 py-1 rounded border ${
+              showTakeoff
+                ? "text-yellow-400 border-yellow-400/40 bg-yellow-400/5"
+                : "text-gray-500 hover:text-yellow-400 border-[hsl(217,33%,22%)] hover:border-yellow-400/30"
+            }`}
+          >
+            📐 AI Takeoff
+          </button>
         </div>
       )}
 
@@ -303,6 +315,25 @@ export function QuickList({ onBack, zip }: QuickListProps) {
             </div>
           )}
         </div>
+      )}
+
+      {/* AI Plan Takeoff */}
+      {showTakeoff && !showTemplates && (
+        <PlanTakeoff
+          onAddToList={(takeoffItems) => {
+            const newItems: QuickListItem[] = takeoffItems.map((t) => ({
+              id: crypto.randomUUID(),
+              item: t.item,
+              spec: t.spec,
+              quantity: t.quantity,
+            }));
+            setItems((prev) => [...prev, ...newItems]);
+            setShowTakeoff(false);
+            setToast(`Added ${newItems.length} items from plan takeoff`);
+            setTimeout(() => setToast(null), 3000);
+          }}
+          onClose={() => setShowTakeoff(false)}
+        />
       )}
 
       {/* Add Item Form */}

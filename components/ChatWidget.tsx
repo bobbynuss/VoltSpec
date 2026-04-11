@@ -91,8 +91,8 @@ export function ChatWidget({ jobContext, variant = "floating" }: ChatWidgetProps
           <X className="w-3.5 h-3.5" />
         </Button>
       </div>
-      {/* Messages */}
-      <ScrollArea className="flex-1 px-3 py-3">
+      {/* Messages — own scrollbar */}
+      <div className="flex-1 overflow-y-auto overscroll-contain px-3 py-3 min-h-0" style={{ scrollbarWidth: "thin", scrollbarColor: "hsl(217,33%,25%) transparent" }}>
         <div className="space-y-3">
           {messages.map((msg, i) => (
             <div key={i} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
@@ -118,7 +118,7 @@ export function ChatWidget({ jobContext, variant = "floating" }: ChatWidgetProps
           )}
           <div ref={bottomRef} />
         </div>
-      </ScrollArea>
+      </div>
       {/* Disclaimer */}
       <div className="flex items-center gap-1.5 px-3 py-1 bg-amber-900/20 border-t border-amber-900/30 text-amber-400 text-[10px]">
         <AlertTriangle className="w-2.5 h-2.5 shrink-0" />

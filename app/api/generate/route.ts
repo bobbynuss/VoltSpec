@@ -1,10 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
-import {
-  getJobById,
-  getJobForJurisdiction,
-  getJurisdictionById,
-  getJurisdictionByZip,
-} from "@/lib/data";
+import { getJobById } from "@/lib/data";
+import { getTrade } from "@/lib/registry";
+
+const trade = getTrade();
+const getJobForJurisdiction = trade.getJobForJurisdiction.bind(trade);
+const getJurisdictionById = trade.getJurisdictionById.bind(trade);
+const getJurisdictionByZip = trade.getJurisdictionByZip.bind(trade);
 
 export async function POST(req: NextRequest) {
   try {

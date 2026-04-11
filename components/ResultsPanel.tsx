@@ -29,27 +29,30 @@ import {
   Mail,
   Send,
 } from "lucide-react";
-import type { Job } from "@/lib/data";
+import type { Job } from "@/lib/core/types";
 import { useAuth } from "./AuthProvider";
 import { QuoteRequestModal } from "./QuoteRequestModal";
-import { JURISDICTIONS } from "@/lib/data";
-import { POA_OPTIONS, DEFAULT_POA_ID, isMeterJob } from "@/lib/data/pointOfAttachment";
-import type { POAOption } from "@/lib/data/pointOfAttachment";
+import { getTrade, getDistributor } from "@/lib/registry";
+import { POA_OPTIONS, DEFAULT_POA_ID, isMeterJob } from "@/lib/trades/electrical/poa";
+import type { POAOption } from "@/lib/trades/electrical/poa";
 import {
   PANEL_TYPE_OPTIONS,
   PANEL_ELIGIBLE_JOBS,
   getDefaultPanelType,
   applyPanelOverride,
-} from "@/lib/data/panel-overrides";
-import type { PanelTypeId } from "@/lib/data/panel-overrides";
-import { groupMaterials } from "@/lib/data/material-groups";
-import {
-  extractPartNumber,
-  elliottVendorCode,
-  formatBulkEntryLine,
-} from "@/lib/vendor-codes";
-import { reorderSuppliersForZip } from "@/lib/zip-to-branch";
-import type { MaterialGroup } from "@/lib/data/material-groups";
+} from "@/lib/trades/electrical/panel-system";
+import type { PanelTypeId } from "@/lib/trades/electrical/panel-system";
+import type { MaterialGroup } from "@/lib/trades/types";
+
+// Pull from registry
+const trade = getTrade();
+const distributor = getDistributor();
+const JURISDICTIONS = trade.jurisdictions;
+const groupMaterials = trade.groupMaterials.bind(trade);
+const { extractPartNumber } = distributor;
+const elliottVendorCode = distributor.resolveVendorCode.bind(distributor);
+const formatBulkEntryLine = distributor.formatBulkEntryLine.bind(distributor);
+const reorderSuppliersForZip = distributor.reorderSuppliersForZip.bind(distributor);
 
 interface GenerateResult {
   job: Job;

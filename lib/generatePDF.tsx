@@ -7,10 +7,12 @@ import {
   StyleSheet,
   pdf,
 } from "@react-pdf/renderer";
-import type { Job } from "@/lib/data";
-import { JURISDICTIONS } from "@/lib/data";
+import type { Job } from "@/lib/core/types";
+import { getTrade, getDistributor } from "@/lib/registry";
 import { VOLTSPEC_LOGO_BASE64 } from "@/lib/logo-base64";
-import { extractPartNumber as sharedExtractPartNumber } from "@/lib/vendor-codes";
+
+const JURISDICTIONS = getTrade().jurisdictions;
+const sharedExtractPartNumber = getDistributor().extractPartNumber;
 
 // Rasterise an inline SVG string to a PNG data-URI via an off-screen canvas.
 // @react-pdf/renderer <Image> doesn't reliably handle SVG data URIs, but PNG

@@ -18,13 +18,16 @@ import {
   deleteProject,
 } from "@/lib/projects";
 import type { SavedProject } from "@/lib/projects";
-import { JOB_TYPES, JURISDICTIONS } from "@/lib/data";
+import { JOB_TYPES } from "@/lib/data";
+import { getTrade } from "@/lib/registry";
 import { useAuth } from "@/components/AuthProvider";
 import {
   listCloudProjects,
   saveCloudProject,
   deleteCloudProject,
-} from "@/lib/cloudProjects";
+} from "@/lib/core/projects";
+
+const JURISDICTIONS = getTrade().jurisdictions;
 
 interface ProjectsPanelProps {
   open: boolean;

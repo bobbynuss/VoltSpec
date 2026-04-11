@@ -14,7 +14,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { JOB_TYPES, JURISDICTIONS, STATE_OPTIONS } from "@/lib/data";
+import { JOB_TYPES } from "@/lib/data";
+import { getTrade } from "@/lib/registry";
+
+// Pull jurisdictions and state options from the trade registry
+const trade = getTrade();
+const JURISDICTIONS = trade.jurisdictions;
+const STATE_OPTIONS = trade.stateOptions;
 import { ChatWidget } from "@/components/ChatWidget";
 
 export interface SidebarHandle {

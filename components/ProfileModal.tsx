@@ -5,7 +5,9 @@ import { X, Save, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "./AuthProvider";
 import { getProfile, updateProfile } from "@/lib/userProfile";
-import { ELLIOTT_STORES } from "@/lib/elliottStores";
+import { getDistributor } from "@/lib/registry";
+
+const ELLIOTT_STORES = getDistributor().stores;
 
 interface ProfileModalProps {
   open: boolean;

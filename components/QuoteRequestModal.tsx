@@ -6,8 +6,12 @@ import { Button } from "@/components/ui/button";
 import { useAuth } from "./AuthProvider";
 import { getProfile } from "@/lib/userProfile";
 import { submitQuoteRequest, type BOMItem } from "@/lib/quoteRequest";
-import type { Job } from "@/lib/data";
-import { extractPartNumber, elliottVendorCode } from "@/lib/vendor-codes";
+import type { Job } from "@/lib/core/types";
+import { getDistributor } from "@/lib/registry";
+
+const distributor = getDistributor();
+const extractPartNumber = distributor.extractPartNumber.bind(distributor);
+const elliottVendorCode = distributor.resolveVendorCode.bind(distributor);
 
 interface QuoteRequestModalProps {
   open: boolean;

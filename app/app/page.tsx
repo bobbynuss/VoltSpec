@@ -14,12 +14,15 @@ import type { TourStep } from "@/components/TourOverlay";
 import { TOUR_STEPS } from "@/lib/tour-steps";
 import { UserButton } from "@/components/UserButton";
 import { Button } from "@/components/ui/button";
-import type { Job } from "@/lib/data";
+import type { Job } from "@/lib/core/types";
 import { saveProject } from "@/lib/projects";
 import type { SavedProject } from "@/lib/projects";
-import { JOB_TYPES, JURISDICTIONS } from "@/lib/data";
+import { JOB_TYPES } from "@/lib/data";
+import { getTrade } from "@/lib/registry";
 import { useAuth } from "@/components/AuthProvider";
-import { saveCloudProject } from "@/lib/cloudProjects";
+import { saveCloudProject } from "@/lib/core/projects";
+
+const JURISDICTIONS = getTrade().jurisdictions;
 
 interface GenerateResult {
   job: Job;

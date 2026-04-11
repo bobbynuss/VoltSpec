@@ -7,8 +7,9 @@ import { Sidebar } from "@/components/Sidebar";
 import type { SidebarHandle } from "@/components/Sidebar";
 import { ResultsPanel } from "@/components/ResultsPanel";
 import { ProjectsPanel } from "@/components/ProjectsPanel";
+import { QuickList } from "@/components/QuickList";
 import Image from "next/image";
-import { Menu, X, Calculator, FolderOpen, HelpCircle } from "lucide-react";
+import { Menu, X, Calculator, FolderOpen, HelpCircle, ShoppingCart } from "lucide-react";
 import { TourOverlay } from "@/components/TourOverlay";
 import type { TourStep } from "@/components/TourOverlay";
 import { TOUR_STEPS } from "@/lib/tour-steps";
@@ -50,6 +51,7 @@ function HomeContent() {
   const [tourActive, setTourActive] = useState(false);
   const [tourStartStep, setTourStartStep] = useState(0);
   const [currentZip, setCurrentZip] = useState("78744");
+  const [quickListMode, setQuickListMode] = useState(false);
   const sidebarRef = useRef<SidebarHandle>(null);
 
   const handleGenerate = async (jobId: string, zip: string, city?: string) => {
@@ -181,6 +183,16 @@ function HomeContent() {
         </span>
         <div className="ml-auto flex items-center gap-3 sm:gap-4">
           <button
+            onClick={() => setQuickListMode(!quickListMode)}
+            className={`flex items-center gap-1.5 text-xs font-medium min-h-[44px] px-2 cursor-pointer transition-colors ${
+              quickListMode ? "text-yellow-400" : "text-gray-400 hover:text-yellow-400"
+            }`}
+            title="Quick List — custom materials list"
+          >
+            <ShoppingCart className="w-4 h-4 sm:w-3.5 sm:h-3.5" />
+            <span className="hidden sm:inline">Quick List</span>
+          </button>
+          <button
             onClick={() => setProjectsOpen(true)}
             className="flex items-center gap-1.5 text-xs text-gray-400 hover:text-yellow-400 transition-colors font-medium min-h-[44px] px-2 cursor-pointer"
             title="Saved Projects"
@@ -242,7 +254,9 @@ function HomeContent() {
 
         {/* Main */}
         <main className="flex-1 overflow-y-auto p-2 sm:p-4 lg:p-6">
-          {result ? (
+          {quickListMode ? (
+            <QuickList onBack={() => setQuickListMode(false)} zip={currentZip} />
+          ) : result ? (
             <ResultsPanel result={result} onSave={handleSaveJob} zip={currentZip} />
           ) : (
             <div className="flex flex-col items-center justify-center h-full min-h-[60vh] text-center px-4">

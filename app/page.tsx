@@ -80,7 +80,7 @@ export default function LandingPage() {
       {/* Stats Bar */}
       <section className="border-t border-b border-[hsl(217,33%,18%)] bg-[hsl(222,47%,9%)] px-4 py-8">
         <div className="max-w-5xl mx-auto grid grid-cols-2 sm:grid-cols-4 gap-6 text-center">
-          <StatBlock number="34" label="Jurisdictions" />
+          <StatBlock number="40" label="Jurisdictions" />
           <StatBlock number="29" label="Job Types" />
           <StatBlock number="4" label="States" />
           <StatBlock number="160+" label="Elliott Branches" />
@@ -99,7 +99,7 @@ export default function LandingPage() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             <FeatureCard
               icon={<MapPin className="w-7 h-7" />}
-              title="34 Jurisdictions"
+              title="40 Jurisdictions"
               description="Texas, Louisiana, Oklahoma, and Arkansas — each with correct utility rules, panel series, meter sockets, and local code amendments."
             />
             <FeatureCard
@@ -134,8 +134,8 @@ export default function LandingPage() {
             <StateCard
               state="Texas"
               abbr="TX"
-              count={21}
-              cities="Austin, San Antonio, Houston, DFW, Amarillo, El Paso, Brownsville, Odessa, Abilene, Lubbock, Waco + co-ops"
+              count={24}
+              cities="Austin, San Antonio, Houston, DFW, Corpus Christi, Beaumont, Texarkana, Amarillo, El Paso, Brownsville, Odessa, Abilene, Lubbock, Waco + co-ops"
             />
             <StateCard
               state="Louisiana"
@@ -146,14 +146,14 @@ export default function LandingPage() {
             <StateCard
               state="Oklahoma"
               abbr="OK"
-              count={3}
-              cities="Oklahoma City, Tulsa, Lawton"
+              count={4}
+              cities="Oklahoma City, Tulsa, Lawton, Enid"
             />
             <StateCard
               state="Arkansas"
               abbr="AR"
-              count={3}
-              cities="Little Rock, Fort Smith, NW Arkansas"
+              count={5}
+              cities="Little Rock, Fort Smith, NW Arkansas, Jonesboro, Hot Springs"
             />
           </div>
         </div>

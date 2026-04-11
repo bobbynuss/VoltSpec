@@ -33,6 +33,12 @@ import { LAWTON_JOBS } from "./lawton/jobs";
 import { LITTLE_ROCK_JOBS } from "./little-rock/jobs";
 import { FORT_SMITH_JOBS } from "./fort-smith/jobs";
 import { SPRINGDALE_JOBS } from "./springdale/jobs";
+import { CORPUS_CHRISTI_JOBS } from "./corpus-christi/jobs";
+import { BEAUMONT_JOBS } from "./beaumont/jobs";
+import { TEXARKANA_JOBS } from "./texarkana/jobs";
+import { JONESBORO_JOBS } from "./jonesboro/jobs";
+import { HOT_SPRINGS_JOBS } from "./hot-springs/jobs";
+import { ENID_JOBS } from "./enid/jobs";
 
 export interface Jurisdiction {
   id: string;
@@ -287,6 +293,39 @@ export const JURISDICTIONS: Jurisdiction[] = [
     zipPrefixes: ["7804"],
     jobs: LAREDO_JOBS,
   },
+  {
+    id: "corpus-christi",
+    label: "Corpus Christi, TX (Nueces County)",
+    shortLabel: "Corpus Christi, TX",
+    utility: "AEP Texas Central",
+    county: "Nueces County",
+    state: "TX",
+    defaultZip: "78401",
+    zipPrefixes: ["784"],
+    jobs: CORPUS_CHRISTI_JOBS,
+  },
+  {
+    id: "beaumont",
+    label: "Beaumont/Port Arthur, TX (Jefferson County)",
+    shortLabel: "Beaumont, TX",
+    utility: "Entergy Texas",
+    county: "Jefferson County",
+    state: "TX",
+    defaultZip: "77701",
+    zipPrefixes: ["777", "776"],
+    jobs: BEAUMONT_JOBS,
+  },
+  {
+    id: "texarkana",
+    label: "Texarkana, TX (Bowie County)",
+    shortLabel: "Texarkana, TX",
+    utility: "SWEPCO",
+    county: "Bowie County",
+    state: "TX",
+    defaultZip: "75501",
+    zipPrefixes: ["755"],
+    jobs: TEXARKANA_JOBS,
+  },
   // ── Louisiana ─────────────────────────────────────────────────────
   {
     id: "shreveport",
@@ -399,6 +438,17 @@ export const JURISDICTIONS: Jurisdiction[] = [
     zipPrefixes: ["735"],
     jobs: LAWTON_JOBS,
   },
+  {
+    id: "enid",
+    label: "Enid, OK (Garfield County)",
+    shortLabel: "Enid, OK",
+    utility: "OG&E (Oklahoma Gas & Electric)",
+    county: "Garfield County",
+    state: "OK",
+    defaultZip: "73701",
+    zipPrefixes: ["737"],
+    jobs: ENID_JOBS,
+  },
   // ── Arkansas ──────────────────────────────────────────────────────
   {
     id: "little-rock",
@@ -432,6 +482,28 @@ export const JURISDICTIONS: Jurisdiction[] = [
     defaultZip: "72762",
     zipPrefixes: ["727", "726"],
     jobs: SPRINGDALE_JOBS,
+  },
+  {
+    id: "jonesboro",
+    label: "Jonesboro, AR (Craighead County)",
+    shortLabel: "Jonesboro, AR",
+    utility: "Entergy Arkansas",
+    county: "Craighead County",
+    state: "AR",
+    defaultZip: "72401",
+    zipPrefixes: ["724", "723"],
+    jobs: JONESBORO_JOBS,
+  },
+  {
+    id: "hot-springs",
+    label: "Hot Springs, AR (Garland County)",
+    shortLabel: "Hot Springs, AR",
+    utility: "Entergy Arkansas",
+    county: "Garland County",
+    state: "AR",
+    defaultZip: "71901",
+    zipPrefixes: ["719"],
+    jobs: HOT_SPRINGS_JOBS,
   },
 ];
 

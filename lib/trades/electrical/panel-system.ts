@@ -61,6 +61,14 @@ const JURISDICTION_DEFAULTS: Record<string, PanelTypeId> = {
   "little-rock": "br",
   "fort-smith": "br",
   springdale: "br",
+  jonesboro: "br",
+  "hot-springs": "br",
+  // New TX — BR series
+  "corpus-christi": "br",
+  beaumont: "br",
+  texarkana: "br",
+  // New OK — BR series
+  enid: "br",
 };
 
 export function getDefaultPanelType(jurisdictionId: string): PanelTypeId {

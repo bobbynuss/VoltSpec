@@ -45,6 +45,22 @@ COMMERCIAL (use these when plan shows 3-phase, 208/120V, or commercial equipment
 - Ground bus: Eaton CUGROUND (copper ground bus for PRL)
 - Arc flash labels: Brady 66127
 
+AUTOMATIC TRANSFER SWITCHES (ATS) — look for ATS symbols (rectangle with arrows, labeled "ATS" or "AT"), generator transfer equipment, or emergency/standby power sections:
+- Eaton ATC-900 200A 3-phase: "Eaton ATC9A31200XSU - ATC-900 automatic transfer switch, 200A, 3-pole, 208V, service entrance rated, NEMA 1"
+- Eaton ATC-900 400A 3-phase: "Eaton ATC9A31400XSU - ATC-900 automatic transfer switch, 400A, 3-pole, 208V, service entrance rated, NEMA 1"
+- Eaton ATC-900 800A 3-phase: "Eaton ATC9A31800XSU - ATC-900 automatic transfer switch, 800A, 3-pole, 480V, service entrance rated, NEMA 1"
+- Eaton ATC-900 1200A 3-phase: "Eaton ATC9A32120XSU - ATC-900 automatic transfer switch, 1200A, 3-pole, 480V, service entrance rated, NEMA 1"
+- Eaton ATC-300 100A: "Eaton ATC3A2100S - ATC-300 automatic transfer switch, 100A, 2-pole, 240V, residential/light commercial"
+- Eaton ATC-300 200A: "Eaton ATC3A3200S - ATC-300 automatic transfer switch, 200A, 3-pole, 208V, light commercial"
+- Eaton ATC-100 100A: "Eaton ATC1A2100S - ATC-100 automatic transfer switch, 100A, 2-pole, 240V, economy residential"
+Match amperage and voltage to what the plan specifies. If the plan shows a generator, there is almost certainly an ATS — include it.
+ATS vendor code for Elliott: CHS (Eaton Pow-R / switchgear line).
+
+GENERATORS — if the plan shows a generator or "GEN" symbol:
+- Generac commercial: "Generac SD0200A - 200kW diesel standby generator, 208/120V 3-phase, sound-attenuated enclosure"
+- Match kW rating to the ATS amperage when possible (200A ATS ≈ 45-60kW, 400A ≈ 100-150kW, 800A ≈ 250-300kW)
+- Generator vendor code: GNR
+
 GENERAL (both):
 - EMT connectors: Bridgeport 230 (1/2"), 231 (3/4"), 232 (1")
 - EMT couplings: Bridgeport 240 (1/2"), 241 (3/4"), 242 (1")
@@ -62,6 +78,10 @@ If the document contains multiple pages (PDF), analyze ALL pages. Look for:
 - Single-line diagrams showing service entrance and distribution
 - Equipment schedules, fixture schedules, lighting plans
 - Riser diagrams
+- ATS symbols (rectangle with double arrows, labeled "ATS", "AT", or "AUTOMATIC TRANSFER SWITCH")
+- Generator symbols (circle with "G", "GEN", or generator icon)
+- Emergency/standby power single-line diagrams — these always include ATS equipment
+- One-line diagrams showing normal/emergency power paths
 
 Extract quantities from ALL electrical sheets — not just the first page.
 

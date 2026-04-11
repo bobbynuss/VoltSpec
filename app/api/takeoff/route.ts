@@ -18,24 +18,55 @@ RESPOND WITH ONLY A JSON ARRAY of items. Each item must have:
 - "spec": Elliott part number and description (e.g. "Eaton TR1307W - Decora 20A 125V tamper-resistant duplex receptacle, white")
 - "quantity": string with number and optional unit (e.g. "12" or "250 ft")
 
-Use these standard parts:
+Use these standard parts (pick the right ones for the job type):
+
+RESIDENTIAL:
 - Receptacles: Eaton TR1107W (15A TR), Eaton TR1307W (20A TR), Eaton TRGF20W (20A GFCI), Eaton TWRGF20W (20A WR GFCI)
 - Switches: Eaton 7501W (single-pole 15A), Eaton 7503W (3-way 15A)
 - Dimmers: Lutron DVCL153PWH (LED dimmer)
 - Lighting: Eaton LT56079F51EWH (6" LED retrofit)
 - Smoke/CO: BRK SC9120B (combo detector)
 - Wire: 12 AWG THHN (COP THHN12STBK500), 14/2 NM-B (COP NM142WG250), 12/2 NM-B (COP NM122WG250)
-- Conduit: 1/2 EMT (CON EMT12), 3/4 EMT (CON EMT34), connectors (Bridgeport 230, 231)
-- Boxes: Crouse-Hinds TP403 (4-square deep), covers TP516 (duplex), TP512 (switch)
-- Plates: Eaton PJ26W (1-gang), Eaton PJ262W (2-gang)
-- Connectors: Ideal 30-072 (wire nuts), Wago 221-412 (lever nuts), Arlington NM94 (NM connectors)
+- Conduit: 1/2 EMT (CON EMT12), 3/4 EMT (CON EMT34)
+- Boxes: Crouse-Hinds TP403 (4-square deep), covers TP516 (duplex)
 - Panels: Eaton CHP42B200R (200A CH), Eaton BRP20B200R (200A BR)
 - Breakers: Eaton CHFP120DF (dual function), Eaton CHFP120GF (GFCI), CHF120 (standard)
 
+COMMERCIAL (use these when plan shows 3-phase, 208/120V, or commercial equipment):
+- Panelboards: Eaton PRL1X3225X42C (PRL 225A 42-ckt interior), EZB2060RBS (enclosure), EZT2060S (trim)
+- Main breakers: Eaton BKD2G225 (225A 65kAIC MCB kit for PRL)
+- Branch breakers: Eaton QBH120/QBH220/QBH320 (QBH bolt-on for PRL, 1/2/3-pole)
+- Disconnects: Eaton DH365FGK (3-phase fusible disconnect)
+- Receptacles: Leviton 16352-W (20A commercial grade duplex), Leviton GFNT2-W (20A GFCI)
+- Switches: Leviton 1221-2W (20A commercial SP), Leviton 1223-2W (20A 3-way)
+- Occupancy sensors: Leviton ODS10-IDW (wall), Leviton ODC0S-I1W (ceiling)
+- Wire: 12 AWG THHN, 10 AWG THHN, 8 AWG THHN (stranded for commercial)
+- Conduit: 3/4 EMT (CON EMT34), 1 EMT (CON EMT1), 1-1/4 EMT, connectors (Bridgeport series)
+- Ground bus: Eaton CUGROUND (copper ground bus for PRL)
+- Arc flash labels: Brady 66127
+
+GENERAL (both):
+- EMT connectors: Bridgeport 230 (1/2"), 231 (3/4"), 232 (1")
+- EMT couplings: Bridgeport 240 (1/2"), 241 (3/4"), 242 (1")
+- One-hole straps: Bridgeport 920S (1/2"), 921S (3/4"), 922S (1")
+- Wall plates: Eaton PJ26W (1-gang), Eaton PJ262W (2-gang)
+- Wire nuts: Ideal 30-072, Wago 221-412 (lever nuts)
+- Duct seal: PECO DS1
+- Ground rods: Erico 615880 (5/8 x 8ft), clamps NSI GRC58
+
 Be practical and realistic with quantities. Round up. If you can't identify specific items, make reasonable assumptions based on the plan type (residential, commercial, etc.).
 
-If the image is NOT an electrical plan (or is unreadable), respond with:
-[{"item": "Unable to analyze", "spec": "The uploaded image does not appear to be an electrical plan. Please upload a clear electrical floor plan or single-line diagram.", "quantity": "0"}]
+If the document contains multiple pages (PDF), analyze ALL pages. Look for:
+- Floor plans with electrical symbols (receptacles, switches, lights, panels)
+- Panel schedules showing breaker layouts and circuit assignments
+- Single-line diagrams showing service entrance and distribution
+- Equipment schedules, fixture schedules, lighting plans
+- Riser diagrams
+
+Extract quantities from ALL electrical sheets — not just the first page.
+
+If the file is truly NOT an electrical plan (e.g. a photo of a cat), respond with:
+[{"item": "Unable to analyze", "spec": "This file does not appear to contain electrical plans. Please upload an electrical floor plan, panel schedule, or permit set.", "quantity": "0"}]
 
 RESPOND WITH ONLY THE JSON ARRAY. No markdown, no explanation, no code blocks.`;
 

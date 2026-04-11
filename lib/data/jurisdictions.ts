@@ -51,6 +51,29 @@ import { TEXARKANA_JOBS } from "./texarkana/jobs";
 import { JONESBORO_JOBS } from "./jonesboro/jobs";
 import { HOT_SPRINGS_JOBS } from "./hot-springs/jobs";
 import { ENID_JOBS } from "./enid/jobs";
+// New states (April 11, 2026)
+import { PHOENIX_JOBS } from "./phoenix/jobs";
+import { TUCSON_JOBS } from "./tucson/jobs";
+import { PRESCOTT_VALLEY_JOBS } from "./prescott-valley/jobs";
+import { DENVER_JOBS } from "./denver/jobs";
+import { COLORADO_SPRINGS_JOBS } from "./colorado-springs/jobs";
+import { FORT_COLLINS_JOBS } from "./fort-collins/jobs";
+import { JACKSONVILLE_FL_JOBS } from "./jacksonville-fl/jobs";
+import { TAMPA_JOBS } from "./tampa/jobs";
+import { ATLANTA_JOBS } from "./atlanta/jobs";
+import { ROME_GA_JOBS } from "./rome-ga/jobs";
+import { WICHITA_JOBS } from "./wichita/jobs";
+import { KANSAS_CITY_JOBS } from "./kansas-city/jobs";
+import { DODGE_CITY_JOBS } from "./dodge-city/jobs";
+import { SPRINGFIELD_MO_JOBS } from "./springfield-mo/jobs";
+import { HOBBS_JOBS } from "./hobbs/jobs";
+import { ROSWELL_JOBS } from "./roswell/jobs";
+import { LAS_CRUCES_JOBS } from "./las-cruces/jobs";
+import { CHARLOTTE_JOBS } from "./charlotte/jobs";
+import { GREENSBORO_JOBS } from "./greensboro/jobs";
+import { GREENVILLE_SC_JOBS } from "./greenville-sc/jobs";
+import { NASHVILLE_JOBS } from "./nashville/jobs";
+import { COOKEVILLE_JOBS } from "./cookeville/jobs";
 
 export interface Jurisdiction {
   id: string;
@@ -58,7 +81,7 @@ export interface Jurisdiction {
   shortLabel: string;
   utility: string;
   county: string;
-  state: "TX" | "LA" | "OK" | "AR";
+  state: string;
   defaultZip: string;
   zipPrefixes: string[];
   jobs: Job[];
@@ -71,6 +94,16 @@ export const STATE_OPTIONS: { value: string; label: string }[] = [
   { value: "LA", label: "Louisiana" },
   { value: "OK", label: "Oklahoma" },
   { value: "AR", label: "Arkansas" },
+  { value: "AZ", label: "Arizona" },
+  { value: "CO", label: "Colorado" },
+  { value: "FL", label: "Florida" },
+  { value: "GA", label: "Georgia" },
+  { value: "KS", label: "Kansas" },
+  { value: "MO", label: "Missouri" },
+  { value: "NM", label: "New Mexico" },
+  { value: "NC", label: "North Carolina" },
+  { value: "SC", label: "South Carolina" },
+  { value: "TN", label: "Tennessee" },
 ];
 
 export const JURISDICTIONS: Jurisdiction[] = [
@@ -649,6 +682,38 @@ export const JURISDICTIONS: Jurisdiction[] = [
     zipPrefixes: ["718"],
     jobs: HOPE_JOBS,
   },
+  // ── Arizona ──────────────────────────────────────────────────────
+  { id: "phoenix", label: "Phoenix Metro, AZ (Maricopa County)", shortLabel: "Phoenix, AZ", utility: "APS (Arizona Public Service)", county: "Maricopa County", state: "AZ", defaultZip: "85009", zipPrefixes: ["850", "852", "853", "851"], jobs: PHOENIX_JOBS },
+  { id: "tucson", label: "Tucson, AZ (Pima County)", shortLabel: "Tucson, AZ", utility: "TEP (Tucson Electric Power)", county: "Pima County", state: "AZ", defaultZip: "85713", zipPrefixes: ["857", "856"], jobs: TUCSON_JOBS },
+  { id: "prescott-valley", label: "Prescott Valley, AZ (Yavapai County)", shortLabel: "Prescott Valley, AZ", utility: "APS (Arizona Public Service)", county: "Yavapai County", state: "AZ", defaultZip: "86314", zipPrefixes: ["863", "860", "861", "862"], jobs: PRESCOTT_VALLEY_JOBS },
+  // ── Colorado ─────────────────────────────────────────────────────
+  { id: "denver", label: "Denver Metro, CO (Denver County)", shortLabel: "Denver, CO", utility: "Xcel Energy", county: "Denver County", state: "CO", defaultZip: "80238", zipPrefixes: ["802", "801", "800", "803", "804"], jobs: DENVER_JOBS },
+  { id: "colorado-springs", label: "Colorado Springs, CO (El Paso County)", shortLabel: "Colorado Springs, CO", utility: "Colorado Springs Utilities", county: "El Paso County", state: "CO", defaultZip: "80915", zipPrefixes: ["809", "808"], jobs: COLORADO_SPRINGS_JOBS },
+  { id: "fort-collins", label: "Fort Collins, CO (Larimer County)", shortLabel: "Fort Collins, CO", utility: "Xcel Energy", county: "Larimer County", state: "CO", defaultZip: "80525", zipPrefixes: ["805", "806"], jobs: FORT_COLLINS_JOBS },
+  // ── Florida ──────────────────────────────────────────────────────
+  { id: "jacksonville-fl", label: "Jacksonville, FL (Duval County)", shortLabel: "Jacksonville, FL", utility: "JEA (Jacksonville Electric Authority)", county: "Duval County", state: "FL", defaultZip: "32256", zipPrefixes: ["322", "321", "320"], jobs: JACKSONVILLE_FL_JOBS },
+  { id: "tampa", label: "Tampa Bay, FL (Hillsborough County)", shortLabel: "Tampa, FL", utility: "Tampa Electric (TECO Energy)", county: "Hillsborough County", state: "FL", defaultZip: "33634", zipPrefixes: ["336", "335", "337", "338"], jobs: TAMPA_JOBS },
+  // ── Georgia ──────────────────────────────────────────────────────
+  { id: "atlanta", label: "Atlanta Metro, GA (Fulton County)", shortLabel: "Atlanta, GA", utility: "Georgia Power", county: "Fulton County", state: "GA", defaultZip: "30336", zipPrefixes: ["303", "300", "301", "302", "304", "305", "306"], jobs: ATLANTA_JOBS },
+  { id: "rome-ga", label: "Rome, GA (Floyd County)", shortLabel: "Rome, GA", utility: "Georgia Power", county: "Floyd County", state: "GA", defaultZip: "30165", zipPrefixes: ["3016"], jobs: ROME_GA_JOBS },
+  // ── Kansas ───────────────────────────────────────────────────────
+  { id: "wichita", label: "Wichita, KS (Sedgwick County)", shortLabel: "Wichita, KS", utility: "Evergy", county: "Sedgwick County", state: "KS", defaultZip: "67213", zipPrefixes: ["672", "670", "671"], jobs: WICHITA_JOBS },
+  { id: "kansas-city", label: "Kansas City Metro, KS/MO", shortLabel: "Kansas City, KS", utility: "Evergy", county: "Multiple Counties", state: "KS", defaultZip: "66219", zipPrefixes: ["662", "660", "661", "640", "641"], jobs: KANSAS_CITY_JOBS },
+  { id: "dodge-city", label: "Dodge City, KS (Ford County)", shortLabel: "Dodge City, KS", utility: "Victory Electric / Midwest Energy", county: "Ford County", state: "KS", defaultZip: "67801", zipPrefixes: ["678", "674", "675", "676", "677"], jobs: DODGE_CITY_JOBS },
+  // ── Missouri ─────────────────────────────────────────────────────
+  { id: "springfield-mo", label: "Springfield, MO (Greene County)", shortLabel: "Springfield, MO", utility: "City Utilities of Springfield", county: "Greene County", state: "MO", defaultZip: "65803", zipPrefixes: ["658", "656", "657"], jobs: SPRINGFIELD_MO_JOBS },
+  // ── New Mexico ───────────────────────────────────────────────────
+  { id: "hobbs", label: "Hobbs/Carlsbad, NM (Lea County)", shortLabel: "Hobbs, NM", utility: "Xcel Energy (SPS)", county: "Lea County", state: "NM", defaultZip: "88240", zipPrefixes: ["882", "883"], jobs: HOBBS_JOBS },
+  { id: "roswell", label: "Roswell, NM (Chaves County)", shortLabel: "Roswell, NM", utility: "Xcel Energy (SPS)", county: "Chaves County", state: "NM", defaultZip: "88201", zipPrefixes: ["8820"], jobs: ROSWELL_JOBS },
+  { id: "las-cruces", label: "Las Cruces, NM (Dona Ana County)", shortLabel: "Las Cruces, NM", utility: "El Paso Electric", county: "Dona Ana County", state: "NM", defaultZip: "88005", zipPrefixes: ["880", "881"], jobs: LAS_CRUCES_JOBS },
+  // ── North Carolina ───────────────────────────────────────────────
+  { id: "charlotte", label: "Charlotte, NC (Mecklenburg County)", shortLabel: "Charlotte, NC", utility: "Duke Energy Carolinas", county: "Mecklenburg County", state: "NC", defaultZip: "28214", zipPrefixes: ["282", "280", "281"], jobs: CHARLOTTE_JOBS },
+  { id: "greensboro", label: "Greensboro, NC (Guilford County)", shortLabel: "Greensboro, NC", utility: "Duke Energy Carolinas", county: "Guilford County", state: "NC", defaultZip: "27406", zipPrefixes: ["274", "270", "271", "272", "273"], jobs: GREENSBORO_JOBS },
+  // ── South Carolina ───────────────────────────────────────────────
+  { id: "greenville-sc", label: "Greenville, SC (Greenville County)", shortLabel: "Greenville, SC", utility: "Duke Energy Progress", county: "Greenville County", state: "SC", defaultZip: "29615", zipPrefixes: ["296", "293", "294", "295"], jobs: GREENVILLE_SC_JOBS },
+  // ── Tennessee ────────────────────────────────────────────────────
+  { id: "nashville", label: "Nashville, TN (Davidson County)", shortLabel: "Nashville, TN", utility: "Nashville Electric Service (NES)", county: "Davidson County", state: "TN", defaultZip: "37211", zipPrefixes: ["372", "371", "370", "373", "374", "375", "376"], jobs: NASHVILLE_JOBS },
+  { id: "cookeville", label: "Cookeville, TN (Putnam County)", shortLabel: "Cookeville, TN", utility: "Cookeville Electric / TVA", county: "Putnam County", state: "TN", defaultZip: "38501", zipPrefixes: ["385", "384", "383", "381", "382"], jobs: COOKEVILLE_JOBS },
 ];
 
 export const DEFAULT_JURISDICTION = JURISDICTIONS[0]; // Austin

@@ -57,7 +57,7 @@ export default function LandingPage() {
           Generate accurate materials lists, realistic SVG blueprints,
           and professional PDF packages — with real Elliott Electric Supply pricing,
           jurisdiction-specific utility rules, and full NEC&nbsp;2026 compliance
-          across <span className="text-white font-semibold">Texas, Louisiana, Oklahoma, and Arkansas</span>.
+          across <span className="text-white font-semibold">14 states</span> — everywhere Elliott Electric has a counter.
         </p>
         <div className="mt-10 flex flex-col sm:flex-row gap-4">
           <Link
@@ -80,10 +80,10 @@ export default function LandingPage() {
       {/* Stats Bar */}
       <section className="border-t border-b border-[hsl(217,33%,18%)] bg-[hsl(222,47%,9%)] px-4 py-8">
         <div className="max-w-5xl mx-auto grid grid-cols-2 sm:grid-cols-4 gap-6 text-center">
-          <StatBlock number="52" label="Jurisdictions" />
+          <StatBlock number="74" label="Jurisdictions" />
           <StatBlock number="29" label="Job Types" />
-          <StatBlock number="4" label="States" />
-          <StatBlock number="160+" label="Elliott Branches" />
+          <StatBlock number="14" label="States" />
+          <StatBlock number="204" label="Elliott Branches" />
         </div>
       </section>
 
@@ -99,8 +99,8 @@ export default function LandingPage() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             <FeatureCard
               icon={<MapPin className="w-7 h-7" />}
-              title="52 Jurisdictions"
-              description="Texas, Louisiana, Oklahoma, and Arkansas — each with correct utility rules, panel series, meter sockets, and local code amendments."
+              title="74 Jurisdictions"
+              description="14 states from Texas to the Carolinas — each with compliant utility rules, panel series, and local code requirements."
             />
             <FeatureCard
               icon={<DollarSign className="w-7 h-7" />}
@@ -125,36 +125,26 @@ export default function LandingPage() {
       <section className="px-4 py-16 sm:py-20 border-t border-[hsl(217,33%,18%)]">
         <div className="max-w-5xl mx-auto">
           <h2 className="text-2xl sm:text-3xl font-bold text-white text-center mb-4">
-            Four States. Growing Fast.
+            Coast to Coast. Every Elliott Counter.
           </h2>
           <p className="text-gray-500 text-center mb-12 max-w-2xl mx-auto">
             Every jurisdiction has compliant utility rules, meter socket requirements, panel series, and local pricing — so your spec matches what the AHJ actually wants.
           </p>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            <StateCard
-              state="Texas"
-              abbr="TX"
-              count={31}
-              cities="Austin, San Antonio, Houston, DFW, Corpus Christi, Beaumont, Texarkana, Longview, Paris, Greenville, Palestine, Corsicana, Kerrville, Brownwood, Amarillo, El Paso, Brownsville, Odessa, Abilene, Lubbock, Waco + co-ops"
-            />
-            <StateCard
-              state="Louisiana"
-              abbr="LA"
-              count={7}
-              cities="Shreveport, Monroe, Alexandria, Lafayette, Lake Charles, Baton Rouge, New Orleans"
-            />
-            <StateCard
-              state="Oklahoma"
-              abbr="OK"
-              count={6}
-              cities="Oklahoma City, Tulsa, Lawton, Enid, Durant, Shawnee"
-            />
-            <StateCard
-              state="Arkansas"
-              abbr="AR"
-              count={8}
-              cities="Little Rock, Fort Smith, NW Arkansas, Jonesboro, Hot Springs, Pine Bluff, El Dorado, Hope"
-            />
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+            <StateCard state="Texas" abbr="TX" count={31} cities="Austin, San Antonio, Houston, DFW, El Paso, Corpus Christi, Beaumont + 24 more" />
+            <StateCard state="Louisiana" abbr="LA" count={7} cities="Shreveport, Baton Rouge, New Orleans, Lafayette, Lake Charles + more" />
+            <StateCard state="Oklahoma" abbr="OK" count={6} cities="OKC, Tulsa, Lawton, Enid, Durant, Shawnee" />
+            <StateCard state="Arkansas" abbr="AR" count={8} cities="Little Rock, Fort Smith, NW Arkansas, Jonesboro, Hot Springs + more" />
+            <StateCard state="Arizona" abbr="AZ" count={3} cities="Phoenix Metro, Tucson, Prescott Valley" />
+            <StateCard state="Colorado" abbr="CO" count={3} cities="Denver, Colorado Springs, Fort Collins" />
+            <StateCard state="Georgia" abbr="GA" count={2} cities="Atlanta Metro, Rome" />
+            <StateCard state="Tennessee" abbr="TN" count={2} cities="Nashville, Cookeville" />
+            <StateCard state="Kansas" abbr="KS" count={3} cities="Wichita, Kansas City, Dodge City" />
+            <StateCard state="North Carolina" abbr="NC" count={2} cities="Charlotte, Greensboro" />
+            <StateCard state="Florida" abbr="FL" count={2} cities="Jacksonville, Tampa" />
+            <StateCard state="New Mexico" abbr="NM" count={3} cities="Hobbs/Carlsbad, Roswell, Las Cruces" />
+            <StateCard state="Missouri" abbr="MO" count={1} cities="Springfield" />
+            <StateCard state="South Carolina" abbr="SC" count={1} cities="Greenville" />
           </div>
         </div>
       </section>

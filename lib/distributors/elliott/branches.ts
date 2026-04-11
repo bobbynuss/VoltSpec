@@ -1,8 +1,9 @@
 /**
- * Elliott Electric Supply — TX, LA, OK, AR Branch Database
+ * Elliott Electric Supply — National Branch Database
  *
- * Source: https://www.eesnet.com/storeinformation/storelist.aspx
- * Last refreshed: 2026-04-09
+ * Source: StoreList.pdf (Elliott Electric internal)
+ * Last refreshed: 2026-04-11
+ * States: TX, LA, OK, AR, AZ, CO, FL, GA, KS, MO, NM, NC, SC, TN
  *
  * Used for zip-code-to-nearest-branch matching via haversine distance.
  * Lat/lng are approximate branch coordinates (Google Maps / ZIP centroid).
@@ -210,4 +211,68 @@ export const ELLIOTT_BRANCHES: ElliottBranch[] = [
   { store: 124, name: "Rogers",                    city: "Rogers",           address: "2214 South 8th Street, Rogers, AR 72758",              phone: "(479) 636-4190", zip: "72758", lat: 36.3170, lng: -94.1180 },
   { store: 125, name: "Fayetteville",              city: "Fayetteville",     address: "555 E 15th Street, Fayetteville, AR 72701",            phone: "(479) 443-4948", zip: "72701", lat: 36.0660, lng: -94.1570 },
   { store: 126, name: "Siloam Springs",            city: "Siloam Springs",   address: "320 N Simon Sager Ave, Siloam Springs, AR 72761",      phone: "(479) 238-1561", zip: "72761", lat: 36.1880, lng: -94.5400 },
+
+  // ── Arizona ──────────────────────────────────────────────────────
+  { store: 148, name: "Phoenix",                   city: "Phoenix",          address: "121 S 39th Ave #100, Phoenix, AZ 85009",               phone: "(480) 372-4901", zip: "85009", lat: 33.4440, lng: -112.1210 },
+  { store: 152, name: "Mesa",                      city: "Mesa",             address: "2250 West Broadway Road Suite 102, Mesa, AZ 85202",    phone: "(623) 900-2983", zip: "85202", lat: 33.4080, lng: -111.8700 },
+  { store: 153, name: "Deer Valley",               city: "Phoenix",          address: "21415 North 15th Lane Suite 116, Phoenix, AZ 85027",   phone: "(480) 681-0668", zip: "85027", lat: 33.6710, lng: -112.0990 },
+  { store: 159, name: "Tucson",                    city: "Tucson",           address: "3130 S Dodge Boulevard, Tucson, AZ 85713",             phone: "(520) 526-1947", zip: "85713", lat: 32.1970, lng: -110.9300 },
+  { store: 166, name: "Gilbert",                   city: "Gilbert",          address: "425 East Germann Road Suite 101, Gilbert, AZ 85297",   phone: "(602) 325-9757", zip: "85297", lat: 33.2850, lng: -111.7530 },
+  { store: 169, name: "Avondale",                  city: "Avondale",         address: "1205 N Eliseo Felix Jr. Way Suite A101, Avondale, AZ 85323", phone: "(623) 259-1366", zip: "85323", lat: 33.4560, lng: -112.3500 },
+  { store: 193, name: "Prescott Valley",           city: "Prescott Valley",  address: "9172 E Florentine Road Unit 9, Prescott Valley, AZ 86314", phone: "(928) 356-1174", zip: "86314", lat: 34.5980, lng: -112.3150 },
+  { store: 205, name: "Casa Grande",               city: "Casa Grande",      address: "317 S Mercedes Ave, Casa Grande, AZ 85122",            phone: "(520) 677-1167", zip: "85122", lat: 32.8790, lng: -111.7570 },
+
+  // ── Colorado ─────────────────────────────────────────────────────
+  { store: 174, name: "Denver",                    city: "Denver",           address: "10070 E. 40th Ave., Denver, CO 80238",                 phone: "(720) 259-9108", zip: "80238", lat: 39.7730, lng: -104.8870 },
+  { store: 186, name: "Fort Collins",              city: "Fort Collins",     address: "3942 Automation Way, Fort Collins, CO 80525",           phone: "(970) 305-3593", zip: "80525", lat: 40.5240, lng: -105.0420 },
+  { store: 195, name: "Centennial",                city: "Centennial",       address: "15152 E Fremont Dr, Centennial, CO 80112",             phone: "(720) 278-7555", zip: "80112", lat: 39.5800, lng: -104.8370 },
+  { store: 196, name: "Colorado Springs",          city: "Colorado Springs", address: "760 Ford St., Colorado Springs, CO 80915",             phone: "(719) 559-2456", zip: "80915", lat: 38.8560, lng: -104.7510 },
+
+  // ── Florida ──────────────────────────────────────────────────────
+  { store: 187, name: "Jacksonville",              city: "Jacksonville",     address: "8051 Bayberry Rd, Jacksonville, FL 32256",             phone: "(904) 339-8781", zip: "32256", lat: 30.2180, lng: -81.5580 },
+  { store: 201, name: "Tampa",                     city: "Tampa",            address: "8110 Anderson Road Suite 100, Tampa, FL 33634",        phone: "(813) 934-6264", zip: "33634", lat: 28.0260, lng: -82.5270 },
+  { store: 203, name: "Tampa Bay East",            city: "Tampa",            address: "201 S 78th St., Tampa, FL 33619",                      phone: "(813) 502-0060", zip: "33619", lat: 27.9470, lng: -82.3880 },
+
+  // ── Georgia ──────────────────────────────────────────────────────
+  { store: 46,  name: "Atlanta",                   city: "Atlanta",          address: "4075 Boulder Ridge Drive, Atlanta, GA 30336",           phone: "(470) 237-5352", zip: "30336", lat: 33.7370, lng: -84.5250 },
+  { store: 150, name: "Rome",                      city: "Rome",             address: "1461 Technology Pkwy, Rome, GA 30165",                 phone: "(706) 622-4953", zip: "30165", lat: 34.2320, lng: -85.2270 },
+  { store: 154, name: "Newnan",                    city: "Newnan",           address: "2 Solar Circle, Newnan, GA 30265",                     phone: "(678) 621-2507", zip: "30265", lat: 33.3810, lng: -84.7660 },
+  { store: 165, name: "Marietta",                  city: "Marietta",         address: "2255 Northwest Parkway SE, Marietta, GA 30067",        phone: "(678) 398-4904", zip: "30067", lat: 33.9260, lng: -84.4870 },
+  { store: 182, name: "Doraville",                 city: "Doraville",        address: "4030 Pleasantdale Rd Suite F, Doraville, GA 30340",    phone: "(678) 710-9550", zip: "30340", lat: 33.8970, lng: -84.2810 },
+  { store: 199, name: "Stockbridge",               city: "Stockbridge",      address: "210 Andrew Dr, Stockbridge, GA 30281",                 phone: "(470) 440-4222", zip: "30281", lat: 33.5440, lng: -84.2290 },
+
+  // ── Kansas ───────────────────────────────────────────────────────
+  { store: 135, name: "Dodge City",                city: "Dodge City",       address: "112 Pearl Street, Dodge City, KS 67801",               phone: "(620) 682-8503", zip: "67801", lat: 37.7530, lng: -100.0170 },
+  { store: 146, name: "West Wichita",              city: "Wichita",          address: "3804 W. Esthner Avenue, Wichita, KS 67213",            phone: "(316) 854-0028", zip: "67213", lat: 37.6730, lng: -97.3810 },
+  { store: 155, name: "Hutchinson",                city: "Hutchinson",       address: "2501 East 14th Avenue, Hutchinson, KS 67501",          phone: "(620) 860-8405", zip: "67501", lat: 38.0610, lng: -97.8900 },
+  { store: 168, name: "Salina",                    city: "Salina",           address: "700 York Ave., Salina, KS 67401",                      phone: "(785) 914-5431", zip: "67401", lat: 38.8400, lng: -97.6110 },
+  { store: 171, name: "Lenexa",                    city: "Lenexa",           address: "10917 Mill Creek Rd, Lenexa, KS 66219",                phone: "(913) 563-7000", zip: "66219", lat: 38.9530, lng: -94.7550 },
+  { store: 200, name: "Lawrence",                  city: "Lawrence",         address: "600 E 23rd Street, Lawrence, KS 66046",                phone: "(785) 330-9441", zip: "66046", lat: 38.9570, lng: -95.2310 },
+  { store: 202, name: "NE Wichita",                city: "Wichita",          address: "8620 E 34th St N, Wichita, KS 67226",                  phone: "(316) 247-8220", zip: "67226", lat: 37.7310, lng: -97.2440 },
+
+  // ── Missouri ─────────────────────────────────────────────────────
+  { store: 172, name: "Lee's Summit",              city: "Lee's Summit",     address: "2818 NE Independence Avenue, Lee's Summit, MO 64064",  phone: "(816) 924-7000", zip: "64064", lat: 38.9270, lng: -94.3570 },
+  { store: 178, name: "Springfield",               city: "Springfield",      address: "2260 N Burton Ave Suite 100, Springfield, MO 65803",   phone: "(417) 429-1665", zip: "65803", lat: 37.2340, lng: -93.2680 },
+  { store: 189, name: "Kansas City North",         city: "Kansas City",      address: "1821 North Topping Avenue, Kansas City, MO 64120",     phone: "(913) 227-4257", zip: "64120", lat: 39.1280, lng: -94.5270 },
+
+  // ── New Mexico ───────────────────────────────────────────────────
+  { store: 76,  name: "Hobbs",                     city: "Hobbs",            address: "1105 West Sanger, Hobbs, NM 88240",                    phone: "(575) 397-2122", zip: "88240", lat: 32.7130, lng: -103.1430 },
+  { store: 92,  name: "Clovis",                    city: "Clovis",           address: "3205 Axtell, Clovis, NM 88101",                        phone: "(575) 742-2504", zip: "88101", lat: 34.4050, lng: -103.2050 },
+  { store: 141, name: "Roswell",                   city: "Roswell",          address: "907 East 2nd Street, Roswell, NM 88201",               phone: "(575) 208-1571", zip: "88201", lat: 33.3940, lng: -104.5210 },
+  { store: 156, name: "Carlsbad",                  city: "Carlsbad",         address: "5004 National Parks Highway, Carlsbad, NM 88220",      phone: "(575) 988-7017", zip: "88220", lat: 32.4210, lng: -104.2290 },
+  { store: 204, name: "Las Cruces",                city: "Las Cruces",       address: "1774 Buildtek Court, Las Cruces, NM 88005",            phone: "(575) 652-6525", zip: "88005", lat: 32.3410, lng: -106.7640 },
+
+  // ── North Carolina ───────────────────────────────────────────────
+  { store: 188, name: "Charlotte",                 city: "Charlotte",        address: "4250 Business Center Dr. Suite 300, Charlotte, NC 28214", phone: "(980) 249-1969", zip: "28214", lat: 35.2380, lng: -80.9390 },
+  { store: 206, name: "Concord",                   city: "Concord",          address: "141 Ramdin CT NW, Concord, NC 28027",                  phone: "(704) 707-4987", zip: "28027", lat: 35.4270, lng: -80.6270 },
+  { store: 210, name: "Greensboro",                city: "Greensboro",       address: "201 E J J Dr., Greensboro, NC 27406",                  phone: "(336) 743-0779", zip: "27406", lat: 36.0480, lng: -79.7720 },
+
+  // ── South Carolina ───────────────────────────────────────────────
+  { store: 207, name: "Greenville",                city: "Greenville",       address: "310 Interstate Blvd, Greenville, SC 29615",            phone: "(864) 735-7911", zip: "29615", lat: 34.8380, lng: -82.3360 },
+
+  // ── Tennessee ────────────────────────────────────────────────────
+  { store: 164, name: "Nashville",                 city: "Nashville",        address: "3723 Keystone Ave, Nashville, TN 37211",               phone: "(629) 262-0932", zip: "37211", lat: 36.1050, lng: -86.7380 },
+  { store: 180, name: "Nashville RDC",             city: "Mt. Juliet",       address: "7520 Eastgate Blvd Suite 100, Mt. Juliet, TN 37122",   phone: "(615) 257-4146", zip: "37122", lat: 36.2060, lng: -86.5130 },
+  { store: 192, name: "Cookeville",                city: "Cookeville",       address: "510 W Jackson Street, Cookeville, TN 38501",           phone: "(931) 271-9933", zip: "38501", lat: 36.1630, lng: -85.5150 },
+  { store: 208, name: "Hendersonville",            city: "Hendersonville",   address: "217 Innovation Way, Hendersonville, TN 37075",         phone: "(615) 991-2399", zip: "37075", lat: 36.3380, lng: -86.6050 },
 ];

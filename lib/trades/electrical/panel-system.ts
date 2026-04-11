@@ -82,6 +82,38 @@ const JURISDICTION_DEFAULTS: Record<string, PanelTypeId> = {
   "pine-bluff": "br",
   "el-dorado": "br",
   hope: "br",
+  // Arizona — BR series
+  phoenix: "br",
+  tucson: "br",
+  "prescott-valley": "br",
+  // Colorado — BR series
+  denver: "br",
+  "colorado-springs": "br",
+  "fort-collins": "br",
+  // Florida — BR series
+  "jacksonville-fl": "br",
+  tampa: "br",
+  // Georgia — BR series
+  atlanta: "br",
+  "rome-ga": "br",
+  // Kansas — BR series
+  wichita: "br",
+  "kansas-city": "br",
+  "dodge-city": "br",
+  // Missouri — BR series
+  "springfield-mo": "br",
+  // New Mexico — BR series
+  hobbs: "br",
+  roswell: "br",
+  "las-cruces": "br",
+  // North Carolina — BR series
+  charlotte: "br",
+  greensboro: "br",
+  // South Carolina — BR series
+  "greenville-sc": "br",
+  // Tennessee — BR series
+  nashville: "br",
+  cookeville: "br",
 };
 
 export function getDefaultPanelType(jurisdictionId: string): PanelTypeId {

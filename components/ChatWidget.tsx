@@ -71,10 +71,10 @@ export function ChatWidget({ jobContext, variant = "floating" }: ChatWidgetProps
 
   const chatPanel = (
     <div className="bg-[hsl(222,47%,9%)] border border-[hsl(217,33%,22%)] rounded-xl shadow-2xl shadow-black/60 flex flex-col overflow-hidden"
-      style={{ height: "380px" }}
+      style={{ height: "min(520px, calc(100vh - 200px))" }}
     >
       {/* Header */}
-      <div className="flex items-center justify-between px-3 py-2.5 bg-[hsl(222,47%,11%)] border-b border-[hsl(217,33%,20%)]">
+      <div className="flex items-center justify-between px-3 py-2 bg-[hsl(222,47%,11%)] border-b border-[hsl(217,33%,20%)]">
         <div className="flex items-center gap-2">
           <Zap className="w-3.5 h-3.5 text-yellow-400 fill-yellow-400" />
           <span className="font-semibold text-white text-xs">VoltSpec AI</span>
@@ -91,17 +91,12 @@ export function ChatWidget({ jobContext, variant = "floating" }: ChatWidgetProps
           <X className="w-3.5 h-3.5" />
         </Button>
       </div>
-      {/* Disclaimer */}
-      <div className="flex items-center gap-1.5 px-3 py-1 bg-amber-900/20 border-b border-amber-900/30 text-amber-400 text-xs">
-        <AlertTriangle className="w-3 h-3 shrink-0" />
-        Reference only — verify with AHJ
-      </div>
       {/* Messages */}
-      <ScrollArea className="flex-1 px-3 py-2">
-        <div className="space-y-2">
+      <ScrollArea className="flex-1 px-3 py-3">
+        <div className="space-y-3">
           {messages.map((msg, i) => (
             <div key={i} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
-              <div className={`max-w-[85%] rounded-xl px-3 py-2 text-xs leading-relaxed whitespace-pre-wrap ${
+              <div className={`max-w-[90%] rounded-xl px-3.5 py-2.5 text-sm leading-relaxed whitespace-pre-wrap ${
                 msg.role === "user"
                   ? "bg-yellow-400 text-gray-900 font-medium"
                   : "bg-[hsl(217,33%,16%)] text-gray-200"
@@ -124,23 +119,28 @@ export function ChatWidget({ jobContext, variant = "floating" }: ChatWidgetProps
           <div ref={bottomRef} />
         </div>
       </ScrollArea>
+      {/* Disclaimer */}
+      <div className="flex items-center gap-1.5 px-3 py-1 bg-amber-900/20 border-t border-amber-900/30 text-amber-400 text-[10px]">
+        <AlertTriangle className="w-2.5 h-2.5 shrink-0" />
+        Reference only — verify with AHJ
+      </div>
       {/* Input */}
-      <div className="px-3 py-2 border-t border-[hsl(217,33%,20%)] flex gap-2">
+      <div className="px-3 py-2.5 border-t border-[hsl(217,33%,20%)] flex gap-2">
         <Textarea
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={handleKeyDown}
           placeholder="Ask a code question…"
           rows={1}
-          className="resize-none text-xs bg-[hsl(217,33%,13%)] border-[hsl(217,33%,22%)] text-white placeholder-gray-600 focus:ring-yellow-400 focus:border-yellow-400 min-h-[34px] max-h-[80px]"
+          className="resize-none text-sm bg-[hsl(217,33%,13%)] border-[hsl(217,33%,22%)] text-white placeholder-gray-600 focus:ring-yellow-400 focus:border-yellow-400 min-h-[38px] max-h-[100px]"
         />
         <Button
           onClick={sendMessage}
           disabled={!input.trim() || loading}
           size="icon"
-          className="bg-yellow-400 hover:bg-yellow-300 text-gray-900 shrink-0 disabled:opacity-40 h-[34px] w-[34px]"
+          className="bg-yellow-400 hover:bg-yellow-300 text-gray-900 shrink-0 disabled:opacity-40 h-[38px] w-[38px]"
         >
-          <Send className="w-3.5 h-3.5" />
+          <Send className="w-4 h-4" />
         </Button>
       </div>
     </div>

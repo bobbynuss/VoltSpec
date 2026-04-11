@@ -234,9 +234,9 @@ function HomeContent() {
         {/* Sidebar */}
         <aside
           className={`
-            fixed lg:static inset-y-0 left-0 z-40 w-[min(18rem,85vw)]
+            fixed lg:static inset-y-0 left-0 z-40 w-[min(22rem,85vw)]
             transform transition-transform duration-200 ease-in-out
-            lg:transform-none lg:w-72
+            lg:transform-none lg:w-[22rem]
             ${sidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}
             bg-[hsl(222,47%,8%)] border-r border-[hsl(217,33%,18%)]
             overflow-y-auto pt-14 lg:pt-0

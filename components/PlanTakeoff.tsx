@@ -36,21 +36,28 @@ export function PlanTakeoff({ onAddToList, onClose }: PlanTakeoffProps) {
   const fileRef = useRef<HTMLInputElement>(null);
 
   const handleFile = useCallback((f: File) => {
-    if (!f.type.startsWith("image/")) {
-      setError("Please upload an image file (JPG, PNG, or WebP). For PDFs, take a screenshot of the electrical plan page first.");
+    const isImage = f.type.startsWith("image/");
+    const isPdf = f.type === "application/pdf" || f.name.toLowerCase().endsWith(".pdf");
+    if (!isImage && !isPdf) {
+      setError("Please upload an image (JPG, PNG, WebP) or a PDF file.");
       return;
     }
-    if (f.size > 20 * 1024 * 1024) {
-      setError("File too large. Max 20MB.");
+    if (f.size > 30 * 1024 * 1024) {
+      setError("File too large. Max 30MB.");
       return;
     }
     setFile(f);
     setError(null);
     setResults(null);
 
-    const reader = new FileReader();
-    reader.onload = (e) => setPreview(e.target?.result as string);
-    reader.readAsDataURL(f);
+    if (isImage) {
+      const reader = new FileReader();
+      reader.onload = (e) => setPreview(e.target?.result as string);
+      reader.readAsDataURL(f);
+    } else {
+      // PDF — show filename as preview instead of image
+      setPreview("pdf");
+    }
   }, []);
 
   const handleDrop = useCallback((e: React.DragEvent) => {
@@ -155,7 +162,7 @@ export function PlanTakeoff({ onAddToList, onClose }: PlanTakeoffProps) {
               <input
                 ref={fileRef}
                 type="file"
-                accept="image/*"
+                accept="image/*,.pdf,application/pdf"
                 onChange={(e) => {
                   const f = e.target.files?.[0];
                   if (f) handleFile(f);
@@ -164,11 +171,21 @@ export function PlanTakeoff({ onAddToList, onClose }: PlanTakeoffProps) {
               />
               {preview ? (
                 <div className="space-y-3">
-                  <img
-                    src={preview}
-                    alt="Plan preview"
-                    className="max-h-48 mx-auto rounded-lg border border-[hsl(217,33%,22%)]"
-                  />
+                  {preview === "pdf" ? (
+                    <div className="flex items-center justify-center gap-3 py-4">
+                      <svg className="w-10 h-10 text-red-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"/><path d="M14 2v6h6"/><path d="M10 13h4"/><path d="M10 17h4"/></svg>
+                      <div className="text-left">
+                        <p className="text-sm text-white font-medium">{file?.name}</p>
+                        <p className="text-xs text-gray-500">{file ? `${(file.size / 1024 / 1024).toFixed(1)} MB — PDF` : "PDF"}</p>
+                      </div>
+                    </div>
+                  ) : (
+                    <img
+                      src={preview}
+                      alt="Plan preview"
+                      className="max-h-48 mx-auto rounded-lg border border-[hsl(217,33%,22%)]"
+                    />
+                  )}
                   <p className="text-xs text-gray-400">
                     <span className="text-white font-medium">{file?.name}</span> — click to change
                   </p>
@@ -177,10 +194,10 @@ export function PlanTakeoff({ onAddToList, onClose }: PlanTakeoffProps) {
                 <div className="space-y-2">
                   <Upload className="w-8 h-8 text-gray-500 mx-auto" />
                   <p className="text-sm text-gray-400">
-                    Drop an electrical plan image here, or <span className="text-yellow-400">click to browse</span>
+                    Drop an electrical plan here, or <span className="text-yellow-400">click to browse</span>
                   </p>
                   <p className="text-xs text-gray-600">
-                    JPG, PNG, or WebP · Max 20MB · For PDFs, screenshot the electrical plan page
+                    PDF, JPG, PNG, or WebP · Max 30MB
                   </p>
                 </div>
               )}

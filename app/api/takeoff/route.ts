@@ -60,19 +60,41 @@ export async function POST(req: NextRequest) {
     const bytes = await file.arrayBuffer();
     const base64 = Buffer.from(bytes).toString("base64");
 
-    // Determine media type
-    let mediaType: "image/jpeg" | "image/png" | "image/gif" | "image/webp" = "image/png";
-    if (file.type === "image/jpeg" || file.name.endsWith(".jpg") || file.name.endsWith(".jpeg")) {
-      mediaType = "image/jpeg";
-    } else if (file.type === "image/webp") {
-      mediaType = "image/webp";
-    } else if (file.type === "image/gif") {
-      mediaType = "image/gif";
-    }
+    const isPdf = file.type === "application/pdf" || file.name.toLowerCase().endsWith(".pdf");
 
     const userMessage = notes
       ? `Analyze this electrical plan and generate a BOM. Additional notes from the contractor: ${notes}`
       : "Analyze this electrical plan and generate a BOM.";
+
+    // Build the content block — PDF uses document type, images use image type
+    let fileContent: Anthropic.Messages.ContentBlockParam;
+    if (isPdf) {
+      fileContent = {
+        type: "document",
+        source: {
+          type: "base64",
+          media_type: "application/pdf",
+          data: base64,
+        },
+      };
+    } else {
+      let mediaType: "image/jpeg" | "image/png" | "image/gif" | "image/webp" = "image/png";
+      if (file.type === "image/jpeg" || file.name.endsWith(".jpg") || file.name.endsWith(".jpeg")) {
+        mediaType = "image/jpeg";
+      } else if (file.type === "image/webp") {
+        mediaType = "image/webp";
+      } else if (file.type === "image/gif") {
+        mediaType = "image/gif";
+      }
+      fileContent = {
+        type: "image",
+        source: {
+          type: "base64",
+          media_type: mediaType,
+          data: base64,
+        },
+      };
+    }
 
     const response = await anthropic.messages.create({
       model: "claude-sonnet-4-20250514",
@@ -82,14 +104,7 @@ export async function POST(req: NextRequest) {
         {
           role: "user",
           content: [
-            {
-              type: "image",
-              source: {
-                type: "base64",
-                media_type: mediaType,
-                data: base64,
-              },
-            },
+            fileContent,
             {
               type: "text",
               text: userMessage,

@@ -3,6 +3,7 @@ import Anthropic from "@anthropic-ai/sdk";
 
 const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY,
+  timeout: 4 * 60 * 1000, // 4 minutes for large PDFs
 });
 
 const SYSTEM_PROMPT = `You are VoltSpec AI Takeoff — an expert electrical estimating assistant that analyzes construction plan images and generates a Bill of Materials (BOM).
@@ -90,6 +91,9 @@ If the file is truly NOT an electrical plan (e.g. a photo of a cat), respond wit
 
 RESPOND WITH ONLY THE JSON ARRAY. No markdown, no explanation, no code blocks.`;
 
+// Allow up to 5 minutes for large PDFs
+export const maxDuration = 300;
+
 export async function POST(req: NextRequest) {
   try {
     if (!process.env.ANTHROPIC_API_KEY) {
@@ -149,7 +153,7 @@ export async function POST(req: NextRequest) {
 
     const response = await anthropic.messages.create({
       model: "claude-sonnet-4-20250514",
-      max_tokens: 4096,
+      max_tokens: 8192,
       system: SYSTEM_PROMPT,
       messages: [
         {

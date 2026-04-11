@@ -77,10 +77,15 @@ export function PlanTakeoff({ onAddToList, onClose }: PlanTakeoffProps) {
       formData.append("file", file);
       if (notes.trim()) formData.append("notes", notes.trim());
 
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 4 * 60 * 1000); // 4 min timeout
+
       const res = await fetch("/api/takeoff", {
         method: "POST",
         body: formData,
+        signal: controller.signal,
       });
+      clearTimeout(timeout);
 
       const data = await res.json();
 
@@ -94,8 +99,12 @@ export function PlanTakeoff({ onAddToList, onClose }: PlanTakeoffProps) {
         // Select all by default
         setSelected(new Set(data.items.map((_: TakeoffItem, i: number) => i)));
       }
-    } catch {
-      setError("Connection error. Check your network and try again.");
+    } catch (err: any) {
+      if (err?.name === "AbortError") {
+        setError("Analysis timed out — this plan may be too large. Try uploading just the electrical sheets (not the full permit set).");
+      } else {
+        setError("Connection error. Check your network and try again.");
+      }
     } finally {
       setLoading(false);
     }
@@ -226,7 +235,7 @@ export function PlanTakeoff({ onAddToList, onClose }: PlanTakeoffProps) {
               {loading ? (
                 <span className="flex items-center gap-2">
                   <Loader2 className="w-4 h-4 animate-spin" />
-                  Analyzing plan…
+                  {file && file.size > 5 * 1024 * 1024 ? "Analyzing large plan — this may take 1-2 minutes…" : "Analyzing plan…"}
                 </span>
               ) : (
                 <span className="flex items-center gap-2">

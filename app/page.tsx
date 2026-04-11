@@ -128,8 +128,7 @@ export default function LandingPage() {
             Four States. Growing Fast.
           </h2>
           <p className="text-gray-500 text-center mb-12 max-w-2xl mx-auto">
-            Every jurisdiction has its own utility rules, meter socket requirements, and pricing overlay.
-            Adding a new city takes one config file.
+            Every jurisdiction has the correct utility rules, meter socket requirements, panel series, and local pricing — so your spec matches what the AHJ actually wants.
           </p>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             <StateCard

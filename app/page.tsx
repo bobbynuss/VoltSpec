@@ -44,22 +44,23 @@ export default function LandingPage() {
       </header>
 
       {/* Hero */}
-      <section className="flex-1 flex flex-col items-center justify-center text-center px-4 py-16 sm:py-24">
-        <div className="mb-6">
-          <Image src="/logo-transparent.png" alt="VoltSpec" width={80} height={80} className="w-20 h-20 mx-auto opacity-90" />
+      <section className="flex-1 flex flex-col items-center justify-center text-center px-6 sm:px-4 py-12 sm:py-24">
+        <div className="mb-4 sm:mb-6">
+          <Image src="/logo-transparent.png" alt="VoltSpec" width={80} height={80} className="w-14 h-14 sm:w-20 sm:h-20 mx-auto opacity-90" />
         </div>
-        <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-white tracking-tight max-w-4xl leading-tight">
+        <h1 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold text-white tracking-tight max-w-4xl leading-tight">
           Electrical Estimating
           <br />
           <span className="text-yellow-400">Built for the Field</span>
         </h1>
-        <p className="mt-6 text-lg sm:text-xl text-gray-400 max-w-2xl leading-relaxed">
-          Generate accurate materials lists, realistic SVG blueprints,
-          and professional PDF packages — with real Elliott Electric Supply pricing,
-          jurisdiction-specific utility rules, and full NEC&nbsp;2026 compliance
-          across <span className="text-white font-semibold">14 states</span> — everywhere Elliott Electric has a counter.
+        <p className="mt-5 sm:mt-6 text-base sm:text-xl text-gray-400 max-w-2xl leading-relaxed">
+          Materials lists, SVG blueprints, and professional PDFs — with real Elliott Electric pricing
+          and NEC&nbsp;2026 compliance across <span className="text-white font-semibold">14 states</span>.
         </p>
-        <div className="mt-10 flex flex-col sm:flex-row gap-4">
+        <p className="mt-2 text-sm text-gray-500 max-w-lg hidden sm:block">
+          Jurisdiction-specific utility rules, panel series, and code requirements — everywhere Elliott Electric has a counter.
+        </p>
+        <div className="mt-8 sm:mt-10 flex flex-col sm:flex-row gap-4 w-full sm:w-auto px-2 sm:px-0">
           <Link
             href="/app"
             className="inline-flex items-center justify-center gap-2 text-lg font-bold text-[hsl(222,47%,7%)] bg-yellow-400 hover:bg-yellow-300 px-8 py-4 rounded-xl transition-colors shadow-lg shadow-yellow-400/20"
@@ -78,8 +79,8 @@ export default function LandingPage() {
       </section>
 
       {/* Stats Bar */}
-      <section className="border-t border-b border-[hsl(217,33%,18%)] bg-[hsl(222,47%,9%)] px-4 py-8">
-        <div className="max-w-5xl mx-auto grid grid-cols-2 sm:grid-cols-4 gap-6 text-center">
+      <section className="border-t border-b border-[hsl(217,33%,18%)] bg-[hsl(222,47%,9%)] px-6 sm:px-4 py-8">
+        <div className="max-w-5xl mx-auto grid grid-cols-2 sm:grid-cols-4 gap-8 sm:gap-6 text-center">
           <StatBlock number="74" label="Jurisdictions" />
           <StatBlock number="29" label="Job Types" />
           <StatBlock number="14" label="States" />
@@ -88,32 +89,32 @@ export default function LandingPage() {
       </section>
 
       {/* Features */}
-      <section className="bg-[hsl(222,47%,8%)] px-4 py-16 sm:py-20">
+      <section className="bg-[hsl(222,47%,8%)] px-6 sm:px-4 py-12 sm:py-20">
         <div className="max-w-5xl mx-auto">
-          <h2 className="text-2xl sm:text-3xl font-bold text-white text-center mb-4">
+          <h2 className="text-xl sm:text-3xl font-bold text-white text-center mb-3 sm:mb-4">
             Everything you need to spec a job
           </h2>
-          <p className="text-gray-500 text-center mb-12 max-w-2xl mx-auto">
+          <p className="text-gray-500 text-center mb-8 sm:mb-12 max-w-2xl mx-auto text-sm sm:text-base">
             From residential service upgrades to 7-phase data center build-outs — one tool handles it all.
           </p>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
             <FeatureCard
-              icon={<MapPin className="w-7 h-7" />}
+              icon={<MapPin className="w-6 h-6 sm:w-7 sm:h-7" />}
               title="74 Jurisdictions"
               description="14 states from Texas to the Carolinas — each with compliant utility rules, panel series, and local code requirements."
             />
             <FeatureCard
-              icon={<DollarSign className="w-7 h-7" />}
+              icon={<DollarSign className="w-6 h-6 sm:w-7 sm:h-7" />}
               title="Real Elliott Pricing"
               description="Actual part numbers, vendor codes, and invoice-derived pricing from Elliott Electric Supply with direct links and one-click Bulk Entry."
             />
             <FeatureCard
-              icon={<Layers className="w-7 h-7" />}
+              icon={<Layers className="w-6 h-6 sm:w-7 sm:h-7" />}
               title="29 Job Types"
               description="Residential, commercial, solar, EV chargers, generators, data center phases 1–7, and more — with smart panel type selection."
             />
             <FeatureCard
-              icon={<FileText className="w-7 h-7" />}
+              icon={<FileText className="w-6 h-6 sm:w-7 sm:h-7" />}
               title="Professional Exports"
               description="PDF packages, one-page Job Sheets, and quote request emails to your Elliott rep — all with toggleable estimated pricing."
             />
@@ -122,15 +123,15 @@ export default function LandingPage() {
       </section>
 
       {/* Coverage Map */}
-      <section className="px-4 py-16 sm:py-20 border-t border-[hsl(217,33%,18%)]">
+      <section className="px-6 sm:px-4 py-12 sm:py-20 border-t border-[hsl(217,33%,18%)]">
         <div className="max-w-5xl mx-auto">
-          <h2 className="text-2xl sm:text-3xl font-bold text-white text-center mb-4">
+          <h2 className="text-xl sm:text-3xl font-bold text-white text-center mb-3 sm:mb-4">
             Coast to Coast. Every Elliott Counter.
           </h2>
-          <p className="text-gray-500 text-center mb-12 max-w-2xl mx-auto">
+          <p className="text-gray-500 text-center mb-8 sm:mb-12 max-w-2xl mx-auto text-sm sm:text-base">
             Every jurisdiction has compliant utility rules, meter socket requirements, panel series, and local pricing — so your spec matches what the AHJ actually wants.
           </p>
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
             <StateCard state="Texas" abbr="TX" count={31} cities="Austin, San Antonio, Houston, DFW, El Paso, Corpus Christi, Beaumont + 24 more" />
             <StateCard state="Louisiana" abbr="LA" count={7} cities="Shreveport, Baton Rouge, New Orleans, Lafayette, Lake Charles + more" />
             <StateCard state="Oklahoma" abbr="OK" count={6} cities="OKC, Tulsa, Lawton, Enid, Durant, Shawnee" />
@@ -150,16 +151,16 @@ export default function LandingPage() {
       </section>
 
       {/* How it works */}
-      <section className="px-4 py-16 sm:py-20 border-t border-[hsl(217,33%,18%)] bg-[hsl(222,47%,8%)]">
+      <section className="px-6 sm:px-4 py-12 sm:py-20 border-t border-[hsl(217,33%,18%)] bg-[hsl(222,47%,8%)]">
         <div className="max-w-3xl mx-auto">
-          <h2 className="text-2xl sm:text-3xl font-bold text-white text-center mb-12">
+          <h2 className="text-xl sm:text-3xl font-bold text-white text-center mb-8 sm:mb-12">
             Three steps. That&apos;s it.
           </h2>
-          <div className="space-y-8">
+          <div className="space-y-6 sm:space-y-8">
             <Step
               num="1"
               title="Pick your city and job type"
-              description="29 job types across 34 jurisdictions — residential services, commercial buildouts, data center phases, solar, EV chargers, generators, and more."
+              description="29 job types across 74 jurisdictions — residential services, commercial buildouts, data center phases, solar, EV chargers, generators, and more."
             />
             <Step
               num="2"
@@ -172,7 +173,7 @@ export default function LandingPage() {
               description="Get your full materials list with smart grouping, SVG blueprint, NEC code references, and a professional PDF or one-page Job Sheet — instantly."
             />
           </div>
-          <div className="text-center mt-12">
+          <div className="text-center mt-10 sm:mt-12">
             <Link
               href="/app"
               className="inline-flex items-center gap-2 text-lg font-bold text-[hsl(222,47%,7%)] bg-yellow-400 hover:bg-yellow-300 px-8 py-4 rounded-xl transition-colors shadow-lg shadow-yellow-400/20"
@@ -185,12 +186,12 @@ export default function LandingPage() {
       </section>
 
       {/* Job Types Preview */}
-      <section className="px-4 py-16 sm:py-20 border-t border-[hsl(217,33%,18%)]">
+      <section className="px-6 sm:px-4 py-12 sm:py-20 border-t border-[hsl(217,33%,18%)]">
         <div className="max-w-5xl mx-auto">
-          <h2 className="text-2xl sm:text-3xl font-bold text-white text-center mb-4">
+          <h2 className="text-xl sm:text-3xl font-bold text-white text-center mb-3 sm:mb-4">
             Job Types
           </h2>
-          <p className="text-gray-500 text-center mb-10 max-w-2xl mx-auto">
+          <p className="text-gray-500 text-center mb-8 sm:mb-10 max-w-2xl mx-auto text-sm sm:text-base">
             Every job type comes with complete materials, NEC requirements, SVG diagrams, and Elliott pricing.
           </p>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -240,7 +241,7 @@ export default function LandingPage() {
       </section>
 
       {/* Footer */}
-      <footer className="border-t border-[hsl(217,33%,18%)] bg-[hsl(222,47%,8%)] px-4 py-8 text-center">
+      <footer className="border-t border-[hsl(217,33%,18%)] bg-[hsl(222,47%,8%)] px-6 sm:px-4 py-8 text-center">
         <div className="flex items-center justify-center gap-2 mb-3">
           <Image src="/logo-transparent.png" alt="VoltSpec" width={20} height={20} className="w-5 h-5 opacity-70" />
           <span className="text-sm font-semibold text-gray-400">
@@ -285,10 +286,12 @@ function FeatureCard({
   description: string;
 }) {
   return (
-    <div className="bg-[hsl(222,47%,10%)] border border-[hsl(217,33%,20%)] rounded-xl p-6 hover:border-yellow-400/30 transition-colors">
-      <div className="text-yellow-400 mb-4">{icon}</div>
-      <h3 className="text-white font-semibold text-lg mb-2">{title}</h3>
-      <p className="text-gray-400 text-sm leading-relaxed">{description}</p>
+    <div className="bg-[hsl(222,47%,10%)] border border-[hsl(217,33%,20%)] rounded-xl p-5 sm:p-6 hover:border-yellow-400/30 transition-colors flex sm:block items-start gap-4">
+      <div className="text-yellow-400 mb-0 sm:mb-4 shrink-0 mt-0.5 sm:mt-0">{icon}</div>
+      <div>
+        <h3 className="text-white font-semibold text-base sm:text-lg mb-1 sm:mb-2">{title}</h3>
+        <p className="text-gray-400 text-sm leading-relaxed">{description}</p>
+      </div>
     </div>
   );
 }
@@ -305,29 +308,29 @@ function StateCard({
   cities: string;
 }) {
   return (
-    <div className="bg-[hsl(222,47%,10%)] border border-[hsl(217,33%,20%)] rounded-xl p-5 hover:border-yellow-400/30 transition-colors">
-      <div className="flex items-center gap-3 mb-3">
-        <div className="w-9 h-9 rounded-lg bg-yellow-400/10 flex items-center justify-center text-yellow-400 font-bold text-sm">
+    <div className="bg-[hsl(222,47%,10%)] border border-[hsl(217,33%,20%)] rounded-xl p-3.5 sm:p-5 hover:border-yellow-400/30 transition-colors">
+      <div className="flex items-center gap-2.5 sm:gap-3 mb-0 sm:mb-3">
+        <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg bg-yellow-400/10 flex items-center justify-center text-yellow-400 font-bold text-xs sm:text-sm shrink-0">
           {abbr}
         </div>
-        <div>
-          <h3 className="text-white font-semibold">{state}</h3>
-          <span className="text-xs text-gray-500">{count} jurisdiction{count !== 1 ? "s" : ""}</span>
+        <div className="min-w-0">
+          <h3 className="text-white font-semibold text-sm sm:text-base truncate">{state}</h3>
+          <span className="text-[11px] sm:text-xs text-gray-500">{count} jurisdiction{count !== 1 ? "s" : ""}</span>
         </div>
       </div>
-      <p className="text-gray-500 text-xs leading-relaxed">{cities}</p>
+      <p className="text-gray-500 text-xs leading-relaxed hidden sm:block">{cities}</p>
     </div>
   );
 }
 
 function JobCategory({ title, jobs }: { title: string; jobs: string[] }) {
   return (
-    <div className="bg-[hsl(222,47%,10%)] border border-[hsl(217,33%,20%)] rounded-xl p-5">
-      <h3 className="text-yellow-400 font-semibold text-sm uppercase tracking-wider mb-3">{title}</h3>
-      <ul className="space-y-1.5">
+    <div className="bg-[hsl(222,47%,10%)] border border-[hsl(217,33%,20%)] rounded-xl p-4 sm:p-5">
+      <h3 className="text-yellow-400 font-semibold text-sm uppercase tracking-wider mb-2.5 sm:mb-3">{title}</h3>
+      <ul className="space-y-1 sm:space-y-1.5">
         {jobs.map((job) => (
-          <li key={job} className="flex items-start gap-2 text-sm text-gray-400">
-            <Zap className="w-3 h-3 text-yellow-400/50 mt-1 shrink-0" />
+          <li key={job} className="flex items-start gap-2 text-[13px] sm:text-sm text-gray-400">
+            <Zap className="w-3 h-3 text-yellow-400/50 mt-0.5 sm:mt-1 shrink-0" />
             {job}
           </li>
         ))}
@@ -346,13 +349,13 @@ function Step({
   description: string;
 }) {
   return (
-    <div className="flex gap-5 items-start">
-      <div className="flex-shrink-0 w-10 h-10 rounded-full bg-yellow-400 text-[hsl(222,47%,7%)] font-extrabold text-lg flex items-center justify-center">
+    <div className="flex gap-4 sm:gap-5 items-start">
+      <div className="flex-shrink-0 w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-yellow-400 text-[hsl(222,47%,7%)] font-extrabold text-base sm:text-lg flex items-center justify-center">
         {num}
       </div>
       <div>
-        <h3 className="text-white font-semibold text-lg">{title}</h3>
-        <p className="text-gray-400 mt-1 leading-relaxed">{description}</p>
+        <h3 className="text-white font-semibold text-base sm:text-lg">{title}</h3>
+        <p className="text-gray-400 mt-1 leading-relaxed text-sm sm:text-base">{description}</p>
       </div>
     </div>
   );

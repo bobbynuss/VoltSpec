@@ -6,9 +6,7 @@ import {
   DollarSign,
   Calculator,
   ArrowRight,
-  Building2,
   Zap,
-  ShoppingCart,
   Layers,
 } from "lucide-react";
 
@@ -89,88 +87,87 @@ export default function LandingPage() {
       </section>
 
       {/* Features */}
-      <section className="bg-[hsl(222,47%,8%)] px-6 sm:px-4 py-12 sm:py-20">
+      <section className="bg-[hsl(222,47%,8%)] px-6 sm:px-4 py-12 sm:py-16">
         <div className="max-w-5xl mx-auto">
           <h2 className="text-xl sm:text-3xl font-bold text-white text-center mb-3 sm:mb-4">
             Everything you need to spec a job
           </h2>
-          <p className="text-gray-500 text-center mb-8 sm:mb-12 max-w-2xl mx-auto text-sm sm:text-base">
+          <p className="text-gray-500 text-center mb-8 sm:mb-10 max-w-2xl mx-auto text-sm sm:text-base">
             From residential service upgrades to 7-phase data center build-outs — one tool handles it all.
           </p>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
             <FeatureCard
               icon={<MapPin className="w-6 h-6 sm:w-7 sm:h-7" />}
               title="74 Jurisdictions"
-              description="14 states from Texas to the Carolinas — each with compliant utility rules, panel series, and local code requirements."
+              description="14 states with compliant utility rules, panel series, and local code requirements."
             />
             <FeatureCard
               icon={<DollarSign className="w-6 h-6 sm:w-7 sm:h-7" />}
               title="Real Elliott Pricing"
-              description="Actual part numbers, vendor codes, and invoice-derived pricing from Elliott Electric Supply with direct links and one-click Bulk Entry."
+              description="Actual part numbers, vendor codes, and invoice-derived pricing with direct links and Bulk Entry."
             />
             <FeatureCard
               icon={<Layers className="w-6 h-6 sm:w-7 sm:h-7" />}
               title="29 Job Types"
-              description="Residential, commercial, solar, EV chargers, generators, data center phases 1–7, and more — with smart panel type selection."
+              description="Residential, commercial, solar, EV, generators, data center phases 1–7, and more."
             />
             <FeatureCard
               icon={<FileText className="w-6 h-6 sm:w-7 sm:h-7" />}
               title="Professional Exports"
-              description="PDF packages, one-page Job Sheets, and quote request emails to your Elliott rep — all with toggleable estimated pricing."
+              description="PDF packages, one-page Job Sheets, and quote requests — with toggleable pricing."
             />
           </div>
         </div>
       </section>
 
-      {/* Coverage Map */}
-      <section className="px-6 sm:px-4 py-12 sm:py-20 border-t border-[hsl(217,33%,18%)]">
+      {/* Coverage — compact state strip */}
+      <section className="px-6 sm:px-4 py-12 sm:py-16 border-t border-[hsl(217,33%,18%)]">
         <div className="max-w-5xl mx-auto">
           <h2 className="text-xl sm:text-3xl font-bold text-white text-center mb-3 sm:mb-4">
-            Coast to Coast. Every Elliott Counter.
+            Coast to Coast
           </h2>
-          <p className="text-gray-500 text-center mb-8 sm:mb-12 max-w-2xl mx-auto text-sm sm:text-base">
-            Every jurisdiction has compliant utility rules, meter socket requirements, panel series, and local pricing — so your spec matches what the AHJ actually wants.
+          <p className="text-gray-500 text-center mb-8 sm:mb-10 max-w-xl mx-auto text-sm sm:text-base">
+            74 jurisdictions across 14 states — everywhere Elliott Electric has a counter.
           </p>
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
-            <StateCard state="Texas" abbr="TX" count={31} cities="Austin, San Antonio, Houston, DFW, El Paso, Corpus Christi, Beaumont + 24 more" />
-            <StateCard state="Louisiana" abbr="LA" count={7} cities="Shreveport, Baton Rouge, New Orleans, Lafayette, Lake Charles + more" />
-            <StateCard state="Oklahoma" abbr="OK" count={6} cities="OKC, Tulsa, Lawton, Enid, Durant, Shawnee" />
-            <StateCard state="Arkansas" abbr="AR" count={8} cities="Little Rock, Fort Smith, NW Arkansas, Jonesboro, Hot Springs + more" />
-            <StateCard state="Arizona" abbr="AZ" count={3} cities="Phoenix Metro, Tucson, Prescott Valley" />
-            <StateCard state="Colorado" abbr="CO" count={3} cities="Denver, Colorado Springs, Fort Collins" />
-            <StateCard state="Georgia" abbr="GA" count={2} cities="Atlanta Metro, Rome" />
-            <StateCard state="Tennessee" abbr="TN" count={2} cities="Nashville, Cookeville" />
-            <StateCard state="Kansas" abbr="KS" count={3} cities="Wichita, Kansas City, Dodge City" />
-            <StateCard state="North Carolina" abbr="NC" count={2} cities="Charlotte, Greensboro" />
-            <StateCard state="Florida" abbr="FL" count={2} cities="Jacksonville, Tampa" />
-            <StateCard state="New Mexico" abbr="NM" count={3} cities="Hobbs/Carlsbad, Roswell, Las Cruces" />
-            <StateCard state="Missouri" abbr="MO" count={1} cities="Springfield" />
-            <StateCard state="South Carolina" abbr="SC" count={1} cities="Greenville" />
+          <div className="flex flex-wrap justify-center gap-2.5 sm:gap-3 max-w-3xl mx-auto">
+            {([
+              ["TX", 31], ["LA", 7], ["OK", 6], ["AR", 8], ["AZ", 3],
+              ["CO", 3], ["FL", 2], ["GA", 2], ["KS", 3], ["MO", 1],
+              ["NC", 2], ["NM", 3], ["SC", 1], ["TN", 2],
+            ] as const).map(([abbr, count]) => (
+              <div
+                key={abbr}
+                className="flex items-center gap-2 bg-[hsl(222,47%,10%)] border border-[hsl(217,33%,20%)] rounded-lg px-3 py-2 sm:px-4 sm:py-2.5 hover:border-yellow-400/30 transition-colors"
+              >
+                <span className="text-yellow-400 font-bold text-sm">{abbr}</span>
+                <span className="text-gray-500 text-xs">{count}</span>
+              </div>
+            ))}
           </div>
         </div>
       </section>
 
       {/* How it works */}
-      <section className="px-6 sm:px-4 py-12 sm:py-20 border-t border-[hsl(217,33%,18%)] bg-[hsl(222,47%,8%)]">
+      <section className="px-6 sm:px-4 py-12 sm:py-16 border-t border-[hsl(217,33%,18%)] bg-[hsl(222,47%,8%)]">
         <div className="max-w-3xl mx-auto">
-          <h2 className="text-xl sm:text-3xl font-bold text-white text-center mb-8 sm:mb-12">
+          <h2 className="text-xl sm:text-3xl font-bold text-white text-center mb-8 sm:mb-10">
             Three steps. That&apos;s it.
           </h2>
           <div className="space-y-6 sm:space-y-8">
             <Step
               num="1"
               title="Pick your city and job type"
-              description="29 job types across 74 jurisdictions — residential services, commercial buildouts, data center phases, solar, EV chargers, generators, and more."
+              description="74 jurisdictions, 29 job types — residential, commercial, data center, solar, EV, and more."
             />
             <Step
               num="2"
               title="Enter your ZIP code"
-              description="VoltSpec auto-detects your jurisdiction, utility, panel series (Eaton CH, BR, Pow-R-Line, SPAN, or MBT combo), and finds your nearest Elliott branch."
+              description="Auto-detects your utility, panel series, and nearest Elliott branch."
             />
             <Step
               num="3"
               title="Generate & export"
-              description="Get your full materials list with smart grouping, SVG blueprint, NEC code references, and a professional PDF or one-page Job Sheet — instantly."
+              description="Full materials list, SVG blueprint, NEC references, and a professional PDF — instantly."
             />
           </div>
           <div className="text-center mt-10 sm:mt-12">
@@ -185,56 +182,27 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Job Types Preview */}
-      <section className="px-6 sm:px-4 py-12 sm:py-20 border-t border-[hsl(217,33%,18%)]">
-        <div className="max-w-5xl mx-auto">
+      {/* Job Types — condensed */}
+      <section className="px-6 sm:px-4 py-12 sm:py-16 border-t border-[hsl(217,33%,18%)]">
+        <div className="max-w-4xl mx-auto">
           <h2 className="text-xl sm:text-3xl font-bold text-white text-center mb-3 sm:mb-4">
-            Job Types
+            29 Job Types
           </h2>
-          <p className="text-gray-500 text-center mb-8 sm:mb-10 max-w-2xl mx-auto text-sm sm:text-base">
-            Every job type comes with complete materials, NEC requirements, SVG diagrams, and Elliott pricing.
+          <p className="text-gray-500 text-center mb-8 sm:mb-10 max-w-xl mx-auto text-sm sm:text-base">
+            Complete materials, NEC requirements, SVG diagrams, and Elliott pricing for every one.
           </p>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            <JobCategory
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <JobColumn
               title="Residential"
-              jobs={[
-                "200A Service Upgrade",
-                "New 200A Residential",
-                "320A & 400A Services",
-                "100A Subpanel",
-                "Detached Garage Subpanel",
-                "Meter Base Replacement",
-                "Residential Trim-Out",
-                "Temp Power Pole",
-              ]}
+              items={["200A Service Upgrade", "New 200A Residential", "320A & 400A Services", "Subpanels", "Meter Base Replacement", "Trim-Out & Temp Power"]}
             />
-            <JobCategory
+            <JobColumn
               title="Specialty"
-              jobs={[
-                "EV Charger (50A & 80A)",
-                "Generator + ATS",
-                "Solar PV 20kW",
-                "Battery Storage",
-                "Whole-House Battery + Solar",
-                "SPAN Smart Panel",
-                "Pool Electrical",
-                "Hot Tub / Spa",
-                "Landscape Lighting",
-              ]}
+              items={["EV Charger (50A & 80A)", "Generator + ATS", "Solar PV & Battery", "SPAN Smart Panel", "Pool & Hot Tub", "Landscape Lighting"]}
             />
-            <JobCategory
-              title="Commercial & Data Center"
-              jobs={[
-                "Commercial 3-Phase 200A",
-                "Commercial 400A 3-Phase",
-                "DC Phase 1: Temp Power",
-                "DC Phase 2: Switchgear",
-                "DC Phase 3: Generator + UPS",
-                "DC Phase 4: Duct Bank",
-                "DC Phase 5: Critical Distribution",
-                "DC Phase 6: Structured Cabling",
-                "DC Phase 7: Final Commissioning",
-              ]}
+            <JobColumn
+              title="Commercial"
+              items={["3-Phase 200A & 400A", "Data Center Phases 1–7", "Switchgear & UPS", "Duct Bank", "Critical Distribution", "Structured Cabling"]}
             />
           </div>
         </div>
@@ -287,51 +255,24 @@ function FeatureCard({
 }) {
   return (
     <div className="bg-[hsl(222,47%,10%)] border border-[hsl(217,33%,20%)] rounded-xl p-5 sm:p-6 hover:border-yellow-400/30 transition-colors flex sm:block items-start gap-4">
-      <div className="text-yellow-400 mb-0 sm:mb-4 shrink-0 mt-0.5 sm:mt-0">{icon}</div>
+      <div className="text-yellow-400 mb-0 sm:mb-3 shrink-0 mt-0.5 sm:mt-0">{icon}</div>
       <div>
-        <h3 className="text-white font-semibold text-base sm:text-lg mb-1 sm:mb-2">{title}</h3>
+        <h3 className="text-white font-semibold text-base sm:text-lg mb-1 sm:mb-1.5">{title}</h3>
         <p className="text-gray-400 text-sm leading-relaxed">{description}</p>
       </div>
     </div>
   );
 }
 
-function StateCard({
-  state,
-  abbr,
-  count,
-  cities,
-}: {
-  state: string;
-  abbr: string;
-  count: number;
-  cities: string;
-}) {
-  return (
-    <div className="bg-[hsl(222,47%,10%)] border border-[hsl(217,33%,20%)] rounded-xl p-3.5 sm:p-5 hover:border-yellow-400/30 transition-colors">
-      <div className="flex items-center gap-2.5 sm:gap-3 mb-0 sm:mb-3">
-        <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg bg-yellow-400/10 flex items-center justify-center text-yellow-400 font-bold text-xs sm:text-sm shrink-0">
-          {abbr}
-        </div>
-        <div className="min-w-0">
-          <h3 className="text-white font-semibold text-sm sm:text-base truncate">{state}</h3>
-          <span className="text-[11px] sm:text-xs text-gray-500">{count} jurisdiction{count !== 1 ? "s" : ""}</span>
-        </div>
-      </div>
-      <p className="text-gray-500 text-xs leading-relaxed hidden sm:block">{cities}</p>
-    </div>
-  );
-}
-
-function JobCategory({ title, jobs }: { title: string; jobs: string[] }) {
+function JobColumn({ title, items }: { title: string; items: string[] }) {
   return (
     <div className="bg-[hsl(222,47%,10%)] border border-[hsl(217,33%,20%)] rounded-xl p-4 sm:p-5">
       <h3 className="text-yellow-400 font-semibold text-sm uppercase tracking-wider mb-2.5 sm:mb-3">{title}</h3>
       <ul className="space-y-1 sm:space-y-1.5">
-        {jobs.map((job) => (
-          <li key={job} className="flex items-start gap-2 text-[13px] sm:text-sm text-gray-400">
+        {items.map((item) => (
+          <li key={item} className="flex items-start gap-2 text-[13px] sm:text-sm text-gray-400">
             <Zap className="w-3 h-3 text-yellow-400/50 mt-0.5 sm:mt-1 shrink-0" />
-            {job}
+            {item}
           </li>
         ))}
       </ul>

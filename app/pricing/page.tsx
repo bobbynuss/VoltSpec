@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Check, X, ArrowLeft, Zap, Crown } from "lucide-react";
@@ -19,6 +19,37 @@ export default function PricingPage() {
   const [billing, setBilling] = useState<"monthly" | "annual">("annual");
   const [checkoutLoading, setCheckoutLoading] = useState(false);
   const [authOpen, setAuthOpen] = useState(false);
+  const [inviteCode, setInviteCode] = useState("");
+  const [inviteLoading, setInviteLoading] = useState(false);
+  const [inviteMsg, setInviteMsg] = useState<{ ok: boolean; text: string } | null>(null);
+
+  const handleRedeem = useCallback(async () => {
+    if (!inviteCode.trim()) return;
+    if (!user) {
+      setAuthOpen(true);
+      return;
+    }
+    setInviteLoading(true);
+    setInviteMsg(null);
+    try {
+      const res = await fetch("/api/invite/redeem", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ code: inviteCode.trim(), userId: user.id, email: user.email }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setInviteMsg({ ok: true, text: "🎉 Pro access activated! Refreshing..." });
+        setTimeout(() => window.location.href = "/app?upgraded=true", 1500);
+      } else {
+        setInviteMsg({ ok: false, text: data.error ?? "Invalid code" });
+      }
+    } catch {
+      setInviteMsg({ ok: false, text: "Something went wrong" });
+    } finally {
+      setInviteLoading(false);
+    }
+  }, [inviteCode, user]);
 
   const handleCheckout = async (priceId: string) => {
     if (!user) {
@@ -198,6 +229,36 @@ export default function PricingPage() {
             </ul>
           </div>
         </div>
+
+        {/* Invite code section */}
+        {tier !== "pro" && (
+          <div className="max-w-sm mx-auto mt-12 text-center">
+            <p className="text-gray-500 text-sm mb-3">Have an invite code?</p>
+            <div className="flex gap-2">
+              <input
+                type="text"
+                value={inviteCode}
+                onChange={(e) => setInviteCode(e.target.value.toUpperCase())}
+                onKeyDown={(e) => e.key === "Enter" && handleRedeem()}
+                placeholder="VS-XXXX-XXXX"
+                maxLength={12}
+                className="flex-1 px-3 py-2.5 rounded-lg text-sm bg-[hsl(217,33%,13%)] border border-[hsl(217,33%,22%)] text-white placeholder-gray-600 focus:outline-none focus:ring-1 focus:ring-yellow-400 focus:border-yellow-400 font-mono tracking-wider text-center"
+              />
+              <button
+                onClick={handleRedeem}
+                disabled={inviteLoading || !inviteCode.trim()}
+                className="px-5 py-2.5 rounded-lg text-sm font-semibold bg-[hsl(217,33%,15%)] text-gray-300 hover:text-yellow-400 hover:bg-[hsl(217,33%,18%)] transition-colors disabled:opacity-40 cursor-pointer"
+              >
+                {inviteLoading ? "..." : "Redeem"}
+              </button>
+            </div>
+            {inviteMsg && (
+              <p className={`text-sm mt-2 ${inviteMsg.ok ? "text-emerald-400" : "text-red-400"}`}>
+                {inviteMsg.text}
+              </p>
+            )}
+          </div>
+        )}
 
         {/* FAQ or note */}
         <p className="text-center text-gray-600 text-sm mt-10 max-w-md mx-auto">

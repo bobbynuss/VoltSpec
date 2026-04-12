@@ -94,6 +94,8 @@ RESPOND WITH ONLY THE JSON ARRAY. No markdown, no explanation, no code blocks.`;
 // Allow up to 5 minutes for large PDFs
 export const maxDuration = 300;
 
+
+
 export async function POST(req: NextRequest) {
   try {
     if (!process.env.ANTHROPIC_API_KEY) {
@@ -103,27 +105,28 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const formData = await req.formData();
-    const file = formData.get("file") as File | null;
-    const notes = formData.get("notes") as string | null;
+    const body = await req.json();
+    const { file: base64, fileName, fileType, notes } = body as {
+      file?: string;
+      fileName?: string;
+      fileType?: string;
+      notes?: string;
+    };
 
-    if (!file) {
+    if (!base64 || !fileName) {
       return NextResponse.json({ error: "No file uploaded" }, { status: 400 });
     }
 
-    // Check file size — Anthropic has limits on document size
-    const maxSize = 25 * 1024 * 1024; // 25MB raw (base64 will be ~33% larger)
-    if (file.size > maxSize) {
+    // Check base64 size (base64 is ~33% larger than raw)
+    const rawSize = Math.round(base64.length * 0.75);
+    const maxSize = 25 * 1024 * 1024;
+    if (rawSize > maxSize) {
       return NextResponse.json({
-        error: `File is ${(file.size / 1024 / 1024).toFixed(1)}MB — too large for AI analysis. Please upload just the electrical sheets (E-pages) from the permit set, not the full document. Most PDF viewers can export individual pages.`,
+        error: `File is ${(rawSize / 1024 / 1024).toFixed(1)}MB — too large for AI analysis. Please upload just the electrical sheets (E-pages) from the permit set, not the full document.`,
       }, { status: 400 });
     }
 
-    // Convert file to base64
-    const bytes = await file.arrayBuffer();
-    const base64 = Buffer.from(bytes).toString("base64");
-
-    const isPdf = file.type === "application/pdf" || file.name.toLowerCase().endsWith(".pdf");
+    const isPdf = fileType === "application/pdf" || fileName.toLowerCase().endsWith(".pdf");
 
     const userMessage = notes
       ? `Analyze this electrical plan and generate a BOM. Additional notes from the contractor: ${notes}`
@@ -142,11 +145,11 @@ export async function POST(req: NextRequest) {
       };
     } else {
       let mediaType: "image/jpeg" | "image/png" | "image/gif" | "image/webp" = "image/png";
-      if (file.type === "image/jpeg" || file.name.endsWith(".jpg") || file.name.endsWith(".jpeg")) {
+      if (fileType === "image/jpeg" || fileName.endsWith(".jpg") || fileName.endsWith(".jpeg")) {
         mediaType = "image/jpeg";
-      } else if (file.type === "image/webp") {
+      } else if (fileType === "image/webp") {
         mediaType = "image/webp";
-      } else if (file.type === "image/gif") {
+      } else if (fileType === "image/gif") {
         mediaType = "image/gif";
       }
       fileContent = {

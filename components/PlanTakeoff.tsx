@@ -77,12 +77,24 @@ export function PlanTakeoff({ onAddToList, onClose }: PlanTakeoffProps) {
       formData.append("file", file);
       if (notes.trim()) formData.append("notes", notes.trim());
 
+      // Convert file to base64 on the client to avoid Next.js FormData size limits
+      const arrayBuffer = await file.arrayBuffer();
+      const base64 = btoa(
+        new Uint8Array(arrayBuffer).reduce((data, byte) => data + String.fromCharCode(byte), "")
+      );
+
       const controller = new AbortController();
       const timeout = setTimeout(() => controller.abort(), 4 * 60 * 1000); // 4 min timeout
 
       const res = await fetch("/api/takeoff", {
         method: "POST",
-        body: formData,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          file: base64,
+          fileName: file.name,
+          fileType: file.type,
+          notes: notes?.trim() || undefined,
+        }),
         signal: controller.signal,
       });
       clearTimeout(timeout);

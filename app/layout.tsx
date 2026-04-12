@@ -87,6 +87,7 @@ export const metadata: Metadata = {
 };
 
 import { AuthProvider } from "@/components/AuthProvider";
+import { SubscriptionProvider } from "@/components/SubscriptionProvider";
 
 export default function RootLayout({
   children,
@@ -96,7 +97,9 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark">
       <body className="min-h-screen bg-background text-foreground antialiased">
-        <AuthProvider>{children}</AuthProvider>
+        <AuthProvider>
+          <SubscriptionProvider>{children}</SubscriptionProvider>
+        </AuthProvider>
         <Analytics />
         <SpeedInsights />
       </body>

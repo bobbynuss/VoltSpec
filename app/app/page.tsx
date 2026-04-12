@@ -23,6 +23,8 @@ import type { SavedProject } from "@/lib/projects";
 import { JOB_TYPES } from "@/lib/data";
 import { getTrade } from "@/lib/registry";
 import { useAuth } from "@/components/AuthProvider";
+import { useSubscription } from "@/components/SubscriptionProvider";
+import { Crown } from "lucide-react";
 import { saveCloudProject } from "@/lib/core/projects";
 
 const JURISDICTIONS = getTrade().jurisdictions;
@@ -45,6 +47,7 @@ export default function Home() {
 function HomeContent() {
   const searchParams = useSearchParams();
   const { user } = useAuth();
+  const { tier } = useSubscription();
   const [result, setResult] = useState<GenerateResult | null>(null);
   const [loading, setLoading] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -228,6 +231,15 @@ function HomeContent() {
             <HelpCircle className="w-4 h-4 sm:w-3.5 sm:h-3.5" />
             <span className="hidden sm:inline">Help</span>
           </Link>
+          {tier === "free" && (
+            <Link
+              href="/pricing"
+              className="flex items-center gap-1 text-xs font-semibold text-gray-900 bg-yellow-400 hover:bg-yellow-300 px-3 py-1.5 rounded-md transition-colors"
+            >
+              <Crown className="w-3 h-3" />
+              <span className="hidden sm:inline">Upgrade</span>
+            </Link>
+          )}
           <UserButton />
         </div>
       </header>

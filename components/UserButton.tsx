@@ -2,12 +2,15 @@
 
 import { useState, useRef, useEffect } from "react";
 import { useAuth } from "./AuthProvider";
+import { useSubscription } from "./SubscriptionProvider";
 import { AuthModal } from "./AuthModal";
 import { ProfileModal } from "./ProfileModal";
-import { User, LogOut, ChevronDown, Settings } from "lucide-react";
+import { User, LogOut, ChevronDown, Settings, CreditCard, Crown } from "lucide-react";
+import Link from "next/link";
 
 export function UserButton() {
   const { user, loading, signOut } = useAuth();
+  const { tier, subscription } = useSubscription();
   const [authOpen, setAuthOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
@@ -48,6 +51,21 @@ export function UserButton() {
       ? displayEmail.slice(0, 17) + "..."
       : displayEmail;
 
+  const handleManageSubscription = async () => {
+    if (!subscription?.stripeCustomerId) return;
+    try {
+      const res = await fetch("/api/stripe/portal", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ customerId: subscription.stripeCustomerId }),
+      });
+      const data = await res.json();
+      if (data.url) window.location.href = data.url;
+    } catch (err) {
+      console.error("Portal error:", err);
+    }
+  };
+
   return (
     <div ref={menuRef} className="relative">
       <button
@@ -60,13 +78,23 @@ export function UserButton() {
           </span>
         </div>
         <span className="hidden sm:inline">{shortEmail}</span>
+        {tier === "pro" && (
+          <Crown className="w-3 h-3 text-yellow-400" />
+        )}
         <ChevronDown className="w-3 h-3" />
       </button>
 
       {menuOpen && (
-        <div className="absolute right-0 top-full mt-1 w-48 bg-[hsl(222,47%,10%)] border border-[hsl(217,33%,20%)] rounded-lg shadow-xl py-1 z-50">
+        <div className="absolute right-0 top-full mt-1 w-52 bg-[hsl(222,47%,10%)] border border-[hsl(217,33%,20%)] rounded-lg shadow-xl py-1 z-50">
           <div className="px-3 py-2 border-b border-[hsl(217,33%,18%)]">
             <p className="text-xs text-gray-400 truncate">{displayEmail}</p>
+            <p className="text-[10px] mt-0.5 font-semibold">
+              {tier === "pro" ? (
+                <span className="text-yellow-400">⚡ Pro Plan</span>
+              ) : (
+                <span className="text-gray-500">Free Plan</span>
+              )}
+            </p>
           </div>
           <button
             onClick={() => {
@@ -78,6 +106,27 @@ export function UserButton() {
             <Settings className="w-3.5 h-3.5" />
             Profile & Sales Rep
           </button>
+          {tier === "pro" && subscription?.stripeCustomerId ? (
+            <button
+              onClick={() => {
+                handleManageSubscription();
+                setMenuOpen(false);
+              }}
+              className="w-full flex items-center gap-2 px-3 py-2 text-sm text-gray-400 hover:text-yellow-400 hover:bg-[hsl(217,33%,14%)] transition-colors cursor-pointer"
+            >
+              <CreditCard className="w-3.5 h-3.5" />
+              Manage Subscription
+            </button>
+          ) : (
+            <Link
+              href="/pricing"
+              onClick={() => setMenuOpen(false)}
+              className="w-full flex items-center gap-2 px-3 py-2 text-sm text-yellow-400 hover:bg-[hsl(217,33%,14%)] transition-colors"
+            >
+              <Crown className="w-3.5 h-3.5" />
+              Upgrade to Pro
+            </Link>
+          )}
           <button
             onClick={() => {
               signOut();

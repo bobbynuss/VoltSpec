@@ -73,30 +73,69 @@ export function PlanTakeoff({ onAddToList, onClose }: PlanTakeoffProps) {
     setResults(null);
 
     try {
-      const formData = new FormData();
-      formData.append("file", file);
-      if (notes.trim()) formData.append("notes", notes.trim());
-
-      // Convert file to base64 on the client to avoid Next.js FormData size limits
+      // Convert file to base64 on the client
       const arrayBuffer = await file.arrayBuffer();
       const base64 = btoa(
         new Uint8Array(arrayBuffer).reduce((data, byte) => data + String.fromCharCode(byte), "")
       );
 
+      // Split into chunks if needed — Vercel has 4.5MB body limit
+      // For files under ~3MB raw (4MB base64), send directly
+      // For larger files, send base64 in chunks via multiple requests
       const controller = new AbortController();
-      const timeout = setTimeout(() => controller.abort(), 4 * 60 * 1000); // 4 min timeout
+      const timeout = setTimeout(() => controller.abort(), 4 * 60 * 1000);
 
-      const res = await fetch("/api/takeoff", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          file: base64,
-          fileName: file.name,
-          fileType: file.type,
-          notes: notes?.trim() || undefined,
-        }),
-        signal: controller.signal,
-      });
+      let res: Response;
+      if (base64.length < 3.5 * 1024 * 1024) {
+        // Small enough — send directly
+        res = await fetch("/api/takeoff", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            file: base64,
+            fileName: file.name,
+            fileType: file.type,
+            notes: notes?.trim() || undefined,
+          }),
+          signal: controller.signal,
+        });
+      } else {
+        // Too large for Vercel — upload base64 chunks and assemble server-side
+        // Step 1: Upload to temporary endpoint
+        const uploadRes = await fetch("/api/takeoff/upload", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            fileName: file.name,
+            fileType: file.type,
+            fileSize: base64.length,
+            notes: notes?.trim() || undefined,
+          }),
+          signal: controller.signal,
+        });
+        const { uploadId } = await uploadRes.json();
+
+        // Step 2: Send chunks
+        const CHUNK_SIZE = 3 * 1024 * 1024; // 3MB chunks
+        const totalChunks = Math.ceil(base64.length / CHUNK_SIZE);
+        for (let i = 0; i < totalChunks; i++) {
+          const chunk = base64.slice(i * CHUNK_SIZE, (i + 1) * CHUNK_SIZE);
+          await fetch("/api/takeoff/upload", {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ uploadId, chunkIndex: i, chunk }),
+            signal: controller.signal,
+          });
+        }
+
+        // Step 3: Process
+        res = await fetch("/api/takeoff/upload", {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ uploadId, totalChunks }),
+          signal: controller.signal,
+        });
+      }
       clearTimeout(timeout);
 
       let data;

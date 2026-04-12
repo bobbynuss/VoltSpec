@@ -6,7 +6,7 @@ const anthropic = new Anthropic({
   timeout: 4 * 60 * 1000, // 4 minutes for large PDFs
 });
 
-const SYSTEM_PROMPT = `You are VoltSpec AI Takeoff — an expert electrical estimating assistant that analyzes construction plan images and generates a Bill of Materials (BOM).
+export const SYSTEM_PROMPT = `You are VoltSpec AI Takeoff — an expert electrical estimating assistant that analyzes construction plan images and generates a Bill of Materials (BOM).
 
 When given an electrical plan image, you:
 1. Identify all electrical symbols (receptacles, switches, lights, panels, disconnects, etc.)
@@ -107,23 +107,11 @@ export async function POST(req: NextRequest) {
 
     const body = await req.json();
     const { file: base64, fileName, fileType, notes } = body as {
-      file?: string;
-      fileName?: string;
-      fileType?: string;
-      notes?: string;
+      file?: string; fileName?: string; fileType?: string; notes?: string;
     };
 
     if (!base64 || !fileName) {
       return NextResponse.json({ error: "No file uploaded" }, { status: 400 });
-    }
-
-    // Check base64 size (base64 is ~33% larger than raw)
-    const rawSize = Math.round(base64.length * 0.75);
-    const maxSize = 25 * 1024 * 1024;
-    if (rawSize > maxSize) {
-      return NextResponse.json({
-        error: `File is ${(rawSize / 1024 / 1024).toFixed(1)}MB — too large for AI analysis. Please upload just the electrical sheets (E-pages) from the permit set, not the full document.`,
-      }, { status: 400 });
     }
 
     const isPdf = fileType === "application/pdf" || fileName.toLowerCase().endsWith(".pdf");

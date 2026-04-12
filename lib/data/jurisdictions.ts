@@ -87,23 +87,23 @@ export interface Jurisdiction {
   jobs: Job[];
 }
 
-/** State display labels for the state selector */
+/** State display labels for the state selector — alphabetical */
 export const STATE_OPTIONS: { value: string; label: string }[] = [
   { value: "ALL", label: "All States" },
-  { value: "TX", label: "Texas" },
-  { value: "LA", label: "Louisiana" },
-  { value: "OK", label: "Oklahoma" },
   { value: "AR", label: "Arkansas" },
   { value: "AZ", label: "Arizona" },
   { value: "CO", label: "Colorado" },
   { value: "FL", label: "Florida" },
   { value: "GA", label: "Georgia" },
   { value: "KS", label: "Kansas" },
+  { value: "LA", label: "Louisiana" },
   { value: "MO", label: "Missouri" },
-  { value: "NM", label: "New Mexico" },
   { value: "NC", label: "North Carolina" },
+  { value: "NM", label: "New Mexico" },
+  { value: "OK", label: "Oklahoma" },
   { value: "SC", label: "South Carolina" },
   { value: "TN", label: "Tennessee" },
+  { value: "TX", label: "Texas" },
 ];
 
 export const JURISDICTIONS: Jurisdiction[] = [

@@ -46,10 +46,11 @@ export const Sidebar = forwardRef<SidebarHandle, SidebarProps>(function Sidebar(
   const [jobId, setJobId] = useState("");
   const [search, setSearch] = useState("");
 
-  // Filter jurisdictions by selected state
-  const filteredJurisdictions = stateFilter === "ALL"
-    ? JURISDICTIONS
-    : JURISDICTIONS.filter((j) => j.state === stateFilter);
+  // Filter jurisdictions by selected state, sorted alphabetically by shortLabel
+  const filteredJurisdictions = (stateFilter === "ALL"
+    ? [...JURISDICTIONS]
+    : JURISDICTIONS.filter((j) => j.state === stateFilter)
+  ).sort((a, b) => a.shortLabel.localeCompare(b.shortLabel));
   const [searchFocused, setSearchFocused] = useState(false);
   const searchRef = useRef<HTMLInputElement>(null);
   const [zipUpdated, setZipUpdated] = useState(false);

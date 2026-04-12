@@ -1,27 +1,30 @@
 import type { Metadata } from "next";
+import { Analytics } from "@vercel/analytics/next";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import "./globals.css";
 
 export const metadata: Metadata = {
   title: {
-    default: "VoltSpec — Electrical Estimating Tool for Texas",
+    default: "VoltSpec — Electrical Estimating for Contractors",
     template: "%s | VoltSpec",
   },
   description:
-    "Generate NEC 2026 materials lists, SVG blueprints, and professional PDF job packages with real Elliott Electric Supply pricing. 21 job types across 12 Texas jurisdictions — Austin, San Antonio, Houston, Dallas/DFW, and more.",
+    "Generate NEC 2026 materials lists, SVG blueprints, and professional PDF job packages with real Elliott Electric Supply pricing. 29 job types across 74 jurisdictions in 14 states — 204 Elliott branches covered.",
   metadataBase: new URL("https://voltspec.online"),
   keywords: [
     "electrical estimating",
+    "electrical estimating software",
     "NEC 2026",
     "materials list",
     "electrician tool",
-    "Texas electrical",
     "Elliott Electric Supply",
     "panel upgrade",
     "service upgrade",
     "EV charger installation",
     "electrical permit",
-    "Austin Energy",
-    "CPS Energy",
+    "electrical takeoff",
+    "electrical blueprint",
+    "contractor estimating tool",
     "VoltSpec",
   ],
   authors: [{ name: "VoltSpec" }],
@@ -43,24 +46,24 @@ export const metadata: Metadata = {
     locale: "en_US",
     url: "https://voltspec.online",
     siteName: "VoltSpec",
-    title: "VoltSpec — Electrical Estimating Tool for Texas",
+    title: "VoltSpec — Electrical Estimating for Contractors",
     description:
-      "Generate NEC 2026 materials lists, SVG blueprints, and professional PDF job packages with real Elliott Electric Supply pricing. 21 job types across 12 Texas jurisdictions.",
+      "Generate NEC 2026 materials lists, SVG blueprints, and professional PDF job packages with real Elliott Electric Supply pricing. 29 job types, 74 jurisdictions, 14 states.",
     images: [
       {
         url: "/og-image.png",
         width: 1200,
         height: 630,
-        alt: "VoltSpec — Electrical Estimating Tool for Texas",
+        alt: "VoltSpec — Electrical Estimating for Contractors",
         type: "image/png",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "VoltSpec — Electrical Estimating Tool for Texas",
+    title: "VoltSpec — Electrical Estimating for Contractors",
     description:
-      "NEC 2026 materials lists, blueprints, and job packages with real EES pricing. 21 job types, 12 Texas jurisdictions.",
+      "NEC 2026 materials lists, blueprints, and job packages with real Elliott Electric pricing. 29 job types, 74 jurisdictions, 14 states.",
     images: ["/og-image.png"],
   },
   alternates: {
@@ -94,6 +97,8 @@ export default function RootLayout({
     <html lang="en" className="dark">
       <body className="min-h-screen bg-background text-foreground antialiased">
         <AuthProvider>{children}</AuthProvider>
+        <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );

@@ -225,9 +225,12 @@ export default function LandingPage() {
             voltspec.online
           </a>
         </p>
-        <p className="text-xs text-gray-600 mt-2 max-w-lg mx-auto">
-          Reference tool only — not engineering advice. Always verify all requirements with your local Authority Having Jurisdiction (AHJ) before installation.
-        </p>
+        <div className="flex items-center justify-center gap-2 mt-3 text-amber-400/80">
+          <span className="text-sm">⚠️</span>
+          <p className="text-xs sm:text-sm font-medium">
+            Reference tool only — not engineering advice. Always verify with your local AHJ.
+          </p>
+        </div>
       </footer>
     </div>
   );

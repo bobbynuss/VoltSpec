@@ -11,6 +11,7 @@ import { QuickList } from "@/components/QuickList";
 import { PlanTakeoff } from "@/components/PlanTakeoff";
 import Image from "next/image";
 import { Menu, X, Calculator, FolderOpen, HelpCircle, ShoppingCart, FileImage } from "lucide-react";
+import { DisclaimerBanner } from "@/components/DisclaimerBanner";
 import { TourOverlay } from "@/components/TourOverlay";
 import type { TourStep } from "@/components/TourOverlay";
 import { TOUR_STEPS } from "@/lib/tour-steps";
@@ -227,12 +228,11 @@ function HomeContent() {
             <HelpCircle className="w-4 h-4 sm:w-3.5 sm:h-3.5" />
             <span className="hidden sm:inline">Help</span>
           </Link>
-          <span className="text-xs text-gray-600 hidden md:block">
-            ⚠️ Reference only — verify with AHJ
-          </span>
           <UserButton />
         </div>
       </header>
+
+      <DisclaimerBanner className="no-print" />
 
       <div className="flex flex-1 overflow-hidden">
         {/* Sidebar overlay on mobile */}
@@ -299,10 +299,13 @@ function HomeContent() {
                 <span className="text-yellow-400 font-semibold">Generate Full Package</span> to get
                 NEC requirements, materials list, supplier info, and official docs.
               </p>
-              <p className="text-gray-600 text-xs mt-6 max-w-sm">
-                ⚠️ VoltSpec is a reference tool only. Always verify requirements with your local
-                Authority Having Jurisdiction (AHJ) before any installation.
-              </p>
+              <div className="flex items-start gap-2.5 mt-8 max-w-md bg-amber-950/30 border border-amber-800/30 rounded-lg px-4 py-3 text-left">
+                <span className="text-amber-400 text-base mt-0.5">⚠️</span>
+                <p className="text-amber-200/80 text-sm leading-relaxed">
+                  <strong className="text-amber-300">Reference tool only</strong> — not engineering advice. 
+                  Always verify requirements with your local Authority Having Jurisdiction (AHJ) before installation.
+                </p>
+              </div>
             </div>
           )}
         </main>

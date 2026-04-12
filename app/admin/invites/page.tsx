@@ -53,10 +53,13 @@ export default function AdminInvitesPage() {
     if (isAdmin) fetchCodes();
   }, [isAdmin, fetchCodes]);
 
+  const [genError, setGenError] = useState<string | null>(null);
+
   const handleGenerate = async () => {
     if (!user?.email) return;
     setGenerating(true);
     setNewCodes([]);
+    setGenError(null);
     try {
       const res = await fetch("/api/invite/generate", {
         method: "POST",
@@ -68,13 +71,21 @@ export default function AdminInvitesPage() {
         }),
       });
       const data = await res.json();
-      if (data.codes) {
+      if (!res.ok) {
+        setGenError(data.error ?? `Failed (${res.status})`);
+        console.error("[admin/invites] Generate failed:", data);
+        return;
+      }
+      if (data.codes?.length) {
         setNewCodes(data.codes);
         setNotes("");
         fetchCodes();
+      } else {
+        setGenError("No codes returned");
       }
-    } catch {
-      // silent
+    } catch (err) {
+      console.error("[admin/invites] Generate error:", err);
+      setGenError("Network error");
     } finally {
       setGenerating(false);
     }
@@ -159,6 +170,10 @@ export default function AdminInvitesPage() {
               {generating ? "Generating..." : "Generate"}
             </button>
           </div>
+
+          {genError && (
+            <p className="text-red-400 text-sm mt-2">❌ {genError}</p>
+          )}
 
           {/* Newly generated codes */}
           {newCodes.length > 0 && (

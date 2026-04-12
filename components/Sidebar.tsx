@@ -3,7 +3,7 @@
 import { useState, useRef, useImperativeHandle, forwardRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Zap, MapPin, Briefcase, Building2, Calculator, FolderOpen, Search, X } from "lucide-react";
+import { Zap, MapPin, Briefcase, Building2, Calculator, FolderOpen, Search, X, Lock, Crown } from "lucide-react";
 
 
 import { Button } from "@/components/ui/button";
@@ -22,6 +22,8 @@ const trade = getTrade();
 const JURISDICTIONS = trade.jurisdictions;
 const STATE_OPTIONS = trade.stateOptions;
 import { ChatWidget } from "@/components/ChatWidget";
+import { useSubscription } from "@/components/SubscriptionProvider";
+import { canAccessCity, canAccessJob } from "@/lib/subscription";
 
 export interface SidebarHandle {
   getState: () => { city: string; zip: string; jobId: string };
@@ -40,11 +42,13 @@ export const Sidebar = forwardRef<SidebarHandle, SidebarProps>(function Sidebar(
   { onGenerate, onOpenProjects, onZipChange, loading, jobContext },
   ref,
 ) {
+  const { tier } = useSubscription();
   const [stateFilter, setStateFilter] = useState("ALL");
   const [city, setCity] = useState("austin");
   const [zip, setZip] = useState("78744");
   const [jobId, setJobId] = useState("");
   const [search, setSearch] = useState("");
+  const [gatePrompt, setGatePrompt] = useState<string | null>(null);
 
   // Filter jurisdictions by selected state, sorted alphabetically by shortLabel
   const filteredJurisdictions = (stateFilter === "ALL"
@@ -255,15 +259,22 @@ export const Sidebar = forwardRef<SidebarHandle, SidebarProps>(function Sidebar(
               <SelectValue placeholder="Select city…" />
             </SelectTrigger>
             <SelectContent className="bg-[hsl(222,47%,10%)] border-[hsl(217,33%,22%)] text-white">
-              {filteredJurisdictions.map((j) => (
-                <SelectItem
-                  key={j.id}
-                  value={j.id}
-                  className="focus:bg-yellow-400/10 focus:text-yellow-300 cursor-pointer"
-                >
-                  {j.shortLabel}
-                </SelectItem>
-              ))}
+              {filteredJurisdictions.map((j) => {
+                const locked = !canAccessCity(tier, j.id);
+                return (
+                  <SelectItem
+                    key={j.id}
+                    value={j.id}
+                    className={`focus:bg-yellow-400/10 focus:text-yellow-300 cursor-pointer ${locked ? "opacity-60" : ""}`}
+                    disabled={locked}
+                  >
+                    <span className="flex items-center gap-2">
+                      {j.shortLabel}
+                      {locked && <Lock className="w-3 h-3 text-gray-500" />}
+                    </span>
+                  </SelectItem>
+                );
+              })}
             </SelectContent>
           </Select>
           {selectedJurisdiction && (
@@ -330,15 +341,22 @@ export const Sidebar = forwardRef<SidebarHandle, SidebarProps>(function Sidebar(
               <SelectValue placeholder="Select job type…" />
             </SelectTrigger>
             <SelectContent className="bg-[hsl(222,47%,10%)] border-[hsl(217,33%,22%)] text-white max-h-[480px] min-w-[min(460px,90vw)] overflow-y-auto">
-              {JOB_TYPES.map((job) => (
-                <SelectItem
-                  key={job.id}
-                  value={job.id}
-                  className="focus:bg-yellow-400/10 focus:text-yellow-300 cursor-pointer py-2"
-                >
-                  {job.label}
-                </SelectItem>
-              ))}
+              {JOB_TYPES.map((job) => {
+                const locked = !canAccessJob(tier, job.id);
+                return (
+                  <SelectItem
+                    key={job.id}
+                    value={job.id}
+                    className={`focus:bg-yellow-400/10 focus:text-yellow-300 cursor-pointer py-2 ${locked ? "opacity-60" : ""}`}
+                    disabled={locked}
+                  >
+                    <span className="flex items-center gap-2">
+                      {job.label}
+                      {locked && <Lock className="w-3 h-3 text-gray-500" />}
+                    </span>
+                  </SelectItem>
+                );
+              })}
             </SelectContent>
           </Select>
         </div>
@@ -371,6 +389,20 @@ export const Sidebar = forwardRef<SidebarHandle, SidebarProps>(function Sidebar(
           )}
         </Button>
       </form>
+
+      {/* Pro upgrade prompt for free users */}
+      {tier === "free" && (
+        <Link
+          href="/pricing"
+          className="flex items-center gap-2.5 px-3 py-2.5 rounded-lg bg-yellow-400/10 border border-yellow-400/20 hover:border-yellow-400/40 transition-colors"
+        >
+          <Crown className="w-4 h-4 text-yellow-400 shrink-0" />
+          <div className="flex-1 min-w-0">
+            <p className="text-xs font-semibold text-yellow-300">Upgrade to Pro</p>
+            <p className="text-[11px] text-gray-500 leading-tight">All 74 cities, 29 jobs, saved projects</p>
+          </div>
+        </Link>
+      )}
 
       {/* Saved Projects button (mobile-visible) */}
       <button

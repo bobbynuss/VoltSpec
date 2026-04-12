@@ -397,9 +397,9 @@ export const Sidebar = forwardRef<SidebarHandle, SidebarProps>(function Sidebar(
       </div>
 
       {/* Disclaimer */}
-      <div className="mt-auto flex items-start gap-2 bg-amber-950/25 border border-amber-800/25 rounded-lg px-3 py-2.5 text-amber-200/70 text-xs leading-relaxed">
-        <span className="text-amber-400 shrink-0">⚠️</span>
-        <span><strong className="text-amber-300/80">Reference only.</strong> Verify all requirements with your local AHJ. Not engineering advice.</span>
+      <div className="mt-auto text-[11px] text-gray-600 border-t border-[hsl(217,33%,18%)] pt-4 leading-relaxed">
+        ⚠️ <strong className="text-gray-500">Reference only.</strong> Verify all requirements with
+        your local AHJ. Not engineering advice.
       </div>
     </div>
   );

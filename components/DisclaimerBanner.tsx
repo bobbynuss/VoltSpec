@@ -3,18 +3,16 @@
 import { AlertTriangle } from "lucide-react";
 
 /**
- * Persistent disclaimer banner — used on every app page.
- * Compact but clearly visible. Yellow/amber warning style.
+ * Subtle persistent disclaimer — visible but not dominating.
  */
 export function DisclaimerBanner({ className = "" }: { className?: string }) {
   return (
     <div
-      className={`flex items-center gap-2.5 px-4 py-2.5 bg-amber-950/40 border-b border-amber-800/30 text-amber-200 ${className}`}
+      className={`flex items-center justify-center gap-1.5 px-4 py-1.5 bg-[hsl(222,47%,8%)] border-b border-[hsl(217,33%,16%)] ${className}`}
     >
-      <AlertTriangle className="w-4 h-4 shrink-0 text-amber-400" />
-      <p className="text-xs sm:text-[13px] font-medium leading-snug">
-        <strong className="text-amber-300">Reference tool only</strong> — not engineering
-        advice. Always verify with your local AHJ before installation.
+      <AlertTriangle className="w-3 h-3 shrink-0 text-gray-500" />
+      <p className="text-[11px] text-gray-500">
+        Reference tool only — not engineering advice. Verify with your local AHJ before installation.
       </p>
     </div>
   );

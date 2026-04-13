@@ -21,6 +21,7 @@ import { useSubscription } from "@/components/SubscriptionProvider";
 import { useAuth } from "@/components/AuthProvider";
 import { AuthModal } from "@/components/AuthModal";
 import { canAccessCity, canAccessJob } from "@/lib/subscription";
+import { getTradeBrand } from "@/lib/trade-branding";
 
 export interface SidebarHandle {
   getState: () => { city: string; zip: string; jobId: string; trade: string };
@@ -31,12 +32,13 @@ interface SidebarProps {
   onGenerate: (jobId: string, zip: string, city: string, trade?: string) => void;
   onOpenProjects: () => void;
   onZipChange?: (zip: string) => void;
+  onTradeChange?: (tradeId: string) => void;
   loading: boolean;
   jobContext?: string;
 }
 
 export const Sidebar = forwardRef<SidebarHandle, SidebarProps>(function Sidebar(
-  { onGenerate, onOpenProjects, onZipChange, loading, jobContext },
+  { onGenerate, onOpenProjects, onZipChange, onTradeChange, loading, jobContext },
   ref,
 ) {
   const { user } = useAuth();
@@ -52,6 +54,7 @@ export const Sidebar = forwardRef<SidebarHandle, SidebarProps>(function Sidebar(
 
   const availableTrades = listTrades();
   const trade = getTrade(activeTrade);
+  const brand = getTradeBrand(activeTrade);
   const JURISDICTIONS = trade.jurisdictions;
   const STATE_OPTIONS = trade.stateOptions;
   const ACTIVE_JOB_TYPES = trade.jobTypes;
@@ -109,8 +112,8 @@ export const Sidebar = forwardRef<SidebarHandle, SidebarProps>(function Sidebar(
       {/* Header */}
       <div className="hidden lg:flex items-center justify-between pb-2 border-b border-[hsl(217,33%,18%)]">
         <div className="flex items-center gap-2">
-          <Image src="/logo-transparent.png" alt="VoltSpec" width={20} height={20} className="w-5 h-5" />
-          <span className="text-sm font-semibold text-gray-300">Job Setup</span>
+          <Image src={brand.logo} alt={brand.name} width={20} height={20} className="w-5 h-5" />
+          <span className="text-sm font-semibold text-gray-300">{brand.name} · Job Setup</span>
         </div>
         <button
           onClick={onOpenProjects}
@@ -133,11 +136,11 @@ export const Sidebar = forwardRef<SidebarHandle, SidebarProps>(function Sidebar(
                   setActiveTrade(t.id);
                   setJobId("");
                   setStateFilter("ALL");
-                  // Reset to default city for the new trade
                   const newTrade = getTrade(t.id);
                   setCity(newTrade.defaultJurisdictionId);
                   const defaultJur = newTrade.getJurisdictionById(newTrade.defaultJurisdictionId);
                   if (defaultJur) setZip(defaultJur.defaultZip);
+                  onTradeChange?.(t.id);
                 }
               }}
               className={`flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-md text-xs font-medium transition-colors cursor-pointer ${

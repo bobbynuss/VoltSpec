@@ -548,6 +548,196 @@ function slabLeakRepair(suppliers: Supplier[], docs: OfficialDoc[]): Job {
   };
 }
 
+// ── Full Home Build: Plumbing Phases ─────────────────────────────
+
+function resPlumbingGroundwork(suppliers: Supplier[], docs: OfficialDoc[]): Job {
+  return {
+    id: "res-plumb-groundwork",
+    label: "New Home Build – Phase 1: Underground & Slab Plumbing",
+    requirements: [
+      "Licensed plumber required — underground rough-in requires permit and inspection BEFORE concrete pour",
+      "IPC Chapter 3: General regulations — all DWV pipe must be Schedule 40 PVC or approved equal",
+      "IPC 708: Cleanout required within 5 ft of building on main drain, every 100 ft, and at direction changes >45°",
+      "IPC 305.4: All penetrations through fire-rated assemblies and vapor barriers must be sealed",
+      "Building sewer: 4\" minimum, slope 1/8\" per foot for 4\", 1/4\" per foot for 3\" and smaller",
+      "Water supply stub-ups through slab: copper or approved PEX with protective sleeve",
+      "Call 811 before digging — locate all existing utilities before trenching",
+      "Pressure test ALL supply lines before concrete pour: 40 PSI for 15 minutes, no drop",
+      "DWV test: water test or air test per inspector requirements — typically 5 PSI air for 15 min",
+      "Photo-document all underground before pour — you cannot access it later",
+      "CRITICAL: All underground plumbing COMPLETE and INSPECTED before slab pour",
+    ],
+    materials: [
+      // ── DWV Underground ───────────────────────────────────────
+      { item: "4\" PVC DWV Pipe", quantity: "60 ft", spec: "4\" Schedule 40 PVC DWV, building drain and main sewer to cleanout, sold per ft" },
+      { item: "3\" PVC DWV Pipe", quantity: "40 ft", spec: "3\" Schedule 40 PVC DWV, toilet drains and main branches, sold per ft" },
+      { item: "2\" PVC DWV Pipe", quantity: "30 ft", spec: "2\" Schedule 40 PVC DWV, tub/shower drains, sold per ft" },
+      { item: "1-1/2\" PVC DWV Pipe", quantity: "20 ft", spec: "1-1/2\" Schedule 40 PVC DWV, lavatory and kitchen drains, sold per ft" },
+      { item: "4\" PVC Wye", quantity: "3", spec: "4\" PVC DWV wye — branch connections at main drain" },
+      { item: "4\" x 3\" PVC Reducer", quantity: "2", spec: "4\" x 3\" PVC reducer bushing — main to branch transitions" },
+      { item: "3\" PVC Sanitary Tee", quantity: "4", spec: "3\" PVC DWV sanitary tee — toilet connections" },
+      { item: "4\" PVC Closet Flange", quantity: "3", spec: "4\" x 3\" PVC closet flange with stainless steel ring — toilet locations (master, guest, half bath)" },
+      { item: "2\" PVC P-Trap", quantity: "2", spec: "2\" PVC tubular P-trap — tub/shower locations" },
+      { item: "1-1/2\" PVC P-Trap", quantity: "3", spec: "1-1/2\" PVC tubular P-trap — lavatory and kitchen locations" },
+      { item: "4\" PVC Cleanout Body", quantity: "2", spec: "4\" PVC DWV cleanout with threaded plug — within 5 ft of building + at main" },
+      { item: "PVC Cement + Primer", quantity: "2", spec: "Oatey purple primer + heavy PVC cement — all solvent-weld joints" },
+      // ── Water Supply (under slab) ─────────────────────────────
+      { item: "3/4\" PEX-A Blue (Cold Main)", quantity: "80 ft", spec: "3/4\" PEX-A tubing blue, main cold supply from meter/entry to distribution, sold per ft" },
+      { item: "3/4\" PEX-A Red (Hot Main)", quantity: "60 ft", spec: "3/4\" PEX-A tubing red, hot supply from water heater to distribution, sold per ft" },
+      { item: "1/2\" PEX-A Blue", quantity: "100 ft", spec: "1/2\" PEX-A blue, cold branch stubs to fixture locations through slab, sold per ft" },
+      { item: "1/2\" PEX-A Red", quantity: "100 ft", spec: "1/2\" PEX-A red, hot branch stubs to fixture locations through slab, sold per ft" },
+      { item: "PEX Crimp Rings 3/4\"", quantity: "20", spec: "3/4\" copper crimp rings" },
+      { item: "PEX Crimp Rings 1/2\"", quantity: "40", spec: "1/2\" copper crimp rings" },
+      { item: "Copper Stub-Outs 1/2\"", quantity: "12", spec: "1/2\" x 8\" copper stub-out with escutcheon — each fixture location through slab" },
+      { item: "PEX Protective Sleeve", quantity: "20 ft", spec: "3/4\" and 1/2\" corrugated PEX sleeve — protect PEX where it passes through slab/concrete" },
+      // ── Gravel & Misc ─────────────────────────────────────────
+      { item: "Gravel Bedding", quantity: "1 yd", spec: "3/4\" clean gravel, pipe bedding — 4\" below + 4\" above DWV pipe" },
+      { item: "Caution Tape (Sewer)", quantity: "1 roll", spec: "Green 'SEWER' warning tape — 12\" above all underground DWV" },
+      { item: "Test Plugs/Caps", quantity: "6", spec: "3\" and 4\" PVC test caps — seal all open drains for pressure test" },
+      { item: "Sand Fill", quantity: "as needed", spec: "Clean sand for backfill around PEX supply lines — no rocks against pipe" },
+    ],
+    blueprintNotes: [
+      "CRITICAL: All underground plumbing must be COMPLETE and INSPECTED before concrete pour",
+      "Toilet rough-in: 12\" from finished wall to center of closet flange (standard)",
+      "Slope all DWV: 1/4\" per foot for 3\" and smaller, 1/8\" per foot for 4\"",
+      "PEX stub-ups: protect with sleeve through slab, leave 12\" above finished floor",
+      "Pressure test supply lines: 40 PSI for 15 min, NO drop — before pour",
+      "DWV test: air test 5 PSI for 15 min, or water test — per inspector preference",
+      "Photo everything before pour — plumber, GC, and inspector should all document",
+      "Coordinate with electrician: Ufer ground also goes in before pour",
+      "Typical 3BR/2BA — 3 toilets, 2 tubs/showers, 3 sinks, kitchen, laundry",
+    ],
+    svgDiagram: "",
+    suppliers,
+    officialDocs: docs,
+  };
+}
+
+function resPlumbingTopout(suppliers: Supplier[], docs: OfficialDoc[]): Job {
+  return {
+    id: "res-plumb-topout",
+    label: "New Home Build – Phase 2: Top-Out (Risers, Vents, Supply Lines)",
+    requirements: [
+      "IPC Chapter 9: Vent system — every fixture must be vented, within distance per IPC Table 906.1",
+      "IPC 903.1: Vent termination — minimum 6\" above roof, 10 ft from any air intake",
+      "IPC 906.1: Maximum developed length of individual vent — depends on pipe size and trap size",
+      "AAV (Air Admittance Valve) permitted per local amendments — some jurisdictions restrict",
+      "Support all piping per IPC Table 308.5 — horizontal and vertical intervals vary by size and material",
+      "Fire-stop all penetrations through fire-rated walls and floors",
+      "No PEX within 18\" of water heater connections — transition to copper",
+      "Pressure test all supply lines: 40 PSI for 15 min before drywall",
+      "DWV water test or air test required — inspect before drywall closure",
+      "Top-out inspection BEFORE drywall — all piping, vents, supports visible",
+    ],
+    materials: [
+      // ── DWV Risers & Branches ─────────────────────────────────
+      { item: "3\" PVC DWV Pipe", quantity: "40 ft", spec: "3\" Schedule 40 PVC DWV, vent stacks and waste risers, sold per ft" },
+      { item: "2\" PVC DWV Pipe", quantity: "30 ft", spec: "2\" Schedule 40 PVC DWV, branch drains and vent risers, sold per ft" },
+      { item: "1-1/2\" PVC DWV Pipe", quantity: "20 ft", spec: "1-1/2\" Schedule 40 PVC DWV, lavatory drains and individual vents, sold per ft" },
+      { item: "3\" PVC Vent Pipe", quantity: "20 ft", spec: "3\" Schedule 40 PVC, main vent stack through roof, sold per ft" },
+      { item: "2\" PVC Vent Pipe", quantity: "30 ft", spec: "2\" Schedule 40 PVC, branch vents connecting to main stack, sold per ft" },
+      { item: "3\" PVC Sanitary Tee", quantity: "3", spec: "3\" PVC DWV sanitary tee — waste/vent connections" },
+      { item: "2\" PVC Sanitary Tee", quantity: "4", spec: "2\" PVC DWV sanitary tee — branch waste/vent" },
+      { item: "3\" x 2\" PVC Reducing Tee", quantity: "2", spec: "3\" x 2\" PVC DWV reducing sanitary tee" },
+      { item: "3\" PVC Roof Flashing", quantity: "1", spec: "3\" PVC roof flashing boot — main vent stack penetration" },
+      { item: "2\" PVC Roof Flashing", quantity: "1", spec: "2\" PVC roof flashing boot — secondary vent penetration" },
+      { item: "Air Admittance Valve", quantity: "2", spec: "Studor AAV 1-1/2\" or 2\", ASSE 1051 — for island sink and remote fixtures" },
+      // ── Water Supply (above slab) ─────────────────────────────
+      { item: "3/4\" PEX-A Blue", quantity: "60 ft", spec: "3/4\" PEX-A blue, cold supply branches through framing, sold per ft" },
+      { item: "3/4\" PEX-A Red", quantity: "60 ft", spec: "3/4\" PEX-A red, hot supply branches through framing, sold per ft" },
+      { item: "1/2\" PEX-A Blue", quantity: "120 ft", spec: "1/2\" PEX-A blue, cold drops to individual fixtures, sold per ft" },
+      { item: "1/2\" PEX-A Red", quantity: "120 ft", spec: "1/2\" PEX-A red, hot drops to individual fixtures, sold per ft" },
+      { item: "PEX Crimp Rings 1/2\"", quantity: "40", spec: "1/2\" copper crimp rings" },
+      { item: "PEX Crimp Rings 3/4\"", quantity: "20", spec: "3/4\" copper crimp rings" },
+      { item: "Drop-Ear Elbows 1/2\"", quantity: "12", spec: "1/2\" PEX x 1/2\" FIP brass drop-ear 90° elbow — fixture stub-outs" },
+      { item: "PEX Tees 3/4\"", quantity: "6", spec: "3/4\" PEX brass tee, crimp style — branch distribution" },
+      { item: "PEX 90° Elbow 3/4\"", quantity: "8", spec: "3/4\" PEX brass 90° elbow, crimp style" },
+      // ── Supports & Misc ───────────────────────────────────────
+      { item: "Pipe Straps (assorted)", quantity: "60", spec: "Plastic pipe straps — 1/2\", 3/4\", 1-1/2\", 2\", 3\" sizes for all pipe" },
+      { item: "Nail Plates", quantity: "25", spec: "16-gauge steel nail plates — protect pipe through studs per IPC 305.6" },
+      { item: "DWV Hangers", quantity: "12", spec: "Galvanized pipe hangers — 2\" and 3\" DWV support in framing" },
+      { item: "PVC Cement + Primer", quantity: "1", spec: "Purple primer + heavy PVC cement" },
+      { item: "Firestop Caulk", quantity: "2", spec: "3M CP-25WB+ fire barrier caulk — seal all pipe penetrations through fire-rated assemblies" },
+      { item: "Test Plugs", quantity: "4", spec: "2\" and 3\" inflatable test balls — for DWV air/water test" },
+    ],
+    blueprintNotes: [
+      "Vent stacks: extend through roof — minimum 6\" above, 10 ft from air intakes",
+      "Support all pipe per IPC 308.5 — PEX: 32\" horizontal, copper: 6 ft, PVC DWV: 4 ft",
+      "PEX: transition to copper within 18\" of water heater",
+      "Nail plates: required wherever pipe is less than 1-1/2\" from stud face",
+      "AAVs: install where conventional vent is impractical — accessible location required",
+      "Pressure test before drywall — NO exceptions, document with photos",
+      "Top-out inspection: inspector must see all piping before walls close",
+      "Coordinate with electrician: both trades need rough-in inspection before drywall",
+    ],
+    svgDiagram: "",
+    suppliers,
+    officialDocs: docs,
+  };
+}
+
+function resPlumbingFixtures(suppliers: Supplier[], docs: OfficialDoc[]): Job {
+  return {
+    id: "res-plumb-fixtures",
+    label: "New Home Build – Phase 3: Water Heater, Fixtures & Trim",
+    requirements: [
+      "Licensed plumber required for water heater installation and gas connections",
+      "Water heater: T&P relief valve required, discharge to within 6\" of floor or exterior",
+      "Gas water heater: drip leg required, gas shutoff within 6 ft, proper flue/vent",
+      "IPC 424.5: Anti-scald valve required on tub/shower — ASSE 1016 listed",
+      "All fixture supply stops required — 1/4-turn angle stops, accessible",
+      "Verify proper drainage: run water at each fixture, check for leaks at every joint",
+      "Dishwasher: high loop or air gap on drain — check local code requirement",
+      "Hose bibs: freeze-proof sillcock recommended in climate zones with freezing temps",
+      "Gas pipe: pressure test 3 PSI for 10 min before connecting appliances",
+    ],
+    materials: [
+      // ── Water Heater ──────────────────────────────────────────
+      { item: "Gas Water Heater 50-gal", quantity: "1", spec: "50-gallon natural gas, 40,000 BTU, 0.62 UEF min, FVIR compliant" },
+      { item: "T&P Relief Valve", quantity: "1", spec: "3/4\" T&P valve, 150 PSI / 210°F, ASME certified" },
+      { item: "T&P Discharge Pipe", quantity: "1", spec: "3/4\" CPVC or copper, to within 6\" of floor" },
+      { item: "Expansion Tank", quantity: "1", spec: "2-gallon thermal expansion tank, pre-charged" },
+      { item: "Gas Flex Connector", quantity: "1", spec: "3/4\" stainless steel gas flex, 24\", CSA certified" },
+      { item: "Gas Shutoff Valve", quantity: "1", spec: "3/4\" brass ball valve, gas-rated, 1/4-turn" },
+      { item: "Drip Leg Assembly", quantity: "1", spec: "3/4\" x 3\" black iron nipple + cap" },
+      { item: "Water Heater Pan", quantity: "1", spec: "26\" aluminum drain pan with 1\" PVC drain" },
+      { item: "Vent Connector", quantity: "1", spec: "4\" galvanized single-wall vent pipe + elbows" },
+      // ── Supply Stops & Connections ────────────────────────────
+      { item: "Angle Stop Valve (1/2\" x 3/8\")", quantity: "10", spec: "1/2\" FIP x 3/8\" comp 1/4-turn angle stop — at each fixture (3 sinks + 3 toilets + washer H/C)" },
+      { item: "Faucet Supply Lines", quantity: "6", spec: "3/8\" comp braided stainless supply lines, 20\" — lavatory faucets (H+C per sink)" },
+      { item: "Toilet Supply Line", quantity: "3", spec: "3/8\" comp x 7/8\" ballcock braided stainless, 12\" — master, guest, half bath" },
+      { item: "Washer Supply Box", quantity: "1", spec: "Oatey Quadtro - washing machine outlet box with valves and drain — laundry" },
+      // ── Fixtures (installed by plumber) ────────────────────────
+      { item: "Kitchen Faucet", quantity: "1", spec: "Moen or Delta pull-down kitchen faucet — per owner/builder selection" },
+      { item: "Bathroom Faucet", quantity: "3", spec: "Moen or Delta centerset bath faucet, 4\" — master, guest, half bath" },
+      { item: "Tub/Shower Valve + Trim", quantity: "2", spec: "Moen or Delta pressure-balance valve with trim kit, ASSE 1016 — master + guest" },
+      { item: "Toilet", quantity: "3", spec: "1.28 GPF WaterSense toilet — master, guest, half bath — per builder selection" },
+      { item: "Garbage Disposal", quantity: "1", spec: "InSinkErator Badger 5 — 1/2 HP continuous feed" },
+      // ── Exterior ──────────────────────────────────────────────
+      { item: "Freeze-Proof Hose Bib", quantity: "2", spec: "Woodford Model 17 — 10\" frost-proof sillcock, anti-siphon — front + rear" },
+      // ── Misc ──────────────────────────────────────────────────
+      { item: "Pipe Thread Sealant", quantity: "1", spec: "Yellow gas-rated Teflon tape + pipe dope — gas connections" },
+      { item: "Plumber's Putty", quantity: "1", spec: "Oatey plumber's putty — sink drain and faucet base seals" },
+      { item: "Silicone Caulk", quantity: "2", spec: "GE Supreme silicone — tub/shower surrounds, sink to countertop" },
+      { item: "Dielectric Unions", quantity: "2", spec: "3/4\" FIP dielectric union — water heater copper-to-steel transition" },
+    ],
+    blueprintNotes: [
+      "Water heater: install before fixture trim — tests gas and water supply systems",
+      "Anti-scald valves: set to 120°F max at each tub/shower — test with thermometer",
+      "Test every fixture: run hot and cold, check under every sink for leaks",
+      "Toilets: verify closet flange is level and correct height — shim if needed before setting",
+      "Dishwasher connection: plumber provides drain and hot water — DW installed by appliance crew",
+      "Gas line test: 3 PSI for 10 min before connecting water heater",
+      "Hose bibs: test for proper anti-siphon function and no leaks at sillcock body",
+      "Final walk: run every fixture, flush every toilet, verify no leaks anywhere",
+      "Coordinate with builder: fixtures selected per spec sheet — verify before ordering",
+    ],
+    svgDiagram: "",
+    suppliers,
+    officialDocs: docs,
+  };
+}
+
 // ── Export: build jobs for a jurisdiction ─────────────────────────
 
 export function buildAustinPlumbingJobs(): Job[] {
@@ -562,6 +752,9 @@ export function buildAustinPlumbingJobs(): Job[] {
     gasLineExtension(s, plumbingDocs),
     waterSoftener(s, plumbingDocs),
     sewerCleanoutInstall(s, plumbingDocs),
+    resPlumbingGroundwork(s, plumbingDocs),
+    resPlumbingTopout(s, plumbingDocs),
+    resPlumbingFixtures(s, plumbingDocs),
   ];
 }
 
@@ -577,6 +770,9 @@ export function buildSanAntonioPlumbingJobs(): Job[] {
     gasLineExtension(s, saDocs),
     waterSoftener(s, saDocs),
     sewerCleanoutInstall(s, saDocs),
+    resPlumbingGroundwork(s, saDocs),
+    resPlumbingTopout(s, saDocs),
+    resPlumbingFixtures(s, saDocs),
   ];
 }
 
@@ -590,4 +786,7 @@ export const PLUMBING_JOB_TYPES = [
   { id: "gas-line-extension", label: "Gas Line Extension (~30 ft)" },
   { id: "water-softener-install", label: "Water Softener Installation" },
   { id: "sewer-cleanout-install", label: "Exterior Sewer Cleanout" },
+  { id: "res-plumb-groundwork", label: "New Home Build – Phase 1: Underground & Slab" },
+  { id: "res-plumb-topout", label: "New Home Build – Phase 2: Top-Out (Risers & Vents)" },
+  { id: "res-plumb-fixtures", label: "New Home Build – Phase 3: Water Heater & Fixtures" },
 ];

@@ -43,6 +43,11 @@ import { job as hotel_room_roughin } from "./jobs/hotel-room-roughin";
 import { job as hotel_room_panels } from "./jobs/hotel-room-panels";
 import { job as hotel_common_areas } from "./jobs/hotel-common-areas";
 import { job as hotel_trim_commissioning } from "./jobs/hotel-trim-commissioning";
+import { job as res_service_entrance } from "./jobs/res-service-entrance";
+import { job as res_rough_in } from "./jobs/res-rough-in";
+import { job as res_rough_in_dedicated } from "./jobs/res-rough-in-dedicated";
+import { job as res_trim_out } from "./jobs/res-trim-out";
+import { job as res_final_inspection } from "./jobs/res-final-inspection";
 
 export const JOBS: Job[] = [
   new_200a_residential,
@@ -89,6 +94,11 @@ export const JOBS: Job[] = [
   hotel_room_panels,
   hotel_common_areas,
   hotel_trim_commissioning,
+  res_service_entrance,
+  res_rough_in,
+  res_rough_in_dedicated,
+  res_trim_out,
+  res_final_inspection,
 ];
 
 export const JOB_TYPES: { id: string; label: string }[] = JOBS.map((j) => ({

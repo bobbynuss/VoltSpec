@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { useAuth } from "@/components/AuthProvider";
-import { ArrowLeft, Copy, Plus, Check, X, Clock, User, Ban, RotateCcw } from "lucide-react";
+import { ArrowLeft, Copy, Plus, Check, X, Clock, User, Ban, RotateCcw, Share2 } from "lucide-react";
 
 const ADMIN_EMAILS = (process.env.NEXT_PUBLIC_ADMIN_EMAILS ?? "")
   .split(",")
@@ -117,6 +117,22 @@ export default function AdminInvitesPage() {
     }
   };
 
+  const shareCode = async (code: string, durationDays: number | null) => {
+    const durText = durationDays ? `${durationDays}-day` : "lifetime";
+    const text = `You're invited to VoltSpec Pro (${durText} access)!\n\nYour code: ${code}\n\nRedeem at: https://voltspec.online/pricing`;
+    if (navigator.share) {
+      try {
+        await navigator.share({ text });
+        return;
+      } catch {
+        // user cancelled or share failed — fall through to copy
+      }
+    }
+    navigator.clipboard.writeText(text);
+    setCopied(code);
+    setTimeout(() => setCopied(null), 2000);
+  };
+
   const copyCode = (code: string) => {
     navigator.clipboard.writeText(code);
     setCopied(code);
@@ -221,8 +237,16 @@ export default function AdminInvitesPage() {
                   <div key={code} className="flex items-center gap-3">
                     <code className="text-lg font-mono font-bold text-white tracking-wider">{code}</code>
                     <button
+                      onClick={() => shareCode(code, duration ? parseInt(duration) : null)}
+                      className="text-gray-400 hover:text-blue-400 transition-colors cursor-pointer"
+                      title="Share"
+                    >
+                      <Share2 className="w-4 h-4" />
+                    </button>
+                    <button
                       onClick={() => copyCode(code)}
                       className="text-gray-400 hover:text-yellow-400 transition-colors cursor-pointer"
+                      title="Copy"
                     >
                       {copied === code ? (
                         <Check className="w-4 h-4 text-emerald-400" />
@@ -319,6 +343,13 @@ export default function AdminInvitesPage() {
                   <div className="ml-auto flex items-center gap-2">
                     {isActive && (
                       <>
+                        <button
+                          onClick={() => shareCode(c.code, c.pro_duration_days)}
+                          className="text-gray-400 hover:text-blue-400 transition-colors cursor-pointer"
+                          title="Share code"
+                        >
+                          <Share2 className="w-4 h-4" />
+                        </button>
                         <button
                           onClick={() => copyCode(c.code)}
                           className="text-gray-400 hover:text-yellow-400 transition-colors cursor-pointer"

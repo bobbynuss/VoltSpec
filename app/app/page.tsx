@@ -26,6 +26,7 @@ import { getTrade } from "@/lib/registry";
 import { useAuth } from "@/components/AuthProvider";
 import { useSubscription } from "@/components/SubscriptionProvider";
 import { Crown } from "lucide-react";
+import { trackEvent } from "@/lib/analytics";
 import { saveCloudProject } from "@/lib/core/projects";
 
 const JURISDICTIONS = getTrade().jurisdictions;
@@ -91,6 +92,12 @@ function HomeContent() {
       });
       const data = await res.json();
       setResult(data);
+      trackEvent("generate", {
+        userId: user?.id,
+        city: city ?? "austin",
+        jobId,
+        jobLabel: data?.job?.label,
+      });
     } catch (err) {
       console.error(err);
     } finally {

@@ -20,6 +20,7 @@ export function ProfileModal({ open, onClose }: ProfileModalProps) {
   const [repName, setRepName] = useState("");
   const [company, setCompany] = useState("");
   const [phone, setPhone] = useState("");
+  const [license, setLicense] = useState("");
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -35,6 +36,7 @@ export function ProfileModal({ open, onClose }: ProfileModalProps) {
             setRepName(p.elliott_rep_name ?? "");
             setCompany(p.company_name ?? "");
             setPhone(p.phone ?? "");
+            setLicense(p.license_number ?? "");
           }
         })
         .finally(() => setLoading(false));
@@ -51,6 +53,7 @@ export function ProfileModal({ open, onClose }: ProfileModalProps) {
         elliott_rep_name: repName || null,
         company_name: company || null,
         phone: phone || null,
+        license_number: license || null,
       });
       setSaved(true);
       setTimeout(() => setSaved(false), 2000);
@@ -97,6 +100,19 @@ export function ProfileModal({ open, onClose }: ProfileModalProps) {
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
                 placeholder="(555) 123-4567"
+                className="w-full px-3 py-2.5 rounded-lg bg-[hsl(217,33%,13%)] border border-[hsl(217,33%,22%)] text-white text-sm focus:outline-none focus:ring-2 focus:ring-yellow-400/50"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs text-gray-400 mb-1.5 uppercase tracking-wider font-semibold">
+                License Number
+              </label>
+              <input
+                type="text"
+                value={license}
+                onChange={(e) => setLicense(e.target.value)}
+                placeholder="e.g., TECL 12345"
                 className="w-full px-3 py-2.5 rounded-lg bg-[hsl(217,33%,13%)] border border-[hsl(217,33%,22%)] text-white text-sm focus:outline-none focus:ring-2 focus:ring-yellow-400/50"
               />
             </div>

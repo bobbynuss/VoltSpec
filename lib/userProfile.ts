@@ -6,6 +6,8 @@ export interface UserProfile {
   elliott_rep_name: string | null;
   company_name: string | null;
   phone: string | null;
+  license_number: string | null;
+  company_logo_url: string | null;
 }
 
 /** Get or create the current user's profile */
@@ -35,7 +37,7 @@ export async function getProfile(): Promise<UserProfile | null> {
 
 /** Update the user's profile */
 export async function updateProfile(
-  updates: Partial<Pick<UserProfile, "elliott_store" | "elliott_rep_name" | "company_name" | "phone">>
+  updates: Partial<Pick<UserProfile, "elliott_store" | "elliott_rep_name" | "company_name" | "phone" | "license_number" | "company_logo_url">>
 ): Promise<void> {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) throw new Error("Not logged in");

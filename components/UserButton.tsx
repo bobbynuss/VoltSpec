@@ -5,7 +5,7 @@ import { useAuth } from "./AuthProvider";
 import { useSubscription } from "./SubscriptionProvider";
 import { AuthModal } from "./AuthModal";
 import { ProfileModal } from "./ProfileModal";
-import { User, LogOut, ChevronDown, Settings, CreditCard, Crown, Shield, Gift } from "lucide-react";
+import { User, LogOut, ChevronDown, Settings, CreditCard, Crown, Shield, Gift, BarChart3 } from "lucide-react";
 import { ReferralModal } from "./ReferralModal";
 import Link from "next/link";
 
@@ -114,14 +114,24 @@ export function UserButton() {
             Profile & Sales Rep
           </button>
           {isAdmin && (
-            <Link
-              href="/admin/invites"
-              onClick={() => setMenuOpen(false)}
-              className="w-full flex items-center gap-2 px-3 py-2 text-sm text-gray-400 hover:text-yellow-400 hover:bg-[hsl(217,33%,14%)] transition-colors"
-            >
-              <Shield className="w-3.5 h-3.5" />
-              Admin
-            </Link>
+            <>
+              <Link
+                href="/admin/invites"
+                onClick={() => setMenuOpen(false)}
+                className="w-full flex items-center gap-2 px-3 py-2 text-sm text-gray-400 hover:text-yellow-400 hover:bg-[hsl(217,33%,14%)] transition-colors"
+              >
+                <Shield className="w-3.5 h-3.5" />
+                Invite Codes
+              </Link>
+              <Link
+                href="/admin/analytics"
+                onClick={() => setMenuOpen(false)}
+                className="w-full flex items-center gap-2 px-3 py-2 text-sm text-gray-400 hover:text-yellow-400 hover:bg-[hsl(217,33%,14%)] transition-colors"
+              >
+                <BarChart3 className="w-3.5 h-3.5" />
+                Analytics
+              </Link>
+            </>
           )}
           {tier === "pro" && (
             <button

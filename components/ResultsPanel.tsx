@@ -28,12 +28,15 @@ import {
   Check,
   Mail,
   Send,
+  Share2,
+  Link as LinkIcon,
 } from "lucide-react";
 import type { Job } from "@/lib/core/types";
 import { useAuth } from "./AuthProvider";
 import { useSubscription } from "./SubscriptionProvider";
 import { getProfile } from "@/lib/userProfile";
 import type { WhiteLabelOptions } from "@/lib/generatePDF";
+import { trackEvent } from "@/lib/analytics";
 import { QuoteRequestModal } from "./QuoteRequestModal";
 import { getTrade, getDistributor } from "@/lib/registry";
 import { POA_OPTIONS, DEFAULT_POA_ID, isMeterJob } from "@/lib/trades/electrical/poa";
@@ -301,12 +304,59 @@ export function ResultsPanel({ result, onSave, zip }: ResultsPanelProps) {
     const { generatePDF } = await import("@/lib/generatePDF");
     const wl = await getWhiteLabelOptions();
     await generatePDF(result, wl);
+    trackEvent("pdf_export", { userId: user?.id, city, jobId: job.id, jobLabel: job.label });
   };
 
   const handleDownloadJobSheet = async () => {
     const { generateJobSheet } = await import("@/lib/generatePDF");
     const wl = await getWhiteLabelOptions();
     await generateJobSheet(result, wl);
+    trackEvent("jobsheet_export", { userId: user?.id, city, jobId: job.id, jobLabel: job.label });
+  };
+
+  const [sharing, setSharing] = useState(false);
+  const [shareUrl, setShareUrl] = useState<string | null>(null);
+
+  const handleShare = async () => {
+    setSharing(true);
+    try {
+      const res = await fetch("/api/share", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          userId: user?.id,
+          jobId: job.id,
+          city,
+          zip,
+          jobLabel: job.label,
+          jurisdiction,
+          resultData: result,
+        }),
+      });
+      const data = await res.json();
+      if (data.shareUrl) {
+        setShareUrl(data.shareUrl);
+        trackEvent("share_created", { userId: user?.id, city, jobId: job.id, jobLabel: job.label });
+        if (navigator.share) {
+          try {
+            await navigator.share({
+              title: `${job.label} — VoltSpec`,
+              text: `Job spec for ${job.label} in ${jurisdiction.split("(")[0].trim()}`,
+              url: data.shareUrl,
+            });
+          } catch { /* cancelled */ }
+        } else {
+          navigator.clipboard.writeText(data.shareUrl);
+          setToast("Share link copied!");
+          setTimeout(() => setToast(null), 3000);
+        }
+      }
+    } catch {
+      setToast("Failed to create share link");
+      setTimeout(() => setToast(null), 3000);
+    } finally {
+      setSharing(false);
+    }
   };
 
   const [emailing, setEmailing] = useState(false);
@@ -400,6 +450,19 @@ export function ResultsPanel({ result, onSave, zip }: ResultsPanelProps) {
                 <><span className="w-4 h-4 border-2 border-orange-400 border-t-transparent rounded-full animate-spin sm:mr-1.5" /><span className="hidden sm:inline">Sending…</span></>
               ) : (
                 <><Mail className="w-4 h-4 sm:mr-1.5" /><span className="hidden sm:inline">Email</span></>
+              )}
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleShare}
+              disabled={sharing}
+              className="border-blue-500/40 text-blue-400 hover:text-blue-300 hover:border-blue-400 active:bg-blue-400/10 transition-colors duration-150 h-11 sm:h-9 text-xs sm:text-sm whitespace-nowrap"
+            >
+              {sharing ? (
+                <><span className="w-4 h-4 border-2 border-blue-400 border-t-transparent rounded-full animate-spin sm:mr-1.5" /><span className="hidden sm:inline">Sharing…</span></>
+              ) : (
+                <><Share2 className="w-4 h-4 sm:mr-1.5" /><span className="hidden sm:inline">Share</span></>
               )}
             </Button>
             {user && (

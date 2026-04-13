@@ -12,6 +12,7 @@ import { PlanTakeoff } from "@/components/PlanTakeoff";
 import Image from "next/image";
 import { Menu, X, Calculator, FolderOpen, HelpCircle, ShoppingCart, FileImage } from "lucide-react";
 import { DisclaimerBanner } from "@/components/DisclaimerBanner";
+import { InstallPrompt } from "@/components/InstallPrompt";
 import { TourOverlay } from "@/components/TourOverlay";
 import type { TourStep } from "@/components/TourOverlay";
 import { TOUR_STEPS } from "@/lib/tour-steps";
@@ -60,6 +61,13 @@ function HomeContent() {
   const [takeoffMode, setTakeoffMode] = useState(false);
   const [showUpgradeToast, setShowUpgradeToast] = useState(false);
   const sidebarRef = useRef<SidebarHandle>(null);
+
+  // Register service worker for PWA
+  useEffect(() => {
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("/sw.js").catch(() => {});
+    }
+  }, []);
 
   // Show celebratory toast when redirected after upgrade
   useEffect(() => {
@@ -369,6 +377,9 @@ function HomeContent() {
           onEnd={() => setTourActive(false)}
         />
       )}
+
+      {/* PWA install prompt */}
+      <InstallPrompt />
     </div>
   );
 }

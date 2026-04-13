@@ -66,8 +66,11 @@ const GEAR_PATTERNS = [
 ];
 
 const PANEL_BREAKER_PATTERNS = [
-  // Panels / loadcenters
-  /\bpanel\b/i,
+  // Panels / loadcenters — must be actual panel products, not items that mention "panel" in passing
+  /\b(load\s*center|panelboard|sub-?panel|main\s*panel|unit\s*panel|floor\s*panel|house\s*panel)\b/i,
+  /\b\d+[-\s]space\b.*\bpanel\b/i,
+  /\bpanel\b.*\b(MLO|main\s*lug|main\s*breaker|flush|surface|NEMA)\b/i,
+  /\bCHP\d/i,
   /\bloadcenter\b/i,
   /\bsmart panel\b/i,
   /\bSPAN\b.*\b(panel|PNL|subpanel)\b/i,

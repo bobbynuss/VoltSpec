@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { useAuth } from "@/components/AuthProvider";
-import { ArrowLeft, Copy, Plus, Check, X, Clock, User } from "lucide-react";
+import { ArrowLeft, Copy, Plus, Check, X, Clock, User, Ban, RotateCcw } from "lucide-react";
 
 const ADMIN_EMAILS = (process.env.NEXT_PUBLIC_ADMIN_EMAILS ?? "")
   .split(",")
@@ -17,7 +17,17 @@ interface InviteCode {
   used_by: string | null;
   used_at: string | null;
   notes: string | null;
+  pro_duration_days: number | null;
+  deactivated: boolean;
 }
+
+const DURATION_OPTIONS = [
+  { value: "", label: "Lifetime", desc: "Forever" },
+  { value: "7", label: "7-day trial", desc: "1 week" },
+  { value: "30", label: "30-day", desc: "1 month" },
+  { value: "90", label: "90-day", desc: "3 months" },
+  { value: "365", label: "1-year", desc: "12 months" },
+];
 
 export default function AdminInvitesPage() {
   const { user, loading: authLoading } = useAuth();
@@ -26,6 +36,7 @@ export default function AdminInvitesPage() {
   const [generating, setGenerating] = useState(false);
   const [notes, setNotes] = useState("");
   const [count, setCount] = useState(1);
+  const [duration, setDuration] = useState("");
   const [newCodes, setNewCodes] = useState<string[]>([]);
   const [copied, setCopied] = useState<string | null>(null);
 
@@ -68,6 +79,7 @@ export default function AdminInvitesPage() {
           adminEmail: user.email,
           notes: notes || undefined,
           count,
+          proDurationDays: duration ? parseInt(duration) : undefined,
         }),
       });
       const data = await res.json();
@@ -88,6 +100,20 @@ export default function AdminInvitesPage() {
       setGenError("Network error");
     } finally {
       setGenerating(false);
+    }
+  };
+
+  const handleDeactivate = async (codeId: string, deactivated: boolean) => {
+    if (!user?.email) return;
+    try {
+      await fetch("/api/invite/deactivate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ adminEmail: user.email, codeId, deactivated }),
+      });
+      fetchCodes();
+    } catch {
+      // silent
     }
   };
 
@@ -150,6 +176,15 @@ export default function AdminInvitesPage() {
               placeholder="Notes (e.g., 'Elliott Austin counter staff')"
               className="flex-1 px-3 py-2.5 rounded-lg text-sm bg-[hsl(217,33%,13%)] border border-[hsl(217,33%,22%)] text-white placeholder-gray-600 focus:outline-none focus:ring-1 focus:ring-yellow-400"
             />
+            <select
+              value={duration}
+              onChange={(e) => setDuration(e.target.value)}
+              className="px-3 py-2.5 rounded-lg text-sm bg-[hsl(217,33%,13%)] border border-[hsl(217,33%,22%)] text-white focus:outline-none focus:ring-1 focus:ring-yellow-400"
+            >
+              {DURATION_OPTIONS.map((d) => (
+                <option key={d.value} value={d.value}>{d.label}</option>
+              ))}
+            </select>
             <select
               value={count}
               onChange={(e) => setCount(parseInt(e.target.value))}
@@ -228,26 +263,40 @@ export default function AdminInvitesPage() {
             <h2 className="text-lg font-semibold text-white mb-3">All Codes</h2>
             {codes.map((c) => {
               const isUsed = !!c.used_by;
-              const isExpired = !isUsed && new Date(c.expires_at) < new Date();
+              const isDeactivated = c.deactivated;
+              const isExpired = !isUsed && !isDeactivated && new Date(c.expires_at) < new Date();
+              const isActive = !isUsed && !isDeactivated && !isExpired;
+              const durLabel = c.pro_duration_days ? `${c.pro_duration_days}d` : "∞";
               return (
                 <div
                   key={c.id}
                   className={`flex items-center gap-3 px-4 py-3 rounded-lg border ${
                     isUsed
                       ? "bg-emerald-950/20 border-emerald-800/20"
-                      : isExpired
-                        ? "bg-red-950/20 border-red-800/20 opacity-60"
-                        : "bg-[hsl(222,47%,10%)] border-[hsl(217,33%,20%)]"
+                      : isDeactivated
+                        ? "bg-gray-950/30 border-gray-800/20 opacity-50"
+                        : isExpired
+                          ? "bg-red-950/20 border-red-800/20 opacity-60"
+                          : "bg-[hsl(222,47%,10%)] border-[hsl(217,33%,20%)]"
                   }`}
                 >
                   <code className="font-mono font-bold text-sm text-white tracking-wider min-w-[130px]">
                     {c.code}
                   </code>
 
+                  <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-[hsl(217,33%,15%)] text-gray-400">
+                    {durLabel}
+                  </span>
+
                   {isUsed ? (
                     <span className="flex items-center gap-1 text-xs text-emerald-400">
                       <User className="w-3 h-3" />
                       Redeemed {new Date(c.used_at!).toLocaleDateString()}
+                    </span>
+                  ) : isDeactivated ? (
+                    <span className="flex items-center gap-1 text-xs text-gray-500">
+                      <Ban className="w-3 h-3" />
+                      Deactivated
                     </span>
                   ) : isExpired ? (
                     <span className="flex items-center gap-1 text-xs text-red-400">
@@ -262,23 +311,44 @@ export default function AdminInvitesPage() {
                   )}
 
                   {c.notes && (
-                    <span className="text-xs text-gray-600 ml-auto truncate max-w-[200px]">
+                    <span className="text-xs text-gray-600 truncate max-w-[180px]">
                       {c.notes}
                     </span>
                   )}
 
-                  {!isUsed && !isExpired && (
-                    <button
-                      onClick={() => copyCode(c.code)}
-                      className="ml-auto text-gray-400 hover:text-yellow-400 transition-colors cursor-pointer"
-                    >
-                      {copied === c.code ? (
-                        <Check className="w-4 h-4 text-emerald-400" />
-                      ) : (
-                        <Copy className="w-4 h-4" />
-                      )}
-                    </button>
-                  )}
+                  <div className="ml-auto flex items-center gap-2">
+                    {isActive && (
+                      <>
+                        <button
+                          onClick={() => copyCode(c.code)}
+                          className="text-gray-400 hover:text-yellow-400 transition-colors cursor-pointer"
+                          title="Copy code"
+                        >
+                          {copied === c.code ? (
+                            <Check className="w-4 h-4 text-emerald-400" />
+                          ) : (
+                            <Copy className="w-4 h-4" />
+                          )}
+                        </button>
+                        <button
+                          onClick={() => handleDeactivate(c.id, true)}
+                          className="text-gray-500 hover:text-red-400 transition-colors cursor-pointer"
+                          title="Deactivate"
+                        >
+                          <Ban className="w-4 h-4" />
+                        </button>
+                      </>
+                    )}
+                    {isDeactivated && !isUsed && (
+                      <button
+                        onClick={() => handleDeactivate(c.id, false)}
+                        className="text-gray-500 hover:text-emerald-400 transition-colors cursor-pointer"
+                        title="Reactivate"
+                      >
+                        <RotateCcw className="w-4 h-4" />
+                      </button>
+                    )}
+                  </div>
                 </div>
               );
             })}

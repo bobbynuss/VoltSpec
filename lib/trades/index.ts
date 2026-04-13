@@ -15,3 +15,4 @@ export type {
 // ── Available Trades ─────────────────────────────────────────────
 
 export { electricalModule } from "./electrical";
+export { plumbingModule } from "./plumbing";

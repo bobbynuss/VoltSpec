@@ -2,31 +2,28 @@ import { NextRequest, NextResponse } from "next/server";
 import { getJobById } from "@/lib/data";
 import { getTrade } from "@/lib/registry";
 
-const trade = getTrade();
-const getJobForJurisdiction = trade.getJobForJurisdiction.bind(trade);
-const getJurisdictionById = trade.getJurisdictionById.bind(trade);
-const getJurisdictionByZip = trade.getJurisdictionByZip.bind(trade);
-
 export async function POST(req: NextRequest) {
   try {
-    const { jobId, zip, city } = await req.json();
+    const { jobId, zip, city, trade: tradeId } = await req.json();
     if (!jobId) {
       return NextResponse.json({ error: "jobId required" }, { status: 400 });
     }
 
-    // Resolve jurisdiction: explicit city > zip-based lookup > default (Austin)
+    const trade = getTrade(tradeId ?? "electrical");
+
+    // Resolve jurisdiction: explicit city > zip-based lookup > default
     const jurisdiction = city
-      ? getJurisdictionById(city)
+      ? trade.getJurisdictionById(city)
       : zip
-        ? getJurisdictionByZip(zip)
+        ? trade.getJurisdictionByZip(zip)
         : undefined;
 
-    // If a jurisdiction was resolved, look up the job within it
+    // Look up the job within the jurisdiction
     let job;
     if (jurisdiction) {
-      job = getJobForJurisdiction(jurisdiction.id, jobId);
+      job = trade.getJobForJurisdiction(jurisdiction.id, jobId);
     }
-    // Fallback: try Austin jobs directly (backward compat)
+    // Fallback: try electrical Austin jobs directly (backward compat)
     if (!job) {
       job = getJobById(jobId);
     }
@@ -36,14 +33,16 @@ export async function POST(req: NextRequest) {
     }
 
     const jurisdictionLabel = jurisdiction?.label ?? "Austin, TX (Travis County)";
+    const codeRef = tradeId === "plumbing" ? "IPC 2021" : "NEC 2026";
 
     return NextResponse.json({
       job,
       jurisdiction: jurisdictionLabel,
       city: jurisdiction?.id ?? "austin",
+      trade: trade.id,
       generatedAt: new Date().toISOString(),
       disclaimer:
-        "⚠️ NOT ENGINEERING ADVICE. Always verify all requirements with your local Authority Having Jurisdiction (AHJ) before any installation. NEC amendments vary by jurisdiction. This tool is for reference only.",
+        `⚠️ NOT ENGINEERING ADVICE. Always verify all requirements with your local Authority Having Jurisdiction (AHJ) before any installation. ${codeRef} amendments vary by jurisdiction. This tool is for reference only.`,
     });
   } catch {
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });

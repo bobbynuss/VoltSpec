@@ -11,12 +11,14 @@
 import type { TradeModule } from "./trades/types";
 import type { DistributorAdapter } from "./distributors/types";
 import { electricalModule } from "./trades/electrical";
+import { plumbingModule } from "./trades/plumbing";
 import { elliottAdapter } from "./distributors/elliott";
 
 // ── Registered modules ───────────────────────────────────────────
 
 const TRADE_MODULES: Map<string, TradeModule> = new Map([
   ["electrical", electricalModule],
+  ["plumbing", plumbingModule],
 ]);
 
 const DISTRIBUTOR_ADAPTERS: Map<string, DistributorAdapter> = new Map([

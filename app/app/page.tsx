@@ -81,14 +81,14 @@ function HomeContent() {
     }
   }, [searchParams]);
 
-  const handleGenerate = async (jobId: string, zip: string, city?: string) => {
+  const handleGenerate = async (jobId: string, zip: string, city?: string, tradeId?: string) => {
     setLoading(true);
     if (zip) setCurrentZip(zip);
     try {
       const res = await fetch("/api/generate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ jobId, zip, city }),
+        body: JSON.stringify({ jobId, zip, city, trade: tradeId }),
       });
       const data = await res.json();
       setResult(data);

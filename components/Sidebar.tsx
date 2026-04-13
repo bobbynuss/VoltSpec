@@ -15,12 +15,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { JOB_TYPES } from "@/lib/data";
-import { getTrade } from "@/lib/registry";
-
-// Pull jurisdictions and state options from the trade registry
-const trade = getTrade();
-const JURISDICTIONS = trade.jurisdictions;
-const STATE_OPTIONS = trade.stateOptions;
+import { getTrade, listTrades } from "@/lib/registry";
 import { ChatWidget } from "@/components/ChatWidget";
 import { useSubscription } from "@/components/SubscriptionProvider";
 import { useAuth } from "@/components/AuthProvider";
@@ -28,12 +23,12 @@ import { AuthModal } from "@/components/AuthModal";
 import { canAccessCity, canAccessJob } from "@/lib/subscription";
 
 export interface SidebarHandle {
-  getState: () => { city: string; zip: string; jobId: string };
+  getState: () => { city: string; zip: string; jobId: string; trade: string };
   setState: (state: { city: string; zip: string; jobId: string }) => void;
 }
 
 interface SidebarProps {
-  onGenerate: (jobId: string, zip: string, city: string) => void;
+  onGenerate: (jobId: string, zip: string, city: string, trade?: string) => void;
   onOpenProjects: () => void;
   onZipChange?: (zip: string) => void;
   loading: boolean;
@@ -47,12 +42,19 @@ export const Sidebar = forwardRef<SidebarHandle, SidebarProps>(function Sidebar(
   const { user } = useAuth();
   const { tier } = useSubscription();
   const [authModalOpen, setAuthModalOpen] = useState(false);
+  const [activeTrade, setActiveTrade] = useState("electrical");
   const [stateFilter, setStateFilter] = useState("ALL");
   const [city, setCity] = useState("austin");
   const [zip, setZip] = useState("78744");
   const [jobId, setJobId] = useState("");
   const [search, setSearch] = useState("");
   const [gatePrompt, setGatePrompt] = useState<string | null>(null);
+
+  const availableTrades = listTrades();
+  const trade = getTrade(activeTrade);
+  const JURISDICTIONS = trade.jurisdictions;
+  const STATE_OPTIONS = trade.stateOptions;
+  const ACTIVE_JOB_TYPES = trade.jobTypes;
 
   // Filter jurisdictions by selected state, sorted alphabetically by shortLabel
   const filteredJurisdictions = (stateFilter === "ALL"
@@ -72,7 +74,7 @@ export const Sidebar = forwardRef<SidebarHandle, SidebarProps>(function Sidebar(
 
 
   useImperativeHandle(ref, () => ({
-    getState: () => ({ city, zip, jobId }),
+    getState: () => ({ city, zip, jobId, trade: activeTrade }),
     setState: ({ city: c, zip: z, jobId: j }) => {
       setCity(c);
       setZip(z);
@@ -99,7 +101,7 @@ export const Sidebar = forwardRef<SidebarHandle, SidebarProps>(function Sidebar(
       setAuthModalOpen(true);
       return;
     }
-    onGenerate(jobId, zip, city);
+    onGenerate(jobId, zip, city, activeTrade);
   };
 
   return (
@@ -119,6 +121,37 @@ export const Sidebar = forwardRef<SidebarHandle, SidebarProps>(function Sidebar(
           <span>Projects</span>
         </button>
       </div>
+
+      {/* Trade Selector */}
+      {availableTrades.length > 1 && (
+        <div className="flex bg-[hsl(217,33%,13%)] border border-[hsl(217,33%,22%)] rounded-lg p-0.5">
+          {availableTrades.map((t) => (
+            <button
+              key={t.id}
+              onClick={() => {
+                if (t.id !== activeTrade) {
+                  setActiveTrade(t.id);
+                  setJobId("");
+                  setStateFilter("ALL");
+                  // Reset to default city for the new trade
+                  const newTrade = getTrade(t.id);
+                  setCity(newTrade.defaultJurisdictionId);
+                  const defaultJur = newTrade.getJurisdictionById(newTrade.defaultJurisdictionId);
+                  if (defaultJur) setZip(defaultJur.defaultZip);
+                }
+              }}
+              className={`flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-md text-xs font-medium transition-colors cursor-pointer ${
+                activeTrade === t.id
+                  ? "bg-yellow-400 text-gray-900"
+                  : "text-gray-400 hover:text-white"
+              }`}
+            >
+              <span>{t.icon}</span>
+              <span>{t.name}</span>
+            </button>
+          ))}
+        </div>
+      )}
 
       {/* Unified Search */}
       <div className="relative">
@@ -160,7 +193,7 @@ export const Sidebar = forwardRef<SidebarHandle, SidebarProps>(function Sidebar(
               j.utility.toLowerCase().includes(q) ||
               j.county.toLowerCase().includes(q)
           ).slice(0, 5);
-          const matchedJobs = JOB_TYPES.filter(
+          const matchedJobs = ACTIVE_JOB_TYPES.filter(
             (j) => j.label.toLowerCase().includes(q)
           ).slice(0, 8);
           if (matchedCities.length === 0 && matchedJobs.length === 0) return null;
@@ -349,7 +382,7 @@ export const Sidebar = forwardRef<SidebarHandle, SidebarProps>(function Sidebar(
               <SelectValue placeholder="Select job type…" />
             </SelectTrigger>
             <SelectContent className="bg-[hsl(222,47%,10%)] border-[hsl(217,33%,22%)] text-white max-h-[480px] min-w-[min(460px,90vw)] overflow-y-auto">
-              {JOB_TYPES.map((job) => {
+              {ACTIVE_JOB_TYPES.map((job) => {
                 const locked = !canAccessJob(tier, job.id);
                 return (
                   <SelectItem

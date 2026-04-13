@@ -8,7 +8,8 @@ export type MaterialGroupId =
   | "panel-breakers"
   | "wire-conductors"
   | "conduit-raceway"
-  | "devices-lighting"
+  | "devices"
+  | "lighting"
   | "fittings-accessories"
   | "miscellaneous";
 
@@ -180,9 +181,69 @@ const FITTING_ACCESSORY_PATTERNS = [
   /\bIPLD\b/i,
 ];
 
-// ── Devices & Lighting ──────────────────────────────────────────────
-// All wiring devices (EWD), Lutron (LUT), smoke/CO (BRK), lighting fixtures
-const DEVICE_LIGHTING_PATTERNS = [
+// ── Lighting ────────────────────────────────────────────────────────
+// All light fixtures (indoor, outdoor, landscape, exit, emergency, pole lights)
+const LIGHTING_PATTERNS = [
+  // Light fixtures (generic)
+  /\blight\s*fixture\b/i,
+  /\brecessed\s*(down)?light\b/i,
+  /\bcan\s*light\b/i,
+  /\bdownlight\b/i,
+  /\bwafer\b.*\blight\b/i,
+  /\bflush\s*mount\b.*\b(ceil|light|LED)\b/i,
+  /\bsconce\b/i,
+  /\bvanity\s*light\b/i,
+  /\bpendant\b/i,
+  /\bchandelier\b/i,
+  /\bcove\s*light\b/i,
+  /\bunder.cabinet\b.*\b(LED|light)\b/i,
+  // Outdoor / area lighting
+  /\bfloodlight\b/i,
+  /\barea\s*light\b/i,
+  /\bshoebox\b/i,
+  /\bpole\s*light\b/i,
+  /\bsite\s*light\b/i,
+  /\bparking\b.*\blight\b/i,
+  /\bDSXF\b/i,
+  // Landscape lighting
+  /\blandscape\s*(light|transform)\b/i,
+  /\bpath\s*light\b/i,
+  /\bspot\s*light\b/i,
+  /\b12V\s*LED\b.*\b(path|spot|light)\b/i,
+  /\blandscape\s*wire\b/i,
+  /\blandscape\s*transformer\b/i,
+  /\bKichler\b/i,
+  // Emergency / exit lighting
+  /\bexit\s*sign\b/i,
+  /\bemergency\s*(light|bug|head)\b/i,
+  /\bbug-eye\b/i,
+  /\bLHQM\b/i,
+  /\bELM\d\b/i,
+  /\bEDGR\b/i,
+  // LED fixture patterns (Lithonia, etc.)
+  /\bLED\s*(fixture|strip|wrap|vapor|troffer|flat\s*panel)\b/i,
+  /\bLithonia\b.*\b(LED|WF\d|FMLWL|FMML|GEMINI|DSXF)\b/i,
+  /\bvapor.tight\b.*\b(fixture|LED)\b/i,
+  // Dimming panels / lighting control (not dimmer switches — those are devices)
+  /\bdimming\s*panel\b/i,
+  /\bGrafik\b/i,
+  // Ceiling fan (lighting + fan combo)
+  /\bceiling\s*fan\b/i,
+  // Generic LED fixture catch
+  /\bLED\b.*\b(lumen|5000K|4000K|3000K|2700K)\b.*\b(fixture|mount|recessed|surface|flush|troffer)\b/i,
+  // Photocells and lighting contactors (lighting control)
+  /\bphotocell\b/i,
+  /\bdusk.to.dawn\b/i,
+  /\blighting\s*contactor\b/i,
+  // Occupancy/vacancy sensors (lighting control)
+  /\boccupancy\s*(sensor|detector)\b/i,
+  /\bvacancy\s*sensor\b/i,
+  // Range hood (has a light, but it's more of a device — exclude)
+];
+
+// ── Devices ─────────────────────────────────────────────────────────
+// Wiring devices: switches, receptacles, wall plates, smoke/CO detectors, fans
+const DEVICE_PATTERNS = [
   // Switches
   /\bswitch\b/i,
   /\bdimmer\b/i,
@@ -206,19 +267,21 @@ const DEVICE_LIGHTING_PATTERNS = [
   /\bCO\s*(detector|alarm|combo)\b/i,
   /\bSMI\d/i,
   /\bSMIC\d/i,
-  /\bBRK\b/i,
-  // Lighting fixtures
-  /\blight\s*fixture\b/i,
-  /\brecessed\s*light\b/i,
-  /\bcan\s*light\b/i,
-  /\bLED\s*(fixture|light|panel|strip)\b/i,
-  /\bsconce\b/i,
-  /\bfloodlight\b/i,
+  /\bKidde\b/i,
+  // Bath exhaust fan (device, not lighting)
+  /\b(bath|exhaust)\s*fan\b/i,
+  /\bBroan\b/i,
+  /\bNuTone\b/i,
+  // Range hood
+  /\brange\s*hood\b/i,
+  // Fan switch/control
   /\bfan\s*(switch|control)\b/i,
+  // Heat lamp (bathroom device)
+  /\bheat\s*lamp\b/i,
   // Vendor code patterns (EWD part numbers)
-  /\bEaton\b.*\b(7501|7503|TR11|TR13|TRGF|TWRGF|TR77|PJ\d|DAL|SGD)\b/i,
-  // Lutron part numbers
-  /\bLutron\b/i,
+  /\bEaton\b.*\b(7501|7503|TR11|TR13|TRGF|TWRGF|TR77|PJ\d|DAL|SGD|1301|1303)\b/i,
+  // Lutron dimmer switches (device, not lighting control panel)
+  /\bLutron\b.*\b(dimmer|switch)\b/i,
   /\bDVCL\b/i,
 ];
 
@@ -293,10 +356,13 @@ function classifyMaterial(mat: MaterialItem): MaterialGroupId {
   // Wire
   if (matchesAny(combined, WIRE_CONDUCTOR_PATTERNS)) return "wire-conductors";
 
-  // Devices & Lighting — check before fittings since "receptacle" matches both
-  // But exclude box/cover/conduit items that happen to mention "receptacle"
-  if (matchesAny(combined, DEVICE_LIGHTING_PATTERNS) && !matchesAny(combined, DEVICE_EXCLUDE_PATTERNS))
-    return "devices-lighting";
+  // Lighting — check before devices since some items match both (e.g., "LED" + "fixture")
+  if (matchesAny(combined, LIGHTING_PATTERNS) && !matchesAny(combined, DEVICE_EXCLUDE_PATTERNS))
+    return "lighting";
+
+  // Devices — switches, receptacles, wall plates, smoke/CO, exhaust fans
+  if (matchesAny(combined, DEVICE_PATTERNS) && !matchesAny(combined, DEVICE_EXCLUDE_PATTERNS))
+    return "devices";
 
   // Fittings: check before conduit since "EMT connector" should be fitting not conduit
   if (matchesAny(combined, FITTING_ACCESSORY_PATTERNS)) return "fittings-accessories";
@@ -316,7 +382,8 @@ const GROUP_META: Record<MaterialGroupId, { label: string; icon: string }> = {
   "panel-breakers": { label: "Panel & Breakers", icon: "⚡" },
   "wire-conductors": { label: "Wire / Service Entrance Conductors", icon: "🔌" },
   "conduit-raceway": { label: "Conduit & Raceway", icon: "🔧" },
-  "devices-lighting": { label: "Devices & Lighting", icon: "💡" },
+  devices: { label: "Devices", icon: "🔲" },
+  lighting: { label: "Lighting", icon: "💡" },
   "fittings-accessories": { label: "Fittings & Accessories", icon: "🔩" },
   miscellaneous: { label: "Miscellaneous / Grounding / Other", icon: "📦" },
 };
@@ -326,7 +393,8 @@ const GROUP_ORDER: MaterialGroupId[] = [
   "panel-breakers",
   "wire-conductors",
   "conduit-raceway",
-  "devices-lighting",
+  "devices",
+  "lighting",
   "fittings-accessories",
   "miscellaneous",
 ];

@@ -31,6 +31,9 @@ import {
 } from "lucide-react";
 import type { Job } from "@/lib/core/types";
 import { useAuth } from "./AuthProvider";
+import { useSubscription } from "./SubscriptionProvider";
+import { getProfile } from "@/lib/userProfile";
+import type { WhiteLabelOptions } from "@/lib/generatePDF";
 import { QuoteRequestModal } from "./QuoteRequestModal";
 import { getTrade, getDistributor } from "@/lib/registry";
 import { POA_OPTIONS, DEFAULT_POA_ID, isMeterJob } from "@/lib/trades/electrical/poa";
@@ -111,6 +114,7 @@ function ElliottLinks({
 
 export function ResultsPanel({ result, onSave, zip }: ResultsPanelProps) {
   const { user } = useAuth();
+  const { tier } = useSubscription();
   const { job, jurisdiction, city, generatedAt, disclaimer } = result;
   const jurisdictionData = JURISDICTIONS.find((j) => j.id === city);
   const [quoteModalOpen, setQuoteModalOpen] = useState(false);
@@ -118,6 +122,12 @@ export function ResultsPanel({ result, onSave, zip }: ResultsPanelProps) {
   const [showOtherSuppliers, setShowOtherSuppliers] = useState(false);
   const [copied, setCopied] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
+  const [whiteLabelEnabled, setWhiteLabelEnabled] = useState(() => {
+    if (typeof window !== "undefined") {
+      return localStorage.getItem("voltspec-white-label") === "true";
+    }
+    return false;
+  });
   const [showPricing, setShowPricing] = useState(() => {
     if (typeof window !== "undefined") {
       const saved = localStorage.getItem("voltspec-show-pricing");
@@ -273,15 +283,30 @@ export function ResultsPanel({ result, onSave, zip }: ResultsPanelProps) {
 
   const handlePrint = () => window.print();
 
+  const getWhiteLabelOptions = async (): Promise<WhiteLabelOptions | undefined> => {
+    if (!whiteLabelEnabled || tier !== "pro") return undefined;
+    try {
+      const profile = await getProfile();
+      if (profile?.company_name) {
+        return {
+          companyName: profile.company_name,
+          phone: profile.phone ?? undefined,
+        };
+      }
+    } catch { /* fall through */ }
+    return undefined;
+  };
+
   const handleDownloadPDF = async () => {
-    // Dynamic import to avoid SSR issues with react-pdf
     const { generatePDF } = await import("@/lib/generatePDF");
-    await generatePDF(result);
+    const wl = await getWhiteLabelOptions();
+    await generatePDF(result, wl);
   };
 
   const handleDownloadJobSheet = async () => {
     const { generateJobSheet } = await import("@/lib/generatePDF");
-    await generateJobSheet(result);
+    const wl = await getWhiteLabelOptions();
+    await generateJobSheet(result, wl);
   };
 
   const [emailing, setEmailing] = useState(false);
@@ -438,6 +463,27 @@ export function ResultsPanel({ result, onSave, zip }: ResultsPanelProps) {
           )}
         </div>
       </div>
+
+      {/* White-label toggle (Pro only) */}
+      {tier === "pro" && (
+        <div className="flex items-center gap-3 px-3 py-2 rounded-lg bg-[hsl(222,47%,10%)] border border-[hsl(217,33%,20%)]">
+          <label className="flex items-center gap-2 cursor-pointer flex-1">
+            <input
+              type="checkbox"
+              checked={whiteLabelEnabled}
+              onChange={(e) => {
+                setWhiteLabelEnabled(e.target.checked);
+                localStorage.setItem("voltspec-white-label", String(e.target.checked));
+              }}
+              className="accent-yellow-400 w-4 h-4 cursor-pointer"
+            />
+            <span className="text-xs text-gray-300 font-medium">White-label PDF</span>
+          </label>
+          <span className="text-[11px] text-gray-500">
+            {whiteLabelEnabled ? "Your company name on exports" : "VoltSpec branding on exports"}
+          </span>
+        </div>
+      )}
 
       {/* Disclaimer Banner */}
       <div className="flex gap-2 p-3 rounded-lg bg-amber-900/20 border border-amber-700/40 text-amber-300 text-xs">

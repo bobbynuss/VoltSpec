@@ -20,7 +20,7 @@ function generateCode(): string {
 
 export async function POST(req: NextRequest) {
   try {
-    const { adminEmail, notes, count = 1, proDurationDays } = await req.json();
+    const { adminEmail, notes, count = 1, proDurationDays, codeType = "standard" } = await req.json();
 
     if (!adminEmail || !ADMIN_EMAILS.includes(adminEmail.toLowerCase())) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
@@ -28,15 +28,28 @@ export async function POST(req: NextRequest) {
 
     const codes: string[] = [];
     const errors: string[] = [];
-    const expiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString();
+
+    // Elliott Sales Rep Master Code: 7-day expiry, reusable, grants 30-day Pro + rep status
+    const isElliottMaster = codeType === "elliott_master";
+    const expiresAt = isElliottMaster
+      ? new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString()
+      : new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString();
+
+    const effectiveDuration = isElliottMaster ? 30 : (proDurationDays ?? null);
+    const effectiveNotes = isElliottMaster
+      ? (notes || "Elliott Sales Rep – 30 Day Pro")
+      : (notes || null);
 
     for (let i = 0; i < Math.min(count, 50); i++) {
       const code = generateCode();
       const { error } = await supabase.from("invite_codes").insert({
         code,
         expires_at: expiresAt,
-        notes: notes || null,
-        pro_duration_days: proDurationDays ?? null, // null = lifetime
+        notes: effectiveNotes,
+        pro_duration_days: effectiveDuration,
+        code_type: isElliottMaster ? "elliott_master" : "standard",
+        is_reusable: isElliottMaster,
+        redemption_count: 0,
       });
       if (error) {
         console.error("[invite/generate] Insert error:", error.message);
@@ -53,7 +66,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    return NextResponse.json({ codes, expiresAt });
+    return NextResponse.json({ codes, expiresAt, codeType: isElliottMaster ? "elliott_master" : "standard" });
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : "Unknown error";
     return NextResponse.json({ error: message }, { status: 500 });

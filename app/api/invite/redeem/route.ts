@@ -31,7 +31,10 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "This code has been deactivated" }, { status: 400 });
     }
 
-    if (invite.used_by) {
+    const isReusable = invite.is_reusable === true;
+
+    // For non-reusable codes, check if already used
+    if (!isReusable && invite.used_by) {
       return NextResponse.json({ error: "This code has already been used" }, { status: 400 });
     }
 
@@ -39,14 +42,28 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "This code has expired" }, { status: 400 });
     }
 
-    // Mark code as used
-    const { error: updateErr } = await supabase
-      .from("invite_codes")
-      .update({ used_by: userId, used_at: new Date().toISOString() })
-      .eq("id", invite.id);
+    // For reusable codes (elliott_master), increment counter; for standard, mark used
+    if (isReusable) {
+      const { error: updateErr } = await supabase
+        .from("invite_codes")
+        .update({
+          redemption_count: (invite.redemption_count ?? 0) + 1,
+          used_at: new Date().toISOString(), // track last redemption time
+        })
+        .eq("id", invite.id);
 
-    if (updateErr) {
-      return NextResponse.json({ error: "Failed to redeem code" }, { status: 500 });
+      if (updateErr) {
+        return NextResponse.json({ error: "Failed to redeem code" }, { status: 500 });
+      }
+    } else {
+      const { error: updateErr } = await supabase
+        .from("invite_codes")
+        .update({ used_by: userId, used_at: new Date().toISOString() })
+        .eq("id", invite.id);
+
+      if (updateErr) {
+        return NextResponse.json({ error: "Failed to redeem code" }, { status: 500 });
+      }
     }
 
     // Calculate Pro end date based on duration
@@ -57,6 +74,9 @@ export async function POST(req: NextRequest) {
 
     const durationLabel = durationDays ? `${durationDays}-day` : "lifetime";
 
+    // Elliott Sales Rep Master Code → also set elliott_sales_rep flag
+    const isElliottMaster = invite.code_type === "elliott_master";
+
     // Grant Pro access
     const { error: subErr } = await supabase.from("subscriptions").upsert(
       {
@@ -64,11 +84,12 @@ export async function POST(req: NextRequest) {
         stripe_customer_id: null,
         stripe_subscription_id: `invite:${normalizedCode}`,
         status: "active",
-        price_id: `invite_${durationLabel}`,
+        price_id: isElliottMaster ? "elliott_sales_rep_30d" : `invite_${durationLabel}`,
         current_period_start: new Date().toISOString(),
         current_period_end: periodEnd,
         cancel_at_period_end: false,
         updated_at: new Date().toISOString(),
+        ...(isElliottMaster ? { elliott_sales_rep: true } : {}),
       },
       { onConflict: "user_id" }
     );
@@ -78,11 +99,18 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Failed to activate Pro" }, { status: 500 });
     }
 
-    const msg = durationDays
-      ? `Pro access activated for ${durationDays} days!`
-      : "Lifetime Pro access activated!";
+    const msg = isElliottMaster
+      ? "Elliott Sales Rep access activated — 30 days Pro + unlimited customer trials!"
+      : durationDays
+        ? `Pro access activated for ${durationDays} days!`
+        : "Lifetime Pro access activated!";
 
-    return NextResponse.json({ success: true, message: msg, durationDays });
+    return NextResponse.json({
+      success: true,
+      message: msg,
+      durationDays,
+      elliottSalesRep: isElliottMaster,
+    });
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : "Unknown error";
     return NextResponse.json({ error: message }, { status: 500 });

@@ -19,6 +19,9 @@ interface InviteCode {
   notes: string | null;
   pro_duration_days: number | null;
   deactivated: boolean;
+  code_type: string | null;
+  is_reusable: boolean | null;
+  redemption_count: number | null;
 }
 
 const DURATION_OPTIONS = [
@@ -65,6 +68,39 @@ export default function AdminInvitesPage() {
   }, [isAdmin, fetchCodes]);
 
   const [genError, setGenError] = useState<string | null>(null);
+  const [generatingMaster, setGeneratingMaster] = useState(false);
+
+  const handleGenerateMaster = async () => {
+    if (!user?.email) return;
+    setGeneratingMaster(true);
+    setNewCodes([]);
+    setGenError(null);
+    try {
+      const res = await fetch("/api/invite/generate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          adminEmail: user.email,
+          codeType: "elliott_master",
+          notes: "Elliott Sales Rep – 30 Day Pro",
+          count: 1,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setGenError(data.error ?? `Failed (${res.status})`);
+        return;
+      }
+      if (data.codes?.length) {
+        setNewCodes(data.codes);
+        fetchCodes();
+      }
+    } catch {
+      setGenError("Network error");
+    } finally {
+      setGeneratingMaster(false);
+    }
+  };
 
   const handleGenerate = async () => {
     if (!user?.email) return;
@@ -159,9 +195,12 @@ export default function AdminInvitesPage() {
     );
   }
 
-  const unused = codes.filter((c) => !c.used_by);
-  const used = codes.filter((c) => c.used_by);
+  const standardCodes = codes.filter((c) => c.code_type !== "elliott_master");
+  const masterCodes = codes.filter((c) => c.code_type === "elliott_master");
+  const unused = standardCodes.filter((c) => !c.used_by);
+  const used = standardCodes.filter((c) => c.used_by);
   const expired = unused.filter((c) => new Date(c.expires_at) < new Date());
+  const totalMasterRedemptions = masterCodes.reduce((sum, c) => sum + (c.redemption_count ?? 0), 0);
 
   return (
     <div className="min-h-screen bg-[hsl(222,47%,7%)]">
@@ -182,8 +221,30 @@ export default function AdminInvitesPage() {
         </p>
 
         {/* Generate section */}
+        {/* Elliott Sales Rep Master Code */}
+        <div className="bg-gradient-to-r from-[hsl(222,47%,10%)] to-[hsl(35,80%,10%)] border border-yellow-900/40 rounded-xl p-5 mb-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="text-lg font-semibold text-yellow-400 flex items-center gap-2">
+                ⚡ Elliott Sales Rep Master Code
+              </h2>
+              <p className="text-xs text-gray-400 mt-1">
+                Reusable code · 7-day expiry · Grants 30-day Pro + unlimited customer trials
+              </p>
+            </div>
+            <button
+              onClick={handleGenerateMaster}
+              disabled={generatingMaster}
+              className="px-5 py-2.5 rounded-lg text-sm font-bold bg-yellow-400 hover:bg-yellow-300 text-gray-900 transition-colors disabled:opacity-50 flex items-center gap-2 cursor-pointer whitespace-nowrap"
+            >
+              <Plus className="w-4 h-4" />
+              {generatingMaster ? "Generating..." : "Generate Master Code"}
+            </button>
+          </div>
+        </div>
+
         <div className="bg-[hsl(222,47%,10%)] border border-[hsl(217,33%,20%)] rounded-xl p-5 mb-8">
-          <h2 className="text-lg font-semibold text-white mb-4">Generate New Codes</h2>
+          <h2 className="text-lg font-semibold text-white mb-4">Generate Standard Codes</h2>
           <div className="flex flex-col sm:flex-row gap-3 mb-3">
             <input
               type="text"
@@ -262,7 +323,7 @@ export default function AdminInvitesPage() {
         </div>
 
         {/* Stats */}
-        <div className="grid grid-cols-3 gap-4 mb-8">
+        <div className="grid grid-cols-4 gap-4 mb-8">
           <div className="bg-[hsl(222,47%,10%)] border border-[hsl(217,33%,20%)] rounded-xl p-4 text-center">
             <div className="text-2xl font-bold text-yellow-400">{codes.length}</div>
             <div className="text-xs text-gray-400 mt-1">Total</div>
@@ -275,6 +336,10 @@ export default function AdminInvitesPage() {
             <div className="text-2xl font-bold text-gray-400">{unused.length - expired.length}</div>
             <div className="text-xs text-gray-400 mt-1">Available</div>
           </div>
+          <div className="bg-[hsl(222,47%,10%)] border border-yellow-900/30 rounded-xl p-4 text-center">
+            <div className="text-2xl font-bold text-yellow-400">{masterCodes.length}</div>
+            <div className="text-xs text-gray-400 mt-1">Master ({totalMasterRedemptions} used)</div>
+          </div>
         </div>
 
         {/* Code list */}
@@ -286,7 +351,9 @@ export default function AdminInvitesPage() {
           <div className="space-y-2">
             <h2 className="text-lg font-semibold text-white mb-3">All Codes</h2>
             {codes.map((c) => {
-              const isUsed = !!c.used_by;
+              const isMaster = c.code_type === "elliott_master";
+              const isReusable = c.is_reusable === true;
+              const isUsed = !isReusable && !!c.used_by;
               const isDeactivated = c.deactivated;
               const isExpired = !isUsed && !isDeactivated && new Date(c.expires_at) < new Date();
               const isActive = !isUsed && !isDeactivated && !isExpired;
@@ -311,6 +378,12 @@ export default function AdminInvitesPage() {
                   <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-[hsl(217,33%,15%)] text-gray-400">
                     {durLabel}
                   </span>
+
+                  {isMaster && (
+                    <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-yellow-900/40 text-yellow-400">
+                      ⚡ MASTER{(c.redemption_count ?? 0) > 0 ? ` · ${c.redemption_count} used` : ""}
+                    </span>
+                  )}
 
                   {isUsed ? (
                     <span className="flex items-center gap-1 text-xs text-emerald-400">

@@ -26,7 +26,7 @@ export async function POST(req: NextRequest) {
     // Verify user is Pro
     const { data: sub } = await supabase
       .from("subscriptions")
-      .select("status")
+      .select("status, elliott_sales_rep")
       .eq("user_id", userId)
       .single();
 
@@ -34,24 +34,30 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Pro subscription required" }, { status: 403 });
     }
 
-    // Count referrals this month
-    const monthStart = new Date();
-    monthStart.setDate(1);
-    monthStart.setHours(0, 0, 0, 0);
+    const isElliottRep = sub.elliott_sales_rep === true;
 
-    const { count } = await supabase
-      .from("invite_codes")
-      .select("*", { count: "exact", head: true })
-      .eq("created_by", userId)
-      .gte("created_at", monthStart.toISOString());
+    // Elliott Sales Reps get unlimited 7-day trials; regular Pro gets 2/month of 30-day
+    if (!isElliottRep) {
+      // Count referrals this month
+      const monthStart = new Date();
+      monthStart.setDate(1);
+      monthStart.setHours(0, 0, 0, 0);
 
-    if ((count ?? 0) >= MAX_REFERRALS_PER_MONTH) {
-      return NextResponse.json(
-        { error: `You've used your ${MAX_REFERRALS_PER_MONTH} referral codes this month. Resets on the 1st.` },
-        { status: 429 }
-      );
+      const { count } = await supabase
+        .from("invite_codes")
+        .select("*", { count: "exact", head: true })
+        .eq("created_by", userId)
+        .gte("created_at", monthStart.toISOString());
+
+      if ((count ?? 0) >= MAX_REFERRALS_PER_MONTH) {
+        return NextResponse.json(
+          { error: `You've used your ${MAX_REFERRALS_PER_MONTH} referral codes this month. Resets on the 1st.` },
+          { status: 429 }
+        );
+      }
     }
 
+    const trialDays = isElliottRep ? 7 : 30;
     const code = generateCode();
     const expiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString();
 
@@ -59,17 +65,35 @@ export async function POST(req: NextRequest) {
       code,
       created_by: userId,
       expires_at: expiresAt,
-      pro_duration_days: 30, // referral codes give 30-day trial
-      notes: `Referral from ${email ?? "Pro user"}`,
+      pro_duration_days: trialDays,
+      notes: isElliottRep
+        ? `Elliott Rep trial from ${email ?? "Sales Rep"}`
+        : `Referral from ${email ?? "Pro user"}`,
     });
 
     if (error) {
       return NextResponse.json({ error: error.message }, { status: 500 });
     }
 
-    const remaining = MAX_REFERRALS_PER_MONTH - ((count ?? 0) + 1);
+    if (isElliottRep) {
+      // Unlimited — no remaining count needed
+      return NextResponse.json({ code, remaining: null, unlimited: true, trialDays });
+    }
 
-    return NextResponse.json({ code, remaining });
+    // Count referrals this month (re-query after insert)
+    const monthStart = new Date();
+    monthStart.setDate(1);
+    monthStart.setHours(0, 0, 0, 0);
+
+    const { count: newCount } = await supabase
+      .from("invite_codes")
+      .select("*", { count: "exact", head: true })
+      .eq("created_by", userId)
+      .gte("created_at", monthStart.toISOString());
+
+    const remaining = MAX_REFERRALS_PER_MONTH - (newCount ?? 0);
+
+    return NextResponse.json({ code, remaining, trialDays });
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : "Unknown error";
     return NextResponse.json({ error: message }, { status: 500 });

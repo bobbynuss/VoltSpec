@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getJobById } from "@/lib/data";
 import { getTrade } from "@/lib/registry";
+import { getNecYear } from "@/lib/data/jurisdiction-config";
 
 export async function POST(req: NextRequest) {
   try {
@@ -33,7 +34,8 @@ export async function POST(req: NextRequest) {
     }
 
     const jurisdictionLabel = jurisdiction?.label ?? "Austin, TX (Travis County)";
-    const codeRef = tradeId === "plumbing" ? "IPC 2021" : "NEC 2026";
+    const necYear = jurisdiction?.state ? getNecYear(jurisdiction.state) : 2026;
+    const codeRef = tradeId === "plumbing" ? "IPC 2021" : `NEC ${necYear}`;
 
     return NextResponse.json({
       job,

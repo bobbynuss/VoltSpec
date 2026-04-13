@@ -12,7 +12,7 @@ import type { Job, MaterialItem, OfficialDoc } from "./types";
 import { JOBS as AUSTIN_JOBS } from "./jobs";
 import { SA_JOBS } from "./san-antonio/jobs";
 import type { JurisdictionConfig, MeterSocketConfig } from "./jurisdiction-config";
-import { DEFAULT_METER_SWAP_JOBS } from "./jurisdiction-config";
+import { DEFAULT_METER_SWAP_JOBS, getNecYear } from "./jurisdiction-config";
 
 // ── Helpers ────────────────────────────────────────────────────────
 
@@ -71,6 +71,7 @@ function processMaterials(
   materials: MaterialItem[],
   config: JurisdictionConfig,
   needsMeterSwap: boolean,
+  necYear: number = 2026,
 ): MaterialItem[] {
   // 0. Filter out meter socket items when utility provides them
   let filtered = materials;
@@ -99,6 +100,14 @@ function processMaterials(
     // 3. Pricing overlay
     if (config.pricing) {
       result = applyPricingOverlay(result, config.pricing);
+    }
+
+    // 4. NEC year replacement in spec strings
+    if (necYear !== 2026) {
+      result = {
+        ...result,
+        spec: applyNecYearReplacement(result.spec, necYear),
+      };
     }
 
     return result;
@@ -158,18 +167,35 @@ function processOfficialDocs(
 
 // ── Main Builder ───────────────────────────────────────────────────
 
+/**
+ * Replace baseline NEC year references with the jurisdiction's actual adopted year.
+ * Baselines are authored with "NEC 2026" — this swaps to the state's actual year.
+ * Only applies when the state's adopted year differs from the baseline year (2026).
+ */
+function applyNecYearReplacement(text: string, necYear: number): string {
+  if (necYear === 2026) return text; // baseline year, no change needed
+  return text.replace(/\bNEC 2026\b/g, `NEC ${necYear}`);
+}
+
 export function buildJobs(config: JurisdictionConfig): Job[] {
   const baselineJobs = config.baseline === "austin" ? AUSTIN_JOBS : SA_JOBS;
   const meterSwapJobs = new Set(config.meterSwapJobs ?? DEFAULT_METER_SWAP_JOBS);
+  const necYear = getNecYear(config.state);
 
   return baselineJobs.map((job) => {
     const needsMeterSwap = (config.meterSocket != null || config.removeMeterSocket != null) && meterSwapJobs.has(job.id);
 
+    // Process requirements and notes with text replacements, then apply NEC year
+    const reqs = processRequirements(job.requirements, config, job.id)
+      .map((r) => applyNecYearReplacement(r, necYear));
+    const notes = processBlueprintNotes(job.blueprintNotes, config, job.id)
+      ?.map((n) => applyNecYearReplacement(n, necYear));
+
     return {
       ...job,
-      materials: processMaterials(job.materials, config, needsMeterSwap),
-      requirements: processRequirements(job.requirements, config, job.id),
-      blueprintNotes: processBlueprintNotes(job.blueprintNotes, config, job.id),
+      materials: processMaterials(job.materials, config, needsMeterSwap, necYear),
+      requirements: reqs,
+      blueprintNotes: notes,
       svgDiagram: processSvgDiagram(job.svgDiagram, config),
       suppliers: [],  // Suppliers now come from ZIP-to-branch dynamically
       officialDocs: processOfficialDocs(config, job.id),

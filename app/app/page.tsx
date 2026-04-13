@@ -23,6 +23,7 @@ import { saveProject } from "@/lib/projects";
 import type { SavedProject } from "@/lib/projects";
 import { JOB_TYPES } from "@/lib/data";
 import { getTrade } from "@/lib/registry";
+import { getNecYear } from "@/lib/data/jurisdiction-config";
 import { useAuth } from "@/components/AuthProvider";
 import { useSubscription } from "@/components/SubscriptionProvider";
 import { Crown } from "lucide-react";
@@ -65,6 +66,13 @@ function HomeContent() {
   const brand = getTradeBrand(activeTrade);
   const [showUpgradeToast, setShowUpgradeToast] = useState(false);
   const sidebarRef = useRef<SidebarHandle>(null);
+
+  // Derive NEC year from current result's jurisdiction state
+  const headerNecYear = (() => {
+    const cityId = (result as Record<string, unknown> | null)?.city as string | undefined;
+    const j = cityId ? JURISDICTIONS.find((j) => j.id === cityId) : undefined;
+    return j?.state ? getNecYear(j.state) : 2026;
+  })();
 
   // Register service worker for PWA
   useEffect(() => {
@@ -216,7 +224,7 @@ function HomeContent() {
           {brand.prefix}<span className={brand.accentColor}>{brand.suffix}</span>
         </h1>
         <span className="hidden sm:inline text-xs text-gray-500 ml-1 mt-0.5">
-          {activeTrade === "plumbing" ? "IPC 2021" : "NEC 2026"} · {result?.jurisdiction ?? "Texas"}
+          {activeTrade === "plumbing" ? "IPC 2021" : `NEC ${headerNecYear}`} · {result?.jurisdiction ?? "Texas"}
         </span>
         <div className="ml-auto flex items-center gap-3 sm:gap-4">
           <button

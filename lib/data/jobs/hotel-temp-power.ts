@@ -1,0 +1,55 @@
+import type { Job } from "../types";
+import { diagram } from "../diagrams/hotel-temp-power";
+import { AUSTIN_SUPPLIERS } from "../suppliers";
+import { AUSTIN_OFFICIAL_DOCS } from "../official-docs";
+
+export const job: Job = {
+  id: "hotel-temp-power",
+  label: "Hotel Build-Out – Phase 1: Temporary Construction Power",
+  requirements: [
+    "NEC 2026 Art. 590: Temporary electrical installations — must comply with permanent wiring standards",
+    "NEC 2026 Art. 590.4(D): Feeders from approved distribution center, overcurrent protected",
+    "NEC 2026 Art. 590.6(A): GFCI required on ALL 125V 15A/20A and 250V receptacle outlets on construction sites",
+    "NEC 2026 Art. 250.53: Ground rods — minimum 2, 6 ft apart",
+    "OSHA 1926.405: Construction site wiring — GFCI or assured equipment grounding program",
+    "Utility coordination: temp service application with load, duration, site plan — hotel sites may need dedicated transformer",
+    "Tower crane: may require separate temp service — verify load with crane contractor",
+    "All outdoor equipment NEMA 3R rated — panel, disconnect, meter socket",
+    "Permit: temporary electrical service permit + construction power plan",
+    "Duration: 12-24 months typical for hotel construction",
+  ],
+  materials: [
+    { item: "400A Meter Socket", quantity: "1", spec: "Eaton 1006353CCH - 320/400A CT-rated meter socket, single-phase, ringless, AE-approved", unitPrice: 680.00 },
+    { item: "400A Fused Safety Switch", quantity: "1", spec: "Eaton DH364FRK - 200A 600V 3-pole heavy-duty fused safety switch NEMA 3R", unitPrice: 485.00 },
+    { item: "42-Space 400A MLO Panel", quantity: "1", spec: "Eaton CHP42L400R - 42-space 400A CH main lug outdoor load center, NEMA 3R", unitPrice: 520.00 },
+    { item: "500 kcmil AL XHHW-2 (Phase A)", quantity: "30 ft", spec: "ALU XHHW500AL - 500 kcmil aluminum XHHW-2 600V, service entrance, sold per ft" },
+    { item: "500 kcmil AL XHHW-2 (Phase B)", quantity: "30 ft", spec: "ALU XHHW500AL - 500 kcmil aluminum XHHW-2 600V, service entrance, sold per ft" },
+    { item: "3/0 AL XHHW-2 (Neutral)", quantity: "30 ft", spec: "ALU XHHW30AL - 3/0 aluminum XHHW-2 600V, neutral, sold per ft" },
+    { item: "4 AWG Bare Copper GEC", quantity: "25 ft", spec: "COP BARE4SOL500 - 4 AWG solid bare copper GEC, sold per ft" },
+    { item: "3 in. Rigid Metal Conduit", quantity: "30 ft", spec: "CON GAL3 - 3 in. galvanized RMC, sold per ft", unitPrice: 14.50 },
+    { item: "3 in. Rigid Weatherhead", quantity: "1", spec: "Bridgeport 1258 - 3 in. service entrance weatherhead", unitPrice: 32.00 },
+    { item: "GFCI Breaker 20A", quantity: "8", spec: "Eaton CHFP120GF - CH 1-pole 20A GFCI, temp outlet circuits per NEC 590.6(A)", unitPrice: 85.19 },
+    { item: "2-Pole 30A Breaker", quantity: "4", spec: "Eaton CHF230 - CH 2-pole 30A, welder/tool circuits", unitPrice: 18.50 },
+    { item: "2-Pole 50A Breaker", quantity: "3", spec: "Eaton CHF250 - CH 2-pole 50A, crane/heavy equipment", unitPrice: 23.73 },
+    { item: "2-Pole 100A Breaker", quantity: "1", spec: "Eaton CHF2100 - CH 2-pole 100A, tower crane or hoist feed", unitPrice: 65.00 },
+    { item: "20A WR GFCI Receptacle", quantity: "8", spec: "Eaton TWRGF20W - 20A 125V TR weather-resistant GFCI", unitPrice: 28.34 },
+    { item: "50A 250V Receptacle", quantity: "3", spec: "Eaton 1250R - 50A 250V NEMA 6-50R flush mount", unitPrice: 16.00 },
+    { item: "Outdoor In-Use Cover", quantity: "15", spec: "Taymac MM420C - extra-duty while-in-use weatherproof cover", unitPrice: 11.47 },
+    { item: "5/8 x 8 ft Ground Rod", quantity: "2", spec: "Erico 615880 - 5/8 in. x 8 ft copper-bonded ground rod", unitPrice: 26.43 },
+    { item: "Ground Rod Clamp", quantity: "2", spec: "NSI GRC58 - 5/8 in. ground rod bronze clamp", unitPrice: 4.21 },
+    { item: "Danger / High Voltage Signs", quantity: "6", spec: "Brady 22530 - DANGER HIGH VOLTAGE sign, 10x14 in.", unitPrice: 8.50 },
+    { item: "Wire Pulling Lubricant", quantity: "1", spec: "Ideal 31-378 - Yellow 77 wire pulling lubricant, 1 gallon", unitPrice: 42.00 },
+  ],
+  blueprintNotes: [
+    "Locate temp power accessible to all construction zones — hotel is typically single building, multi-story",
+    "GFCI protect ALL outlets — no exceptions per NEC 590.6",
+    "Tower crane: verify if separate temp service needed — 100A+ dedicated circuit minimum",
+    "Spider boxes per active floor — relocate as construction progresses up floors",
+    "Plan conduit paths for Phase 2 main switchgear room and ATS/generator pad",
+    "Duration 12-24 months — coordinate permit renewal with AHJ",
+    "Adjust quantities for building footprint and number of active work zones",
+  ],
+  svgDiagram: diagram,
+  suppliers: AUSTIN_SUPPLIERS,
+  officialDocs: AUSTIN_OFFICIAL_DOCS,
+};

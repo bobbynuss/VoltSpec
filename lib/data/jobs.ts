@@ -28,6 +28,21 @@ import { job as dc_generator_ups } from "./jobs/dc-generator-ups";
 import { job as dc_critical_dist } from "./jobs/dc-critical-dist";
 import { job as dc_structured_cabling } from "./jobs/dc-structured-cabling";
 import { job as dc_final_commissioning } from "./jobs/dc-final-commissioning";
+import { job as pole_light_takeoff } from "./jobs/pole-light-takeoff";
+import { job as mf_temp_power } from "./jobs/mf-temp-power";
+import { job as mf_site_distribution } from "./jobs/mf-site-distribution";
+import { job as mf_building_risers } from "./jobs/mf-building-risers";
+import { job as mf_unit_roughin } from "./jobs/mf-unit-roughin";
+import { job as mf_unit_panels } from "./jobs/mf-unit-panels";
+import { job as mf_common_areas } from "./jobs/mf-common-areas";
+import { job as mf_trim_commissioning } from "./jobs/mf-trim-commissioning";
+import { job as hotel_temp_power } from "./jobs/hotel-temp-power";
+import { job as hotel_switchgear } from "./jobs/hotel-switchgear";
+import { job as hotel_floor_dist } from "./jobs/hotel-floor-dist";
+import { job as hotel_room_roughin } from "./jobs/hotel-room-roughin";
+import { job as hotel_room_panels } from "./jobs/hotel-room-panels";
+import { job as hotel_common_areas } from "./jobs/hotel-common-areas";
+import { job as hotel_trim_commissioning } from "./jobs/hotel-trim-commissioning";
 
 export const JOBS: Job[] = [
   new_200a_residential,
@@ -59,6 +74,21 @@ export const JOBS: Job[] = [
   dc_critical_dist,
   dc_structured_cabling,
   dc_final_commissioning,
+  pole_light_takeoff,
+  mf_temp_power,
+  mf_site_distribution,
+  mf_building_risers,
+  mf_unit_roughin,
+  mf_unit_panels,
+  mf_common_areas,
+  mf_trim_commissioning,
+  hotel_temp_power,
+  hotel_switchgear,
+  hotel_floor_dist,
+  hotel_room_roughin,
+  hotel_room_panels,
+  hotel_common_areas,
+  hotel_trim_commissioning,
 ];
 
 export const JOB_TYPES: { id: string; label: string }[] = JOBS.map((j) => ({

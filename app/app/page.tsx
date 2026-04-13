@@ -58,7 +58,19 @@ function HomeContent() {
   const [currentZip, setCurrentZip] = useState("78744");
   const [quickListMode, setQuickListMode] = useState(false);
   const [takeoffMode, setTakeoffMode] = useState(false);
+  const [showUpgradeToast, setShowUpgradeToast] = useState(false);
   const sidebarRef = useRef<SidebarHandle>(null);
+
+  // Show celebratory toast when redirected after upgrade
+  useEffect(() => {
+    if (searchParams.get("upgraded") === "true") {
+      setShowUpgradeToast(true);
+      // Clean URL without reload
+      window.history.replaceState({}, "", "/app");
+      const timer = setTimeout(() => setShowUpgradeToast(false), 6000);
+      return () => clearTimeout(timer);
+    }
+  }, [searchParams]);
 
   const handleGenerate = async (jobId: string, zip: string, city?: string) => {
     setLoading(true);
@@ -329,6 +341,25 @@ function HomeContent() {
         currentZip={sidebarState.zip}
         currentJobId={sidebarState.jobId}
       />
+
+      {/* Upgrade celebration toast */}
+      {showUpgradeToast && (
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 animate-in slide-in-from-bottom-4 fade-in duration-300">
+          <div className="flex items-center gap-3 bg-[hsl(222,47%,10%)] border border-yellow-400/40 rounded-xl px-6 py-4 shadow-2xl shadow-yellow-400/10">
+            <span className="text-3xl">⚡</span>
+            <div>
+              <p className="text-white font-bold text-base">Welcome to VoltSpec Pro!</p>
+              <p className="text-gray-400 text-sm">All 74 jurisdictions and 29 job types unlocked.</p>
+            </div>
+            <button
+              onClick={() => setShowUpgradeToast(false)}
+              className="text-gray-500 hover:text-gray-300 ml-2 cursor-pointer"
+            >
+              ✕
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Interactive tour overlay */}
       {tourActive && (

@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { useAuth } from "@/components/AuthProvider";
-import { ArrowLeft, Copy, Plus, Check, X, Clock, User, Ban, RotateCcw, Share2 } from "lucide-react";
+import { ArrowLeft, Copy, Plus, Check, X, Clock, User, Ban, RotateCcw, Share2, Zap } from "lucide-react";
 
 const ADMIN_EMAILS = (process.env.NEXT_PUBLIC_ADMIN_EMAILS ?? "")
   .split(",")
@@ -35,6 +35,8 @@ const DURATION_OPTIONS = [
 export default function AdminInvitesPage() {
   const { user, loading: authLoading } = useAuth();
   const [codes, setCodes] = useState<InviteCode[]>([]);
+  const [repMap, setRepMap] = useState<Record<string, boolean>>({});
+  const [togglingRep, setTogglingRep] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [generating, setGenerating] = useState(false);
   const [notes, setNotes] = useState("");
@@ -56,6 +58,7 @@ export default function AdminInvitesPage() {
       });
       const data = await res.json();
       if (data.codes) setCodes(data.codes);
+      if (data.repMap) setRepMap(data.repMap);
     } catch {
       // silent
     } finally {
@@ -150,6 +153,29 @@ export default function AdminInvitesPage() {
       fetchCodes();
     } catch {
       // silent
+    }
+  };
+
+  const handleToggleRep = async (userId: string, currentlyRep: boolean) => {
+    if (!user?.email) return;
+    setTogglingRep(userId);
+    try {
+      const res = await fetch("/api/invite/toggle-rep", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          adminEmail: user.email,
+          userId,
+          elliottSalesRep: !currentlyRep,
+        }),
+      });
+      if (res.ok) {
+        setRepMap((prev) => ({ ...prev, [userId]: !currentlyRep }));
+      }
+    } catch {
+      // silent
+    } finally {
+      setTogglingRep(null);
     }
   };
 
@@ -414,6 +440,22 @@ export default function AdminInvitesPage() {
                   )}
 
                   <div className="ml-auto flex items-center gap-2">
+                    {/* Elliott Sales Rep toggle — show for any redeemed code */}
+                    {c.used_by && (
+                      <button
+                        onClick={() => handleToggleRep(c.used_by!, repMap[c.used_by!] === true)}
+                        disabled={togglingRep === c.used_by}
+                        className={`flex items-center gap-1 px-2 py-1 rounded text-[10px] font-bold transition-colors cursor-pointer ${
+                          repMap[c.used_by!]
+                            ? "bg-yellow-400/20 text-yellow-400 hover:bg-yellow-400/30"
+                            : "bg-[hsl(217,33%,15%)] text-gray-500 hover:text-yellow-400 hover:bg-yellow-400/10"
+                        }`}
+                        title={repMap[c.used_by!] ? "Revoke unlimited trials" : "Grant unlimited trials (Elliott Rep)"}
+                      >
+                        <Zap className="w-3 h-3" />
+                        {repMap[c.used_by!] ? "Rep ✓" : "Make Rep"}
+                      </button>
+                    )}
                     {isActive && (
                       <>
                         <button

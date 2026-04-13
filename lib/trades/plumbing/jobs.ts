@@ -354,15 +354,213 @@ function sewerCleanoutInstall(suppliers: Supplier[], docs: OfficialDoc[]): Job {
   };
 }
 
+// ── Tankless Water Heater ─────────────────────────────────────────
+
+function tanklessWaterHeater(suppliers: Supplier[], docs: OfficialDoc[]): Job {
+  return {
+    id: "tankless-water-heater",
+    label: "Tankless Water Heater Installation (Outdoor, Gas)",
+    requirements: [
+      "Licensed plumber required for all water heater installations per Texas Administrative Code Title 22",
+      "Permit required — contact local building department before work begins",
+      "Gas line upgrade typically required — tankless units draw 150,000-199,000 BTU (verify gas meter capacity)",
+      "Minimum 3/4\" gas supply to unit — may need 1\" depending on BTU and run length per IFGC Table 402.4",
+      "Condensate drain required for condensing units — route to exterior drain or indirect waste",
+      "Dedicated 120V outlet required within 3 ft of unit for electronic ignition",
+      "Anti-scald mixing valve recommended at distribution point if unit set above 120°F",
+      "Expansion tank still required on closed-loop systems even with tankless",
+      "Recirculation pump recommended for long piping runs — reduces wait time at fixtures",
+      "Outdoor units: follow manufacturer clearances to windows, doors, and property lines",
+    ],
+    materials: [
+      { item: "Tankless Water Heater", quantity: "1", spec: "Rinnai RU199eN or Navien NPE-240A — outdoor natural gas, 199,000 BTU, 0.96 UEF, condensing" },
+      { item: "Tankless Mounting Bracket", quantity: "1", spec: "Manufacturer wall-mount bracket kit, stainless steel, for exterior installation" },
+      { item: "Gas Line 1\" Black Iron", quantity: "20 ft", spec: '1" Schedule 40 black iron pipe, upgrade from 3/4" to support 199K BTU demand' },
+      { item: "Gas Ball Valve 1\"", quantity: "1", spec: '1" brass ball valve, gas-rated, 1/4-turn, at unit' },
+      { item: "Gas Flex Connector 3/4\"", quantity: "1", spec: '3/4" stainless steel gas flex, 24", CSA certified — unit connection' },
+      { item: "Drip Leg Assembly", quantity: "1", spec: '3/4" x 4" black iron nipple + cap, sediment trap' },
+      { item: "Cold Water Isolation Valve", quantity: "1", spec: '3/4" brass ball valve, full port, cold inlet' },
+      { item: "Hot Water Isolation Valve", quantity: "1", spec: '3/4" brass ball valve, full port, hot outlet' },
+      { item: "Service Valves Kit", quantity: "1", spec: "Isolation valve kit with pressure relief and drain ports for flushing" },
+      { item: "Condensate Neutralizer", quantity: "1", spec: "Condensate neutralizer kit with media, for condensing units — protects drains from acidic condensate" },
+      { item: "Condensate Drain Line", quantity: "10 ft", spec: '1/2" PVC or CPVC condensate drain to exterior' },
+      { item: "Expansion Tank", quantity: "1", spec: "2-gallon thermal expansion tank, pre-charged" },
+      { item: "Recirculation Pump", quantity: "1", spec: "Grundfos UP15-10SU7P TLC — dedicated return line recirc pump with timer and aquastat" },
+      { item: 'Copper Pipe 3/4"', quantity: "20 ft", spec: '3/4" Type M copper, transition from PEX to unit connections' },
+      { item: "Dielectric Unions", quantity: "2", spec: '3/4" FIP dielectric union, at unit connections' },
+      { item: "Pipe Thread Sealant", quantity: "1", spec: "Yellow gas-rated Teflon tape + pipe dope" },
+    ],
+    blueprintNotes: [
+      "Verify gas meter capacity — tankless needs 199K BTU, most residential meters max 250K BTU total",
+      "Size gas line per total run length: 1\" for up to 60 ft at 199K BTU, 1-1/4\" for longer runs",
+      "Outdoor unit: minimum 12\" clearance from windows/doors, 36\" from forced air intake",
+      "Plan condensate drain — condensing units produce acidic condensate, needs neutralizer or proper routing",
+      "Recirc pump: install on hot return line, timer set for peak usage hours to save energy",
+      "Flush kit: install service valves for annual vinegar flush — critical maintenance for longevity",
+    ],
+    svgDiagram: "",
+    suppliers,
+    officialDocs: docs,
+  };
+}
+
+// ── Kitchen Sink / Disposal ──────────────────────────────────────
+
+function kitchenPlumbing(suppliers: Supplier[], docs: OfficialDoc[]): Job {
+  return {
+    id: "kitchen-sink-disposal",
+    label: "Kitchen Sink & Garbage Disposal Rough-In",
+    requirements: [
+      "Licensed plumber required for new rough-in — permit and inspection needed",
+      "Kitchen sink drain: 1-1/2\" minimum PVC DWV per IPC Table 709.1",
+      "Garbage disposal: dedicated 1-1/2\" drain connection, continuous waste to P-trap",
+      "Dishwasher drain: connect to disposal or tailpiece with high loop per IPC 802.1.6",
+      "Air gap or high loop required for dishwasher drain — check local amendments",
+      "Vent required: 1-1/2\" minimum, within 5 ft of trap per IPC Table 906.1",
+      "AAV (Air Admittance Valve) permitted in most jurisdictions — verify local code",
+      "Hot and cold supply: 1/2\" minimum PEX or copper to sink location",
+      "Supply stops required at sink — angle stops with 3/8\" compression for faucet supply",
+    ],
+    materials: [
+      { item: "Kitchen P-Trap 1-1/2\"", quantity: "1", spec: '1-1/2" PVC tubular P-trap with union, slip joint' },
+      { item: "Continuous Waste Tee", quantity: "1", spec: '1-1/2" PVC continuous waste kit for double-bowl sink with disposal' },
+      { item: 'PVC DWV Pipe 1-1/2"', quantity: "10 ft", spec: '1-1/2" Schedule 40 PVC DWV, drain to main stack' },
+      { item: 'PVC Vent Pipe 1-1/2"', quantity: "8 ft", spec: '1-1/2" Schedule 40 PVC, vent to main stack or AAV' },
+      { item: "Air Admittance Valve", quantity: "1", spec: "Studor AAV, 1-1/2\", ASSE 1051 listed — for island or remote sink vent" },
+      { item: "Dishwasher Drain Connector", quantity: "1", spec: '5/8" hose barb to disposal or tailpiece with high loop support' },
+      { item: 'PEX Supply 1/2" Red', quantity: "15 ft", spec: '1/2" PEX-A red (hot), to kitchen sink' },
+      { item: 'PEX Supply 1/2" Blue', quantity: "15 ft", spec: '1/2" PEX-A blue (cold), to kitchen sink' },
+      { item: "Angle Stop Valves", quantity: "2", spec: '1/2" FIP x 3/8" compression angle stop, 1/4-turn, chrome (H+C)' },
+      { item: "Faucet Supply Lines", quantity: "2", spec: '3/8" comp x 3/8" comp braided stainless steel, 20"' },
+      { item: "Garbage Disposal", quantity: "1", spec: "InSinkErator Badger 5 — 1/2 HP continuous feed, or per owner selection" },
+      { item: "Disposal Mounting Kit", quantity: "1", spec: "3-bolt mounting assembly with flange and snap ring (included with most disposals)" },
+      { item: "PVC Cement + Primer", quantity: "1", spec: "Purple primer + medium clear PVC cement" },
+      { item: "Pipe Straps", quantity: "6", spec: '1-1/2" plastic pipe straps for DWV support' },
+    ],
+    blueprintNotes: [
+      "Drain rough-in: centerline 15-18\" from floor, 4\" from wall (verify sink specs)",
+      "Supply stub-outs: hot on left, cold on right, 20-22\" AFF typical",
+      "Dishwasher drain: high loop to underside of countertop before connecting to disposal or tailpiece",
+      "Island sink: AAV required if no conventional vent path available",
+      "Disposal: hardwired or cord-and-plug — verify local code requirement",
+      "Slope all horizontal DWV 1/4\" per foot minimum",
+    ],
+    svgDiagram: "",
+    suppliers,
+    officialDocs: docs,
+  };
+}
+
+// ── Water Softener ───────────────────────────────────────────────
+
+function waterSoftener(suppliers: Supplier[], docs: OfficialDoc[]): Job {
+  return {
+    id: "water-softener-install",
+    label: "Water Softener Installation",
+    requirements: [
+      "Licensed plumber recommended — check local requirements for water treatment equipment",
+      "Install on main water supply AFTER meter and pressure regulator, BEFORE water heater",
+      "Bypass valve required — allows water flow during maintenance or regeneration",
+      "Drain connection required for regeneration backwash — indirect waste to floor drain or laundry standpipe",
+      "Overflow drain recommended — route to same drain as regeneration",
+      "120V GFCI-protected outlet required within 6 ft of unit — coordinate with electrician",
+      "Hard water loop: some homes pre-plumbed with softener loop in garage — check before cutting pipe",
+      "Outdoor installations must be freeze-protected — insulate or install in heated enclosure",
+      "Verify water pressure: 20-125 PSI operating range typical, PRV may need adjustment",
+    ],
+    materials: [
+      { item: "Water Softener", quantity: "1", spec: "48,000-grain capacity water softener with digital valve head, suitable for 1-4 bathroom homes — Fleck 5600SXT or equivalent" },
+      { item: "Bypass Valve", quantity: "1", spec: "3/4\" or 1\" bypass valve kit, matches softener inlet/outlet" },
+      { item: '3/4" PEX Tubing Blue', quantity: "10 ft", spec: '3/4" PEX-A blue, inlet supply from main' },
+      { item: '3/4" PEX Tubing Red', quantity: "10 ft", spec: '3/4" PEX-A red, outlet to distribution' },
+      { item: "SharkBite Fittings 3/4\"", quantity: "4", spec: '3/4" SharkBite push-to-connect couplings for cut-in to main line' },
+      { item: "Drain Line 1/2\"", quantity: "20 ft", spec: '1/2" poly tubing for regeneration drain, route to floor drain or standpipe' },
+      { item: "Drain Line Clamp", quantity: "1", spec: '1/2" drain line air gap fitting for indirect waste connection' },
+      { item: "Overflow Fitting", quantity: "1", spec: '1" overflow drain fitting, connects to same drain as regeneration' },
+      { item: 'Ball Valve 3/4"', quantity: "2", spec: '3/4" brass ball valve, full port, inlet and outlet isolation' },
+      { item: "Water Hardness Test Kit", quantity: "1", spec: "Test strip kit for pre/post installation hardness verification" },
+      { item: "Pipe Insulation", quantity: "10 ft", spec: '3/4" foam pipe insulation for supply lines in unconditioned spaces' },
+      { item: "Softener Salt", quantity: "1 bag", spec: "40 lb bag solar salt or pellet salt for initial fill" },
+    ],
+    blueprintNotes: [
+      "Install AFTER meter and PRV, BEFORE water heater and distribution",
+      "Bypass valve: required for service — allows water flow during maintenance",
+      "Drain: must be indirect waste (air gap) — cannot connect directly to sewer",
+      "Level surface required — softener must be plumb for proper operation",
+      "Leave 3 ft access clearance for salt loading and maintenance",
+      "Program regeneration for 2 AM — low water usage period",
+      "Test water hardness before and after installation — document for customer",
+    ],
+    svgDiagram: "",
+    suppliers,
+    officialDocs: docs,
+  };
+}
+
+// ── Slab Leak Repair ─────────────────────────────────────────────
+
+function slabLeakRepair(suppliers: Supplier[], docs: OfficialDoc[]): Job {
+  return {
+    id: "slab-leak-repair",
+    label: "Slab Leak Repair – Reroute Through Attic (PEX)",
+    requirements: [
+      "Licensed plumber required — slab leak repair requires permit",
+      "Leak detection and location must be performed before repair — electronic or infrared methods",
+      "Reroute is preferred over spot repair in most cases — avoids future slab failures",
+      "Abandon existing under-slab piping — cap both ends, fill with foam if accessible",
+      "PEX reroute through attic must be insulated to prevent condensation and freezing",
+      "All PEX in attic must be UV-protected — no exposure to sunlight through vents or skylights",
+      "Support PEX per IPC Table 308.5 — 32\" horizontal for 1/2\" and 3/4\"",
+      "Pressure test new lines: 40 PSI for 15 minutes before patching walls/ceilings",
+      "Drywall repairs not included in plumbing scope — coordinate with general contractor",
+      "Water damage assessment may require separate remediation contractor",
+    ],
+    materials: [
+      { item: '3/4" PEX-A Red (Hot Reroute)', quantity: "150 ft", spec: '3/4" PEX-A tubing, red, main hot supply reroute through attic' },
+      { item: '3/4" PEX-A Blue (Cold Reroute)', quantity: "150 ft", spec: '3/4" PEX-A tubing, blue, main cold supply reroute through attic' },
+      { item: '1/2" PEX-A Red', quantity: "100 ft", spec: '1/2" PEX-A red, branch drops from attic to fixtures' },
+      { item: '1/2" PEX-A Blue', quantity: "100 ft", spec: '1/2" PEX-A blue, branch drops from attic to fixtures' },
+      { item: "PEX Manifold (Hot)", quantity: "1", spec: "6-port brass manifold with shutoff valves, hot distribution" },
+      { item: "PEX Manifold (Cold)", quantity: "1", spec: "6-port brass manifold with shutoff valves, cold distribution" },
+      { item: "Crimp Rings 1/2\"", quantity: "60", spec: '1/2" copper crimp rings' },
+      { item: "Crimp Rings 3/4\"", quantity: "30", spec: '3/4" copper crimp rings' },
+      { item: "Drop-Ear Elbows 1/2\"", quantity: "12", spec: '1/2" PEX x 1/2" FIP brass drop-ear 90° elbow for stub-outs' },
+      { item: "PEX Transition Fittings", quantity: "4", spec: '3/4" PEX to copper sweat adapter, at water heater and main entry' },
+      { item: "Pipe Insulation (attic)", quantity: "300 ft", spec: '3/4" and 1/2" foam pipe insulation, required for all attic PEX runs' },
+      { item: "Pipe Straps", quantity: "80", spec: '1/2" and 3/4" plastic pipe straps, support per code intervals' },
+      { item: "Nail Plates", quantity: "20", spec: "16-gauge steel nail plates for wall penetrations" },
+      { item: "Copper Stub-outs", quantity: "12", spec: '1/2" x 8" copper stub-out with escutcheon at each fixture' },
+      { item: "Cap Fittings", quantity: "4", spec: '3/4" and 1/2" PEX or copper caps, to abandon under-slab lines' },
+    ],
+    blueprintNotes: [
+      "REROUTE PREFERRED — spot repair under slab has high failure rate",
+      "Route through attic: manifold near water heater, branch drops to each fixture",
+      "Insulate ALL attic PEX — condensation will damage ceiling, freezing will burst pipe",
+      "Abandon under-slab lines: cap at both ends where accessible",
+      "Coordinate with homeowner on drywall/ceiling patch — not included in plumbing scope",
+      "Pressure test at 40 PSI / 15 min before ANY wall/ceiling patching",
+      "Photo-document all work before insulation and drywall — for inspection and records",
+      "Typical for 2-bath, 1,500-2,000 sq ft home — adjust quantities for larger homes",
+    ],
+    svgDiagram: "",
+    suppliers,
+    officialDocs: docs,
+  };
+}
+
 // ── Export: build jobs for a jurisdiction ─────────────────────────
 
 export function buildAustinPlumbingJobs(): Job[] {
   const s = [fergusonAustin];
   return [
     waterHeaterReplacement(s, plumbingDocs),
+    tanklessWaterHeater(s, plumbingDocs),
     wholeHouseRepipe(s, plumbingDocs),
+    slabLeakRepair(s, plumbingDocs),
     bathroomRoughIn(s, plumbingDocs),
+    kitchenPlumbing(s, plumbingDocs),
     gasLineExtension(s, plumbingDocs),
+    waterSoftener(s, plumbingDocs),
     sewerCleanoutInstall(s, plumbingDocs),
   ];
 }
@@ -371,17 +569,25 @@ export function buildSanAntonioPlumbingJobs(): Job[] {
   const s = [fergusonSanAntonio];
   return [
     waterHeaterReplacement(s, saDocs),
+    tanklessWaterHeater(s, saDocs),
     wholeHouseRepipe(s, saDocs),
+    slabLeakRepair(s, saDocs),
     bathroomRoughIn(s, saDocs),
+    kitchenPlumbing(s, saDocs),
     gasLineExtension(s, saDocs),
+    waterSoftener(s, saDocs),
     sewerCleanoutInstall(s, saDocs),
   ];
 }
 
 export const PLUMBING_JOB_TYPES = [
   { id: "water-heater-50gal-gas", label: "50-Gallon Gas Water Heater Replacement" },
+  { id: "tankless-water-heater", label: "Tankless Water Heater (Outdoor, Gas)" },
   { id: "whole-house-repipe-pex", label: "Whole-House PEX Repipe (2,000 sq ft)" },
+  { id: "slab-leak-repair", label: "Slab Leak Repair – Attic Reroute (PEX)" },
   { id: "bathroom-rough-in", label: "New Bathroom Rough-In" },
+  { id: "kitchen-sink-disposal", label: "Kitchen Sink & Garbage Disposal Rough-In" },
   { id: "gas-line-extension", label: "Gas Line Extension (~30 ft)" },
+  { id: "water-softener-install", label: "Water Softener Installation" },
   { id: "sewer-cleanout-install", label: "Exterior Sewer Cleanout" },
 ];

@@ -5,7 +5,8 @@ import { useAuth } from "./AuthProvider";
 import { useSubscription } from "./SubscriptionProvider";
 import { AuthModal } from "./AuthModal";
 import { ProfileModal } from "./ProfileModal";
-import { User, LogOut, ChevronDown, Settings, CreditCard, Crown, Shield } from "lucide-react";
+import { User, LogOut, ChevronDown, Settings, CreditCard, Crown, Shield, Gift } from "lucide-react";
+import { ReferralModal } from "./ReferralModal";
 import Link from "next/link";
 
 export function UserButton() {
@@ -14,6 +15,7 @@ export function UserButton() {
   const [authOpen, setAuthOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
+  const [referralOpen, setReferralOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
   // Close menu on outside click
@@ -121,6 +123,18 @@ export function UserButton() {
               Admin
             </Link>
           )}
+          {tier === "pro" && (
+            <button
+              onClick={() => {
+                setReferralOpen(true);
+                setMenuOpen(false);
+              }}
+              className="w-full flex items-center gap-2 px-3 py-2 text-sm text-gray-400 hover:text-yellow-400 hover:bg-[hsl(217,33%,14%)] transition-colors cursor-pointer"
+            >
+              <Gift className="w-3.5 h-3.5" />
+              Share VoltSpec
+            </button>
+          )}
           {tier === "pro" && subscription?.stripeCustomerId ? (
             <button
               onClick={() => {
@@ -155,6 +169,7 @@ export function UserButton() {
         </div>
       )}
       <ProfileModal open={profileOpen} onClose={() => setProfileOpen(false)} />
+      <ReferralModal open={referralOpen} onClose={() => setReferralOpen(false)} />
     </div>
   );
 }

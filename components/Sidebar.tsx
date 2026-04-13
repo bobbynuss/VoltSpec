@@ -23,6 +23,8 @@ const JURISDICTIONS = trade.jurisdictions;
 const STATE_OPTIONS = trade.stateOptions;
 import { ChatWidget } from "@/components/ChatWidget";
 import { useSubscription } from "@/components/SubscriptionProvider";
+import { useAuth } from "@/components/AuthProvider";
+import { AuthModal } from "@/components/AuthModal";
 import { canAccessCity, canAccessJob } from "@/lib/subscription";
 
 export interface SidebarHandle {
@@ -42,7 +44,9 @@ export const Sidebar = forwardRef<SidebarHandle, SidebarProps>(function Sidebar(
   { onGenerate, onOpenProjects, onZipChange, loading, jobContext },
   ref,
 ) {
+  const { user } = useAuth();
   const { tier } = useSubscription();
+  const [authModalOpen, setAuthModalOpen] = useState(false);
   const [stateFilter, setStateFilter] = useState("ALL");
   const [city, setCity] = useState("austin");
   const [zip, setZip] = useState("78744");
@@ -91,6 +95,10 @@ export const Sidebar = forwardRef<SidebarHandle, SidebarProps>(function Sidebar(
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!jobId) return;
+    if (!user) {
+      setAuthModalOpen(true);
+      return;
+    }
     onGenerate(jobId, zip, city);
   };
 
@@ -381,6 +389,11 @@ export const Sidebar = forwardRef<SidebarHandle, SidebarProps>(function Sidebar(
               <span className="w-4 h-4 border-2 border-gray-900 border-t-transparent rounded-full animate-spin" />
               Generating…
             </span>
+          ) : !user ? (
+            <span className="flex items-center gap-2">
+              <Zap className="w-4 h-4 fill-gray-900" />
+              Sign in to Generate
+            </span>
           ) : (
             <span className="flex items-center gap-2">
               <Zap className="w-4 h-4 fill-gray-900" />
@@ -433,6 +446,8 @@ export const Sidebar = forwardRef<SidebarHandle, SidebarProps>(function Sidebar(
         ⚠️ <strong className="text-gray-500">Reference only.</strong> Verify all requirements with
         your local AHJ. Not engineering advice.
       </div>
+
+      <AuthModal open={authModalOpen} onClose={() => setAuthModalOpen(false)} />
     </div>
   );
 });

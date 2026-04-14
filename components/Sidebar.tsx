@@ -10,12 +10,15 @@ import { Button } from "@/components/ui/button";
 import {
   Select,
   SelectContent,
+  SelectGroup,
   SelectItem,
+  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
 import { JOB_TYPES } from "@/lib/data";
 import { getTrade, listTrades } from "@/lib/registry";
+import { JOB_CATEGORIES } from "@/lib/trades/electrical";
 import { ChatWidget } from "@/components/ChatWidget";
 import { useSubscription } from "@/components/SubscriptionProvider";
 import { useAuth } from "@/components/AuthProvider";
@@ -245,6 +248,11 @@ export const Sidebar = forwardRef<SidebarHandle, SidebarProps>(function Sidebar(
                     >
                       <Briefcase className="w-3.5 h-3.5 text-yellow-400 shrink-0" />
                       <span className="flex-1 truncate">{j.label}</span>
+                      {j.category && (
+                        <span className="text-[9px] text-gray-600 uppercase tracking-wide shrink-0">
+                          {JOB_CATEGORIES.find((c) => c.id === j.category)?.label}
+                        </span>
+                      )}
                     </button>
                   ))}
                 </div>
@@ -385,20 +393,33 @@ export const Sidebar = forwardRef<SidebarHandle, SidebarProps>(function Sidebar(
               <SelectValue placeholder="Select job type…" />
             </SelectTrigger>
             <SelectContent className="bg-[hsl(222,47%,10%)] border-[hsl(217,33%,22%)] text-white max-h-[480px] min-w-[min(460px,90vw)] overflow-y-auto">
-              {ACTIVE_JOB_TYPES.map((job) => {
-                const locked = !canAccessJob(tier, job.id);
+              {JOB_CATEGORIES.map((cat) => {
+                const categoryJobs = ACTIVE_JOB_TYPES.filter(
+                  (j) => j.category === cat.id
+                );
+                if (categoryJobs.length === 0) return null;
                 return (
-                  <SelectItem
-                    key={job.id}
-                    value={job.id}
-                    className={`focus:bg-yellow-400/10 focus:text-yellow-300 cursor-pointer py-2 ${locked ? "opacity-60" : ""}`}
-                    disabled={locked}
-                  >
-                    <span className="flex items-center gap-2">
-                      {job.label}
-                      {locked && <Lock className="w-3 h-3 text-gray-500" />}
-                    </span>
-                  </SelectItem>
+                  <SelectGroup key={cat.id}>
+                    <SelectLabel className="text-[11px] font-bold text-yellow-400/80 uppercase tracking-wider px-3 pt-3 pb-1">
+                      {cat.label}
+                    </SelectLabel>
+                    {categoryJobs.map((job) => {
+                      const locked = !canAccessJob(tier, job.id);
+                      return (
+                        <SelectItem
+                          key={job.id}
+                          value={job.id}
+                          className={`focus:bg-yellow-400/10 focus:text-yellow-300 cursor-pointer py-2 ${locked ? "opacity-60" : ""}`}
+                          disabled={locked}
+                        >
+                          <span className="flex items-center gap-2">
+                            {job.label}
+                            {locked && <Lock className="w-3 h-3 text-gray-500" />}
+                          </span>
+                        </SelectItem>
+                      );
+                    })}
+                  </SelectGroup>
                 );
               })}
             </SelectContent>

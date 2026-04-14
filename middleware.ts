@@ -11,6 +11,7 @@ export function middleware(request: NextRequest) {
       pathname === "/maintenance" ||
       pathname === "/terms" ||
       pathname === "/privacy" ||
+      pathname === "/pitch" ||
       pathname.startsWith("/_next") ||
       pathname.startsWith("/api/health") ||
       pathname.startsWith("/favicon") ||

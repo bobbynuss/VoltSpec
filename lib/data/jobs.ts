@@ -48,6 +48,17 @@ import { job as res_rough_in } from "./jobs/res-rough-in";
 import { job as res_rough_in_dedicated } from "./jobs/res-rough-in-dedicated";
 import { job as res_trim_out } from "./jobs/res-trim-out";
 import { job as res_final_inspection } from "./jobs/res-final-inspection";
+import { job as commercial_led_retrofit } from "./jobs/commercial-led-retrofit";
+import { job as commercial_ev_charging } from "./jobs/commercial-ev-charging";
+import { job as commercial_generator } from "./jobs/commercial-generator";
+import { job as commercial_sign_lighting } from "./jobs/commercial-sign-lighting";
+import { job as tenant_finish_out } from "./jobs/tenant-finish-out";
+import { job as restaurant_kitchen } from "./jobs/restaurant-kitchen";
+import { job as retail_buildout } from "./jobs/retail-buildout";
+import { job as warehouse_buildout } from "./jobs/warehouse-buildout";
+import { job as fire_alarm_system } from "./jobs/fire-alarm-system";
+import { job as office_buildout } from "./jobs/office-buildout";
+import { job as car_wash_electrical } from "./jobs/car-wash-electrical";
 
 export const JOBS: Job[] = [
   new_200a_residential,
@@ -99,6 +110,17 @@ export const JOBS: Job[] = [
   res_rough_in_dedicated,
   res_trim_out,
   res_final_inspection,
+  commercial_led_retrofit,
+  commercial_ev_charging,
+  commercial_generator,
+  commercial_sign_lighting,
+  tenant_finish_out,
+  restaurant_kitchen,
+  retail_buildout,
+  warehouse_buildout,
+  fire_alarm_system,
+  office_buildout,
+  car_wash_electrical,
 ];
 
 export const JOB_TYPES: { id: string; label: string }[] = JOBS.map((j) => ({

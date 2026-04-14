@@ -78,6 +78,17 @@ const CATEGORY_MAP: Record<string, JobCategoryId> = {
   // ── Commercial ─────────────────────────────────────────
   "commercial-3phase-200a":        "commercial",
   "commercial-400a-3phase":        "commercial",
+  "commercial-led-retrofit":       "commercial",
+  "commercial-ev-charging":        "commercial",
+  "commercial-generator":          "commercial",
+  "commercial-sign-lighting":      "commercial",
+  "tenant-finish-out":             "commercial",
+  "restaurant-kitchen":            "commercial",
+  "retail-buildout":               "commercial",
+  "warehouse-buildout":            "commercial",
+  "fire-alarm-system":             "commercial",
+  "office-buildout":               "commercial",
+  "car-wash-electrical":           "commercial",
 
   // ── New Home Build (Phased) ────────────────────────────
   "res-service-entrance":          "new-home",

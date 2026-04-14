@@ -1,0 +1,52 @@
+import type { Job } from "../types";
+import { AUSTIN_SUPPLIERS } from "../suppliers";
+import { AUSTIN_OFFICIAL_DOCS } from "../official-docs";
+
+export const job: Job = {
+  id: "commercial-ev-charging",
+  label: "Commercial EV Charging Station (Multi-Port)",
+  requirements: [
+    "NEC 2026 Art. 625: Electric vehicle power transfer system requirements",
+    "NEC 2026 Art. 625.40: Separate branch circuit or dedicated feeder for each EVSE",
+    "NEC 2026 Art. 625.42: Rating — continuous load, size conductors at 125% of max current",
+    "Austin Energy: commercial EV installations require AE service review if adding >50 kW total load",
+    "ADA-compliant charging station placement required — at least one accessible space per ADA 502",
+    "Load management system (OCPP-compatible) recommended for sites with 4+ ports to avoid demand charges",
+    "Dedicated metering panel recommended — separate from building main for demand tracking",
+    "Concrete bollards or wheel stops required for pedestal-mount chargers in parking areas",
+    "Permit: commercial electrical permit + possible AE service upgrade application",
+    "Signage required per local parking ordinance — EV ONLY with tow-away notice",
+  ],
+  materials: [
+    { item: "EV Metering Panel (200A, 3-Phase)", quantity: "1", spec: "Eaton PRL1X3225X42C - Pow-R-Xpress 225A interior, 208Y/120V 3P 4W, 42-circuit, dedicated EV distribution panel" },
+    { item: "EZB Enclosure (20×60 NEMA 3R)", quantity: "1", spec: "Eaton EZB2060RBS - EZ Box enclosure, 20×60 in., outdoor rated for EV panel location" },
+    { item: "EZT Trim (20×60)", quantity: "1", spec: "Eaton EZT2060S - EZ Trim surface mount for 20×60 box" },
+    { item: "225A Main Breaker Kit", quantity: "1", spec: "Eaton BKD2G225 - Pow-R-Xpress MCB kit, 225A 240V 65 kAIC, 3-pole" },
+    { item: "50A 2-Pole Breaker (Level 2 EVSE)", quantity: "8", spec: "Eaton QBH250 - QBH 2-pole 50A 240V bolt-on breaker, one per Level 2 charger port" },
+    { item: "100A 3-Pole Breaker (DC Fast Charger)", quantity: "2", spec: "Eaton QBH3100 - QBH 3-pole 100A 240V bolt-on breaker, one per DC fast charger" },
+    { item: "6 AWG THHN (Level 2 circuits)", quantity: "800 ft", spec: "COP THHN6STR500 - 6 AWG stranded THHN copper, 500 ft spool, for 50A Level 2 branch circuits (4 conductors × 50 ft avg × 4 circuits)" },
+    { item: "2 AWG THHN (DCFC circuits)", quantity: "300 ft", spec: "COP THHN2STR500 - 2 AWG stranded THHN copper, for 100A DC fast charger feeders" },
+    { item: "1 in. Rigid Metal Conduit", quantity: "200 ft", spec: "CON GAL1 - 1 in. galvanized rigid conduit, Level 2 circuits to charger pedestals" },
+    { item: "2 in. Rigid Metal Conduit", quantity: "100 ft", spec: "CON GAL2 - 2 in. galvanized rigid conduit, DCFC feeder runs" },
+    { item: "1 in. RMC Fittings Assortment", quantity: "1 lot", spec: "Couplings, connectors, LBs, straps for 1 in. RMC — typical 30-piece lot" },
+    { item: "2 in. RMC Fittings Assortment", quantity: "1 lot", spec: "Couplings, connectors, LBs, straps for 2 in. RMC — typical 15-piece lot" },
+    { item: "Ground Rod (5/8 × 8 ft)", quantity: "2", spec: "Erico 615880 - 5/8 in. × 8 ft copper-bonded ground rod for EV panel grounding" },
+    { item: "Ground Rod Clamp", quantity: "2", spec: "NSI GRC58 - 5/8 in. bronze ground rod clamp, UL listed" },
+    { item: "4 AWG Bare Copper Ground", quantity: "100 ft", spec: "COP BARE4SOL500 - 4 AWG solid bare copper, equipment grounding conductor for EV circuits" },
+    { item: "Concrete Bollard (4 in. × 48 in.)", quantity: "8", spec: "Steel pipe bollard, 4 in. OD × 48 in., concrete-filled, powder-coated yellow — charger protection" },
+    { item: "EV Parking Signage", quantity: "4", spec: "EV ONLY parking sign with tow notice, 12×18 in., reflective, per local code" },
+    { item: "NEMA 3R J-Box (charger feed point)", quantity: "10", spec: "Eaton TP606 - 6×6×4 NEMA 3R junction box, outdoor rated, charger conduit termination" },
+  ],
+  blueprintNotes: [
+    "Material quantities based on 8 Level 2 ports + 2 DC fast charger ports — adjust to site plan",
+    "EVSE units (chargers) are NOT included — owner/operator typically furnishes ChargePoint, Tesla, etc.",
+    "Load management system strongly recommended — reduces peak demand and may avoid costly service upgrade",
+    "Verify utility transformer capacity before starting — 10-port site adds 100+ kW to building load",
+    "Conduit runs to parking lot: use Schedule 40 PVC underground, transition to RMC above grade",
+    "All outdoor boxes and panels must be NEMA 3R minimum",
+    "ADA space must have 44 in. min clear aisle and accessible route to charger interface",
+    "Consider future expansion — run spare conduit to additional parking spaces now while trenching",
+  ],
+  suppliers: AUSTIN_SUPPLIERS,
+  officialDocs: AUSTIN_OFFICIAL_DOCS,
+};

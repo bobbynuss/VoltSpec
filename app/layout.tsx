@@ -9,7 +9,7 @@ export const metadata: Metadata = {
     template: "%s | VoltSpec",
   },
   description:
-    "Generate NEC 2026 materials lists, SVG blueprints, and professional PDF job packages with real Elliott Electric Supply pricing. 29 job types across 74 jurisdictions in 14 states — 204 Elliott branches covered.",
+    "Generate NEC 2026 materials lists, SVG blueprints, and professional PDF job packages with real Elliott Electric Supply pricing. 60 job types across 74 jurisdictions in 14 states — 204 Elliott branches covered.",
   metadataBase: new URL("https://voltspec.online"),
   keywords: [
     "electrical estimating",
@@ -48,7 +48,7 @@ export const metadata: Metadata = {
     siteName: "VoltSpec",
     title: "VoltSpec — Electrical Estimating for Contractors",
     description:
-      "Generate NEC 2026 materials lists, SVG blueprints, and professional PDF job packages with real Elliott Electric Supply pricing. 29 job types, 74 jurisdictions, 14 states.",
+      "Generate NEC 2026 materials lists, SVG blueprints, and professional PDF job packages with real Elliott Electric Supply pricing. 60 job types, 74 jurisdictions, 14 states.",
     images: [
       {
         url: "/og-image.png",
@@ -63,7 +63,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "VoltSpec — Electrical Estimating for Contractors",
     description:
-      "NEC 2026 materials lists, blueprints, and job packages with real Elliott Electric pricing. 29 job types, 74 jurisdictions, 14 states.",
+      "NEC 2026 materials lists, blueprints, and job packages with real Elliott Electric pricing. 60 job types, 74 jurisdictions, 14 states.",
     images: ["/og-image.png"],
   },
   alternates: {

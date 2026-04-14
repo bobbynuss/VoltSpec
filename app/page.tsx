@@ -81,7 +81,7 @@ export default function LandingPage() {
       <section className="border-t border-b border-[hsl(217,33%,18%)] bg-[hsl(222,47%,9%)] px-6 sm:px-4 py-8">
         <div className="max-w-5xl mx-auto grid grid-cols-2 sm:grid-cols-4 gap-8 sm:gap-6 text-center">
           <StatBlock number="74" label="Jurisdictions" />
-          <StatBlock number="29" label="Job Types" />
+          <StatBlock number="60" label="Job Types" />
           <StatBlock number="14" label="States" />
           <StatBlock number="204" label="Elliott Branches" />
         </div>
@@ -109,7 +109,7 @@ export default function LandingPage() {
             />
             <FeatureCard
               icon={<Layers className="w-6 h-6 sm:w-7 sm:h-7" />}
-              title="29 Job Types"
+              title="60 job types"
               description="Residential, commercial, solar, EV, generators, data center phases 1–7, and more."
             />
             <FeatureCard
@@ -158,7 +158,7 @@ export default function LandingPage() {
             <Step
               num="1"
               title="Pick your city and job type"
-              description="74 jurisdictions, 29 job types — residential, commercial, data center, solar, EV, and more."
+              description="74 jurisdictions, 60 job types — residential, commercial, data center, solar, EV, and more."
             />
             <Step
               num="2"
@@ -187,7 +187,7 @@ export default function LandingPage() {
       <section className="px-6 sm:px-4 py-12 sm:py-16 border-t border-[hsl(217,33%,18%)]">
         <div className="max-w-4xl mx-auto">
           <h2 className="text-xl sm:text-3xl font-bold text-white text-center mb-3 sm:mb-4">
-            29 Job Types
+            60 job types
           </h2>
           <p className="text-gray-500 text-center mb-8 sm:mb-10 max-w-xl mx-auto text-sm sm:text-base">
             Complete materials, NEC requirements, SVG diagrams, and Elliott pricing for every one.

@@ -33,11 +33,11 @@ const steps = [
   {
     num: 2,
     tourIndex: 2,
-    title: "29 Job Types — Residential to Data Center",
+    title: "60 job types — Residential to Data Center",
     icon: Layers,
     color: "text-cyan-400",
     bg: "bg-cyan-400/10 border-cyan-400/25 hover:border-cyan-400/50",
-    body: "Choose from 29 job types: residential services (200A, 320A, 400A), subpanels, EV chargers, generators, solar PV, battery storage, pool/spa, landscape lighting, trim-out, commercial 3-phase, and a full 7-phase Data Center Build-Out series. Every job comes with NEC 2026 requirements, materials, and a schematic.",
+    body: "Choose from 60 job types: residential services (200A, 320A, 400A), subpanels, EV chargers, generators, solar PV, battery storage, pool/spa, landscape lighting, trim-out, commercial 3-phase, and a full 7-phase Data Center Build-Out series. Every job comes with NEC 2026 requirements, materials, and a schematic.",
   },
   {
     num: 3,
@@ -148,7 +148,7 @@ export default function HelpPage() {
               and export professional PDFs — in about 30 seconds.
             </p>
             <p className="text-xs text-gray-500 mb-6">
-              74 jurisdictions · 14 states · 29 job types · 204 Elliott branches
+              74 jurisdictions · 14 states · 60 job types · 204 Elliott branches
             </p>
 
             {/* Start Tour CTA */}

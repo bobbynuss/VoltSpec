@@ -42,6 +42,16 @@ export default function MaintenancePage() {
             support@voltspec.online
           </a>
         </p>
+
+        <p className="text-slate-600 text-xs">
+          <a href="/terms" className="text-slate-500 hover:text-yellow-400 underline underline-offset-2 transition-colors">
+            Terms of Service
+          </a>
+          {" · "}
+          <a href="/privacy" className="text-slate-500 hover:text-yellow-400 underline underline-offset-2 transition-colors">
+            Privacy Policy
+          </a>
+        </p>
       </div>
     </div>
   );

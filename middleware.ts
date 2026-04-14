@@ -6,9 +6,11 @@ export function middleware(request: NextRequest) {
   if (process.env.MAINTENANCE_MODE === "true") {
     const { pathname } = request.nextUrl;
 
-    // Allow the maintenance page itself, static assets, and API health checks
+    // Allow the maintenance page, legal pages, static assets, and API health checks
     if (
       pathname === "/maintenance" ||
+      pathname === "/terms" ||
+      pathname === "/privacy" ||
       pathname.startsWith("/_next") ||
       pathname.startsWith("/api/health") ||
       pathname.startsWith("/favicon") ||

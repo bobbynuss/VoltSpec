@@ -221,13 +221,22 @@ export default function LandingPage() {
           </span>
         </div>
         <p className="text-sm text-gray-500">
-          © {new Date().getFullYear()} VoltSpec —{" "}
+          © {new Date().getFullYear()} VoltSpec LLC —{" "}
           <a
             href="https://voltspec.online"
             className="text-gray-400 hover:text-yellow-400 transition-colors"
           >
             voltspec.online
           </a>
+        </p>
+        <p className="text-xs text-gray-500 mt-2">
+          <Link href="/terms" className="text-gray-400 hover:text-yellow-400 transition-colors">
+            Terms of Service
+          </Link>
+          {" · "}
+          <Link href="/privacy" className="text-gray-400 hover:text-yellow-400 transition-colors">
+            Privacy Policy
+          </Link>
         </p>
         <div className="flex items-center justify-center gap-2 mt-3 text-amber-400/80">
           <span className="text-sm">⚠️</span>

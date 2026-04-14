@@ -1,5 +1,7 @@
 "use client";
 
+import Link from "next/link";
+
 /**
  * Legal disclaimers protecting VoltSpec LLC.
  * Rendered on every public-facing page.
@@ -25,6 +27,21 @@ export function LegalDisclaimer({ className = "" }: { className?: string }) {
           utility requirements, and job-site conditions. VoltSpec LLC and its
           affiliates assume no liability for any errors, omissions, or damages
           resulting from the use of this tool.
+        </p>
+        <p className="text-[11px] text-gray-500 pt-2">
+          <Link
+            href="/terms"
+            className="text-gray-400 hover:text-yellow-400 underline underline-offset-2 transition-colors"
+          >
+            Terms of Service
+          </Link>
+          {" · "}
+          <Link
+            href="/privacy"
+            className="text-gray-400 hover:text-yellow-400 underline underline-offset-2 transition-colors"
+          >
+            Privacy Policy
+          </Link>
         </p>
       </div>
     </div>

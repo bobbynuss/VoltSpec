@@ -7,6 +7,7 @@ import { Check, X, ArrowLeft, Zap, Crown } from "lucide-react";
 import { useAuth } from "@/components/AuthProvider";
 import { useSubscription } from "@/components/SubscriptionProvider";
 import { AuthModal } from "@/components/AuthModal";
+import { LegalDisclaimer } from "@/components/LegalDisclaimer";
 
 const MONTHLY_PRICE_ID =
   process.env.NEXT_PUBLIC_STRIPE_PRICE_MONTHLY_ID ?? "price_1TLVEK2O5006XVfSZ8XIDdPR";
@@ -268,6 +269,9 @@ export default function PricingPage() {
       </div>
 
       <AuthModal open={authOpen} onClose={() => setAuthOpen(false)} />
+
+      {/* Legal Disclaimers */}
+      <LegalDisclaimer />
     </div>
   );
 }

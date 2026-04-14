@@ -18,6 +18,7 @@ import {
   Layers,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { LegalDisclaimer } from "@/components/LegalDisclaimer";
 
 const steps = [
   {
@@ -242,6 +243,9 @@ export default function HelpPage() {
           </div>
         </div>
       </main>
+
+      {/* Legal Disclaimers */}
+      <LegalDisclaimer />
     </div>
   );
 }

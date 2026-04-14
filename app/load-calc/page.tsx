@@ -19,6 +19,7 @@ import {
   Info,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { LegalDisclaimer } from "@/components/LegalDisclaimer";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -685,6 +686,9 @@ export default function LoadCalcPage() {
           </div>
         </div>
       </main>
+
+      {/* Legal Disclaimers */}
+      <LegalDisclaimer />
     </div>
   );
 }

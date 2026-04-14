@@ -9,6 +9,7 @@ import {
   Zap,
   Layers,
 } from "lucide-react";
+import { LegalDisclaimer } from "@/components/LegalDisclaimer";
 
 export default function LandingPage() {
   return (
@@ -207,6 +208,9 @@ export default function LandingPage() {
           </div>
         </div>
       </section>
+
+      {/* Legal Disclaimers */}
+      <LegalDisclaimer />
 
       {/* Footer */}
       <footer className="border-t border-[hsl(217,33%,18%)] bg-[hsl(222,47%,8%)] px-6 sm:px-4 py-8 text-center">

@@ -12,7 +12,7 @@ export function DisclaimerBanner({ className = "" }: { className?: string }) {
     >
       <AlertTriangle className="w-3 h-3 shrink-0 text-gray-500" />
       <p className="text-[11px] text-gray-500">
-        Reference tool only — not engineering advice. Verify with your local AHJ before installation.
+        Independent estimating tool — not engineering advice. Not affiliated with Elliott Electric Supply or any utility. Verify with your local AHJ before installation.
       </p>
     </div>
   );

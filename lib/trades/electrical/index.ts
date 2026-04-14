@@ -73,7 +73,7 @@ const CATEGORY_MAP: Record<string, JobCategoryId> = {
   "landscape-lighting":            "residential",
   "temp-power-pole":               "residential",
   "residential-trim-out":          "residential",
-  "pole-light-takeoff":            "residential",
+  "pole-light-takeoff":            "commercial",
 
   // ── Commercial ─────────────────────────────────────────
   "commercial-3phase-200a":        "commercial",

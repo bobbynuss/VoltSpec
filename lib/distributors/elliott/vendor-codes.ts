@@ -192,9 +192,9 @@ export function elliottVendorCode(part: string, spec: string): string | null {
   if (/\bkeystone\b/i.test(s)) return "KST";
   if (/^(?:KT|LED\d|L\d{2}P)/.test(p) && /\b(LED|LAMP|TUBE|DRIVER)\b/i.test(s)) return "KST";
 
-  // ── Juno / Acuity Brands (JNO) — track lighting, Trac-Lites ────────────
-  if (/\bjuno\b/i.test(s) || /\btrac.lites?\b/i.test(s)) return "JNO";
-  if (/^R(?:4FT|8FT|2FT|12FT|38|39|21|23|24|26|600L)/i.test(p)) return "JNO";
+  // ── Juno / Acuity Brands (JUN) — track lighting, Trac-Lites ────────────
+  if (/\bjuno\b/i.test(s) || /\btrac.lites?\b/i.test(s)) return "JUN";
+  if (/^R(?:4FT|8FT|2FT|12FT|38|39|21|23|24|26|600L)/i.test(p)) return "JUN";
 
   // ── Lithonia (LIT) — commercial lighting fixtures, floods ──────────────
   if (/\blithonia\b/i.test(s)) return "LIT";

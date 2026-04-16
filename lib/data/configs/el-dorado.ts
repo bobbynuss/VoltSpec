@@ -11,8 +11,17 @@ export const EL_DORADO_CONFIG: JurisdictionConfig = {
   defaultZip: "71730",
   zipPrefixes: ["717"],
   baseline: "san-antonio",
+  meterSocket: {
+    catalog: "U5168XTL200",
+    description: "200A ringless single-phase meter socket, Entergy Arkansas approved",
+    replaces: ["U5135-XL-200", "U5135", "1006352CCH"],
+  },
   patchMaterialText: true,
   textReplacements: [
+    // Meter socket swaps
+    ["Milbank U5135-XL-200", "Milbank U5168XTL200"],
+    ["Milbank U5135", "Milbank U5168XTL200"],
+    ["1006352CCH", "U5168XTL200"],
     // Pass & Seymour device swaps (AR stocks PAS instead of EWD)
     ["Eaton TR270W", "PAS 15WRTRWCC"],
     ["Eaton TWR270W", "PAS 15WRTRWRWCC"],

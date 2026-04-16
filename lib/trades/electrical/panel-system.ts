@@ -335,18 +335,33 @@ function spanBreaker(info: BreakerInfo): MaterialItem {
 
 // ── MBT (Meter-Breaker Combo) materials ────────────────────────────
 
-function mbtComboUnit(): MaterialItem {
+/**
+ * MBT combo unit models per jurisdiction.
+ * Different stores/utilities stock different all-in-one meter-breaker combos.
+ * Default is MBT48B200BTS (48-space).
+ */
+const MBT_COMBO_MODELS: Record<string, { catalog: string; spaces: string; description: string }> = {
+  hope:          { catalog: "MB816B200BTS",    spaces: "8/16",  description: "200A all-in-one meter socket + main breaker + 8-space/16-circuit loadcenter" },
+  "fort-smith":  { catalog: "MBT48B200BTS",    spaces: "48",    description: "200A all-in-one meter socket + main breaker + 48-space loadcenter" },
+  "hot-springs": { catalog: "MBT48B200BTS",    spaces: "48",    description: "200A all-in-one meter socket + main breaker + 48-space loadcenter" },
+  jonesboro:     { catalog: "MBE4040B200BTS",  spaces: "40/40", description: "200A all-in-one meter socket + main breaker + 40-space/40-circuit loadcenter" },
+};
+
+function mbtComboUnit(jurisdictionId?: string): MaterialItem {
+  const model = jurisdictionId ? MBT_COMBO_MODELS[jurisdictionId] : undefined;
+  const catalog = model?.catalog ?? "MBT48B200BTS";
+  const desc = model?.description ?? "200A all-in-one meter socket + main breaker + 48-space loadcenter";
   return {
     item: "200A Meter-Breaker Combo Panel",
     quantity: "1",
-    spec: "Eaton MBT48B200BTS - 200A all-in-one meter socket + main breaker + 48-space loadcenter, BR series plug-on neutral, outdoor rated, eliminates separate meter socket and feed-through panel",
+    spec: `Eaton ${catalog} - ${desc}, BR series plug-on neutral, outdoor rated, eliminates separate meter socket and feed-through panel`,
     unitPrice: 850,
   };
 }
 
 // ── Main override function ─────────────────────────────────────────
 
-export function applyPanelOverride(job: Job, targetType: PanelTypeId): Job {
+export function applyPanelOverride(job: Job, targetType: PanelTypeId, jurisdictionId?: string): Job {
   if (!PANEL_ELIGIBLE_JOBS.has(job.id)) return job;
 
   const newMaterials: MaterialItem[] = [];
@@ -385,7 +400,7 @@ export function applyPanelOverride(job: Job, targetType: PanelTypeId): Job {
           newMaterials.push(...spanPanel(job.id));
           break;
         case "mbt":
-          newMaterials.push(mbtComboUnit());
+          newMaterials.push(mbtComboUnit(jurisdictionId));
           break;
       }
       panelReplaced = true;
@@ -452,7 +467,7 @@ export function applyPanelOverride(job: Job, targetType: PanelTypeId): Job {
       case "br": newMaterials.unshift(brPanel(job.id)); break;
       case "prl": newMaterials.unshift(...prlPanel(job.id)); break;
       case "span": newMaterials.unshift(...spanPanel(job.id)); break;
-      case "mbt": newMaterials.unshift(mbtComboUnit()); break;
+      case "mbt": newMaterials.unshift(mbtComboUnit(jurisdictionId)); break;
     }
   }
 
@@ -499,19 +514,22 @@ export function applyPanelOverride(job: Job, targetType: PanelTypeId): Job {
 
   // Add MBT-specific notes
   if (targetType === "mbt") {
+    const mbtModel = jurisdictionId ? MBT_COMBO_MODELS[jurisdictionId] : undefined;
+    const mbtCat = mbtModel?.catalog ?? "MBT48B200BTS";
+    const mbtSpaces = mbtModel?.spaces ?? "48";
     const mbtReqs = [
-      "MBT48B200BTS is an all-in-one meter socket + main breaker + loadcenter — eliminates separate meter base and feed-through panel",
+      `${mbtCat} is an all-in-one meter socket + main breaker + loadcenter — eliminates separate meter base and feed-through panel`,
       "Verify utility approval for meter-breaker combo unit before ordering — not all utilities accept combo units",
-      "48-space BR plug-on neutral panel built in — uses standard Type BR breakers",
+      `${mbtSpaces}-space BR plug-on neutral panel built in — uses standard Type BR breakers`,
     ];
     for (const r of mbtReqs) {
       if (!requirements.includes(r)) requirements.push(r);
     }
 
     const mbtNotes = [
-      "MBT48B200BTS combo unit: mount at meter location — single enclosure replaces meter socket + panel",
+      `${mbtCat} combo unit: mount at meter location — single enclosure replaces meter socket + panel`,
       "No separate feed-through panel or meter-to-panel SE cable needed — all internal to combo unit",
-      "Uses Type BR plug-on breakers — 48 spaces available for branch circuits",
+      `Uses Type BR plug-on breakers — ${mbtSpaces} spaces available for branch circuits`,
     ];
     for (const n of mbtNotes) {
       if (!blueprintNotes.includes(n)) blueprintNotes.push(n);

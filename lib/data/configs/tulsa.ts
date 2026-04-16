@@ -18,29 +18,22 @@ export const TULSA_CONFIG: JurisdictionConfig = {
   defaultZip: "74129",
   zipPrefixes: ["740", "741", "743", "744"],
   baseline: "san-antonio",
-  meterSocket: {
-    catalog: "UTRS213BE",
-    description: "200A ringless single-phase OH/UG meter socket, PSO approved",
-    replaces: ["1009874ACH", "U5135-XL-200", "U5135", "1006352CCH"],
+  removeMeterSocket: {
+    replaces: ["1009874ACH", "U5135-XL-200", "U5135", "1006352CCH", "Milbank U5135-XL-200", "Milbank U5135"],
   },
   extraRequirements: Object.fromEntries(
     DEFAULT_METER_SWAP_JOBS.map((jobId) => [
       jobId,
-      ["Meter socket often provided by local utility — confirm with utility before ordering"],
+      ["Meter socket provided by PSO — do NOT order, coordinate with utility for delivery"],
     ]),
   ),
   extraBlueprintNotes: Object.fromEntries(
     DEFAULT_METER_SWAP_JOBS.map((jobId) => [
       jobId,
-      ["Meter socket often provided by local utility — confirm with utility before ordering"],
+      ["Meter socket provided by PSO — do NOT order, coordinate with utility for delivery"],
     ]),
   ),
   textReplacements: [
-    ["Eaton 1009874ACH", "Eaton UTRS213BE"],
-    ["1009874ACH", "UTRS213BE"],
-    ["1006352CCH", "UTRS213BE"],
-    ["Milbank U5135-XL-200", "Eaton UTRS213BE"],
-    ["Milbank U5135", "Eaton UTRS213BE"],
     ["CPS Energy Residential Service Application required", "PSO service application required"],
     ["CPS Energy", "PSO"],
     ["CPS", "PSO"],

@@ -133,6 +133,44 @@ export const CATALOG_CATEGORIES: CatalogCategory[] = [
     ],
   },
   {
+    id: "lighting",
+    label: "Lighting & Controls",
+    icon: "💡",
+    items: [
+      // Emergency / egress
+      { item: "Frog Eyes Emergency Light", spec: "Eaton APEL - LED emergency egress light, frog eye twin-head, battery backup", defaultQty: "4" },
+      { item: "Outdoor Egress Light", spec: "Eaton SELW25BZ - outdoor rated LED emergency egress light, bronze finish, wet location", defaultQty: "2" },
+      { item: "Combo LED Emergency Exit Sign", spec: "Eaton APX7RG - combo LED emergency exit sign with twin heads, red/green selectable", defaultQty: "4" },
+      { item: "LED Emergency Battery Pack", spec: "Eaton EBPLEDL14W - LED emergency battery pack, 14W, fluorescent/LED fixture retrofit", defaultQty: "4" },
+      // Fixtures
+      { item: "2x4 LED Flat Panel", spec: "Eaton CPX2X4AL08SWW7M2 - 2x4 LED flat panel, switchable watt/CCT, drop ceiling grid mount", defaultQty: "12" },
+      { item: "LED High-Bay (150W)", spec: "Eaton CPHBAL013MVOLTSW - Crouse-Hinds high-bay LED, 150W, multi-volt, switchable CCT/lumen", defaultQty: "12" },
+      { item: "LED Vapor-Tight (4 ft)", spec: "Eaton 4APVTLDSL3C3 - 4 ft LED vapor-tight, sealed lens, wet/damp location rated", defaultQty: "6" },
+      { item: "LED Wall Pack", spec: "Eaton TWR1LEDAL0SWW2UV - LED wall pack, full cutoff, multi-volt, switchable wattage/CCT", defaultQty: "4" },
+      // Track lighting (Juno Trac-Lites)
+      { item: "Track Rail (4 ft, white)", spec: "Juno R4FT WH - Trac-Lites 4 ft track section, 20A 120V, white, single-circuit", defaultQty: "4" },
+      { item: "Track Rail (8 ft, white)", spec: "Juno R8FT WH - Trac-Lites 8 ft track section, 20A 120V, white, single-circuit", defaultQty: "2" },
+      { item: "Track Live-End Feed", spec: "Juno R38 WH - Trac-Lites live-end feed connector with cover, white", defaultQty: "2" },
+      { item: "Track End Cap", spec: "Juno R39 WH - Trac-Lites end cap, white", defaultQty: "4" },
+      { item: "Track Straight Connector", spec: "Juno R23 WH - Trac-Lites miniature straight connector, white", defaultQty: "2" },
+      { item: "LED Track Head (spot)", spec: "Juno R600L G2 3K PDIM WH - Trac-Lites LED track head, 10W, 3000K, 800 lm, 25° spot, phase-dim, white", defaultQty: "8" },
+      { item: "LED Track Head (flood)", spec: "Juno R600L G2 3K PDIM FL WH - Trac-Lites LED track head, 10W, 3000K, 800 lm, 40° flood, phase-dim, white", defaultQty: "4" },
+      // Floods
+      { item: "Flood Light", spec: "Lithonia ESXF1 series - LED flood light, exterior, adjustable mount", defaultQty: "4" },
+      { item: "Emergency Flood Light", spec: "Lithonia HGXLED2RH series - LED emergency flood, remote head compatible", defaultQty: "2" },
+      // Lamps & retrofits
+      { item: "LED HID Replacement Lamp", spec: "Keystone L36PSHIDEX398CSB - LED HID replacement lamp, 36W, EX39 mogul base, 3000K/4000K/5000K selectable", defaultQty: "6" },
+      { item: "LED Replacement Tube (T8 4ft)", spec: "Keystone LED13T848G8CSJX3 - LED T8 replacement tube, 13W, 4 ft, Type B direct wire, selectable CCT", defaultQty: "20" },
+      { item: "LED Tube Wiring Harness", spec: "Keystone KTSOCKETT8UT4W - T8 wiring harness for Type B LED tube conversion, non-shunted sockets", defaultQty: "20" },
+      // Photocontrols & timers
+      { item: "Photocell (fixed position)", spec: "Tork 2000 - photocell, fixed position mount, dusk-to-dawn, 120V", defaultQty: "2" },
+      { item: "Turn-Lock LED Photocontrol", spec: "Tork 5237UL - turn-lock LED photocontrol, twist-lock mount, dusk-to-dawn", defaultQty: "4" },
+      { item: "Flush Mount Photocontrol", spec: "Tork 3000 - flush mount photocontrol, surface mount, dusk-to-dawn", defaultQty: "2" },
+      { item: "Digital Time Clock", spec: "Tork EWZ201C - digital time clock, astronomic, 120/277V, 2-channel", defaultQty: "1" },
+      { item: "Digital In-Wall Astro Switch", spec: "Tork SS703Z - digital in-wall astronomic switch, 120/277V, 3-way compatible", defaultQty: "1" },
+    ],
+  },
+  {
     id: "grounding",
     label: "Grounding & Misc",
     icon: "📦",

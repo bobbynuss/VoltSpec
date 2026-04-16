@@ -171,7 +171,7 @@ export function ResultsPanel({ result, onSave, zip }: ResultsPanelProps) {
 
   // Apply panel override to get effective job
   const panelJob = showPanelSelector
-    ? applyPanelOverride(job, panelType)
+    ? applyPanelOverride(job, panelType, city)
     : job;
 
   // Build effective materials / blueprintNotes / svgDiagram with POA injected

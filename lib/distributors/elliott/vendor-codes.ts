@@ -17,7 +17,7 @@
 export function extractPartNumber(spec: string): string | null {
   // Pattern 1: after a known vendor/brand prefix
   const vendorMatch = spec.match(
-    /(?:Eaton|Carlon|Erico|Leviton|Southwire|Bridgeport|Burndy|Polaris|Taymac|Pentair|NSI|Generac|Kohler|SolarEdge|Enphase|ChargePoint|Midnite Solar|Allied|Regal|Thomas\s*&\s*Betts|Crouse-Hinds|Kichler|Brady|Gardner\s*Bender|PECO|ALU|COP|CON|BRI|CRS|TAM|GNR|AMF|ALF|PVC|PVF|PEC|M-W|MIB|AMY|PAS)\s+([A-Z0-9][A-Z0-9\-]{1,})/i
+    /(?:Eaton|Carlon|Erico|Leviton|Southwire|Bridgeport|Burndy|Polaris|Taymac|Pentair|NSI|Generac|Kohler|SolarEdge|Enphase|ChargePoint|Midnite Solar|Allied|Regal|Thomas\s*&\s*Betts|Crouse-Hinds|Kichler|Brady|Gardner\s*Bender|PECO|Tork|Keystone|Lithonia|Hoffman|nVent|Juno|ALU|COP|CON|BRI|CRS|TAM|GNR|AMF|ALF|PVC|PVF|PEC|M-W|MIB|AMY|PAS)\s+([A-Z0-9][A-Z0-9\-]{1,})/i
   );
   if (vendorMatch) return vendorMatch[1].replace(/-+$/, "");
   // Pattern 2: after " - " separator
@@ -183,6 +183,29 @@ export function elliottVendorCode(part: string, spec: string): string | null {
   if (/^1006\d{3}CCH$/.test(p)) return "CHD";
   if (/^(?:CHP|CHB|CHF|CHFP|MBP|CHSPT|CHGEN|EHD|GHB|BAB|HQP|DH|DG|CH2|CHW)/.test(p)) return "CHD";
   if (/\beaten\b/i.test(s) && !/\b(CONDUIT|WIRE|CABLE|COPPER|ALUMINUM|POW.R.LINE)\b/.test(s)) return "CHD";
+
+  // ── Tork (TOR) — photocontrols, timers, time clocks ─────────────────
+  if (/\btork\b/i.test(s)) return "TOR";
+  if (/^(?:2000|3000|5237|EWZ|SS7|DZS|W1|W2|EC|EU)/.test(p) && /\b(PHOTO|TIMER|TIME\s*CLOCK|ASTRO)\b/i.test(s)) return "TOR";
+
+  // ── Keystone (KST) — LED lamps, tubes, drivers ────────────────────────
+  if (/\bkeystone\b/i.test(s)) return "KST";
+  if (/^(?:KT|LED\d|L\d{2}P)/.test(p) && /\b(LED|LAMP|TUBE|DRIVER)\b/i.test(s)) return "KST";
+
+  // ── Juno / Acuity Brands (JNO) — track lighting, Trac-Lites ────────────
+  if (/\bjuno\b/i.test(s) || /\btrac.lites?\b/i.test(s)) return "JNO";
+  if (/^R(?:4FT|8FT|2FT|12FT|38|39|21|23|24|26|600L)/i.test(p)) return "JNO";
+
+  // ── Lithonia (LIT) — commercial lighting fixtures, floods ──────────────
+  if (/\blithonia\b/i.test(s)) return "LIT";
+  if (/^(?:ESXF|DSXF|HGXLED|GEMINI|IBH|IBG|TFX)/.test(p)) return "LIT";
+
+  // ── Hoffman / nVent (HOF) — enclosures, junction boxes ────────────────
+  if (/\bhoffman\b|\bnvent\b/i.test(s)) return "HOF";
+  if (/^ASE\d/.test(p)) return "HOF";
+
+  // ── Eaton Crouse-Hinds lighting (ETL) — high-bay, vapor-tight ─────────
+  if (/^(?:CPHB|CPXF|\dAPVT|CPX\d|TWR\d|SELW|APX|APEL|EBPLED)/.test(p)) return "ETL";
 
   // ── Grounding hardware ─────────────────────────────────────────────────
   if (/^615\d{3}/.test(p)) return "CDW";

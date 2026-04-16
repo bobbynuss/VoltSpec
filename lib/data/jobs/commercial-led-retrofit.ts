@@ -20,9 +20,9 @@ export const job: Job = {
   materials: [
     { item: "4 ft LED Troffer Retrofit Kit (40W)", quantity: "40", spec: "Eaton ML4T4040R - Metalux 4 ft LED retrofit kit, 40W, 4000K, 4400 lumens, 0-10V dimmable, UL 1598C listed, replaces 2-lamp T8 fluorescent" },
     { item: "2x4 LED Flat Panel (40W)", quantity: "20", spec: "Eaton 24FP4040R - Metalux 2x4 LED flat panel, 40W, 4000K, 5000 lumens, 0-10V dimmable, drop ceiling grid mount" },
-    { item: "LED High-Bay (150W)", quantity: "12", spec: "Eaton?"  },
+    { item: "LED High-Bay (150W)", quantity: "12", spec: "Eaton CPHBAL013MVOLTSW - Crouse-Hinds high-bay LED, 150W, multi-volt, switchable CCT/lumen, for warehouse/industrial open ceilings" },
     { item: "Occupancy/Vacancy Sensor (ceiling)", quantity: "15", spec: "Eaton OS310U-W - ceiling mount occupancy sensor, 360° coverage, passive infrared, 120/277V" },
-    { item: "Daylight Harvesting Sensor", quantity: "4", spec: "Eaton?"  },
+    { item: "Daylight Harvesting Sensor", quantity: "4", spec: "Lithonia NCM series - nLight ceiling-mount daylight sensor, 0-10V dimming output, photocell-based daylight harvesting for energy code compliance" },
     { item: "0-10V Dimming Wire (18/2)", quantity: "500 ft", spec: "Lutron GRX-CBL-346S - 18/2 shielded plenum-rated 0-10V dimming cable, purple jacket, sold per ft" },
     { item: "Wire Nuts (tan, 22-8 AWG)", quantity: "1 bag (100)", spec: "Ideal 30-073 - Wing-Nut 452 tan wire connectors, 100/bag, for fixture whip connections" },
     { item: "MC Cable 12/2 (fixture whips)", quantity: "500 ft", spec: "AFC 1903B42-00 - 12/2 MC cable with ground, 250 ft coil × 2, for fixture branch circuit runs" },
@@ -39,7 +39,7 @@ export const job: Job = {
     "All MC cable must be supported within 12 in. of box and every 6 ft per NEC 330.30",
     "Emergency circuit fixtures must have battery backup or be on emergency panel",
     "Recycle old fluorescent lamps per EPA regulations — do not trash",
-    "Items marked '?' need Elliott part numbers confirmed — speak to your branch lighting specialist",
+
   ],
   suppliers: AUSTIN_SUPPLIERS,
   officialDocs: AUSTIN_OFFICIAL_DOCS,

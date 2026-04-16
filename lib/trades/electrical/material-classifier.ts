@@ -225,6 +225,10 @@ const LIGHTING_PATTERNS = [
   /\bEDGR\b/i,
   // LED fixture patterns (Lithonia, etc.)
   /\bLED\s*(fixture|strip|wrap|vapor|troffer|flat\s*panel)\b/i,
+  /\bhigh.bay\b/i,
+  /\bdaylight\s*(harvest|sensor)\b/i,
+  /\bwall\s*pack\b/i,
+  /\btrack\s*light\b/i,
   /\bLithonia\b.*\b(LED|WF\d|FMLWL|FMML|GEMINI|DSXF)\b/i,
   /\bvapor.tight\b.*\b(fixture|LED)\b/i,
   // Dimming panels / lighting control (not dimmer switches — those are devices)

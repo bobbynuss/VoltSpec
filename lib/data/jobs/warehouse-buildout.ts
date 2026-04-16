@@ -22,8 +22,8 @@ export const job: Job = {
     { item: "EZB Enclosure (20×68 NEMA 1)", quantity: "1", spec: "Eaton EZB2068RBS - EZ Box enclosure, 20×68 in., for PRL1X interior" },
     { item: "EZT Trim (20×68)", quantity: "1", spec: "Eaton EZT2068S - EZ Trim surface mount for 20×68 box" },
     { item: "400A Main Breaker Kit", quantity: "1", spec: "Eaton BKD2G400 - Pow-R-Xpress MCB kit, 400A 240V 65 kAIC, 3-pole" },
-    { item: "LED High-Bay (150W)", quantity: "30", spec: "Eaton?"  },
-    { item: "LED High-Bay (200W)", quantity: "10", spec: "Eaton?"  },
+    { item: "LED High-Bay (150W)", quantity: "30", spec: "Eaton CPHBAL013MVOLTSW - Crouse-Hinds high-bay LED, 150W, multi-volt, switchable CCT/lumen, for warehouse/industrial open ceilings" },
+    { item: "LED High-Bay (200W)", quantity: "10", spec: "Eaton CPHBAL013MVOLTSW - Crouse-Hinds high-bay LED, 200W config, multi-volt, switchable CCT/lumen, for high-ceiling warehouse bays" },
     { item: "High-Bay Safety Cable", quantity: "40", spec: "Aircraft cable safety tether, 1/16 in. SS, with clips — one per high-bay fixture per NEC 410.136" },
     { item: "3-Pole 20A Breaker (lighting)", quantity: "8", spec: "Eaton QBH320 - QBH 3-pole 20A bolt-on, high-bay lighting circuits" },
     { item: "3-Pole 30A Breaker (dock/motor)", quantity: "6", spec: "Eaton QBH330 - QBH 3-pole 30A bolt-on, dock leveler and conveyor motor circuits" },
@@ -51,7 +51,7 @@ export const job: Job = {
   blueprintNotes: [
     "Material quantities for typical 20,000-30,000 sq ft warehouse — adjust to actual floor plan",
     "High-bay fixtures: confirm mounting height and aisle layout — spacing affects light count significantly",
-    "Items marked '?' need Elliott part numbers — speak to branch lighting specialist for high-bay options",
+
     "3-phase panel: all branch breakers are 3-pole QBH bolt-on for PRL1X — do NOT use CH breakers",
     "Office sub-panel fed from main warehouse panel — locate in office area for convenience",
     "Dock door motors: verify HP rating and voltage — most are 1/2 HP 208V 3-phase",

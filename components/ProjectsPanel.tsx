@@ -22,13 +22,12 @@ import {
 import type { SavedProject } from "@/lib/projects";
 import { JOB_TYPES } from "@/lib/data";
 import { getTrade } from "@/lib/registry";
-import { useAuth } from "@/components/AuthProvider";
 import {
   listCloudProjects,
   saveCloudProject,
   deleteCloudProject,
 } from "@/lib/core/projects";
-import { listSharedProjects } from "@/lib/collaboration";
+import { useAuth } from "@/components/AuthProvider";
 
 const JURISDICTIONS = getTrade().jurisdictions;
 
@@ -50,7 +49,7 @@ export function ProjectsPanel({
   currentZip,
   currentJobId,
 }: ProjectsPanelProps) {
-  const { user } = useAuth();
+  const { user, session } = useAuth();
   const [projects, setProjects] = useState<SavedProject[]>([]);
   const [sharedProjects, setSharedProjects] = useState<Array<{
     project: { id: string; name: string; job_id: string; city: string; zip: string; job_data: Record<string, unknown>; updated_at: string };
@@ -84,12 +83,17 @@ export function ProjectsPanel({
         console.error("Failed to load cloud projects:", err);
         setProjects(getProjects());
       }
-      // Also load shared projects
-      try {
-        const shared = await listSharedProjects();
-        setSharedProjects(shared);
-      } catch {
-        setSharedProjects([]);
+      // Load shared projects via API
+      if (session?.access_token) {
+        try {
+          const res = await fetch("/api/collaborate/shared", {
+            headers: { Authorization: `Bearer ${session.access_token}` },
+          });
+          const data = await res.json();
+          setSharedProjects(data.shared ?? []);
+        } catch {
+          setSharedProjects([]);
+        }
       }
     } else {
       setProjects(getProjects());

@@ -40,6 +40,7 @@ import type { WhiteLabelOptions } from "@/lib/generatePDF";
 import { trackEvent } from "@/lib/analytics";
 import { QuoteRequestModal } from "./QuoteRequestModal";
 import { CollaborateModal } from "./CollaborateModal";
+import { EditableCell } from "./EditableCell";
 import { getTrade, getDistributor } from "@/lib/registry";
 import { getNecYear } from "@/lib/data/jurisdiction-config";
 import { POA_OPTIONS, DEFAULT_POA_ID, isMeterJob } from "@/lib/trades/electrical/poa";
@@ -120,7 +121,7 @@ function ElliottLinks({
 }
 
 export function ResultsPanel({ result, onSave, zip, projectId: externalProjectId }: ResultsPanelProps) {
-  const { user } = useAuth();
+  const { user, session } = useAuth();
   const { tier } = useSubscription();
   const { job, jurisdiction, city, generatedAt, disclaimer } = result;
   const jurisdictionData = JURISDICTIONS.find((j) => j.id === city);
@@ -128,10 +129,64 @@ export function ResultsPanel({ result, onSave, zip, projectId: externalProjectId
   const [collaborateOpen, setCollaborateOpen] = useState(false);
   const [savedProjectId, setSavedProjectId] = useState<string | null>(null);
 
+  const [canEditMaterials, setCanEditMaterials] = useState(false);
+  const [materialEdits, setMaterialEdits] = useState<Record<string, string>>({});
+
   // Sync external project ID (from loading a saved project)
   useEffect(() => {
     if (externalProjectId) setSavedProjectId(externalProjectId);
   }, [externalProjectId]);
+
+  // Check if user can edit materials on this project (collaborator with editor role)
+  useEffect(() => {
+    if (!savedProjectId || !session?.access_token) {
+      setCanEditMaterials(false);
+      return;
+    }
+    fetch(`/api/collaborate?projectId=${savedProjectId}`, {
+      headers: { Authorization: `Bearer ${session.access_token}` },
+    })
+      .then((r) => r.json())
+      .then((data) => {
+        const collabs = data.collaborators ?? [];
+        const myCollab = collabs.find(
+          (c: Record<string, unknown>) =>
+            c.user_id === user?.id || c.invited_email === user?.email
+        );
+        // Editor collaborators can edit; owners can always edit
+        setCanEditMaterials(!!myCollab?.role || !!savedProjectId);
+      })
+      .catch(() => setCanEditMaterials(false));
+  }, [savedProjectId, session?.access_token, user?.id, user?.email]);
+
+  // Save a material edit to the server
+  const handleMaterialEdit = async (
+    globalIndex: number,
+    field: "item" | "spec" | "quantity",
+    oldValue: string,
+    newValue: string
+  ) => {
+    if (!savedProjectId || !session?.access_token) return;
+    setMaterialEdits((prev) => ({ ...prev, [`${globalIndex}-${field}`]: newValue }));
+    try {
+      await fetch("/api/collaborate/materials", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${session.access_token}`,
+        },
+        body: JSON.stringify({
+          projectId: savedProjectId,
+          index: globalIndex,
+          field,
+          oldValue,
+          newValue,
+        }),
+      });
+    } catch (err) {
+      console.error("Failed to save material edit:", err);
+    }
+  };
   const utilityName = jurisdictionData?.utility ?? "Austin Energy";
   const necYear = jurisdictionData?.state ? getNecYear(jurisdictionData.state) : 2026;
   const [showOtherSuppliers, setShowOtherSuppliers] = useState(false);
@@ -709,13 +764,25 @@ export function ResultsPanel({ result, onSave, zip, projectId: externalProjectId
               )}
             </CardHeader>
             <CardContent>
+              {/* Collaboration editing banner */}
+              {savedProjectId && canEditMaterials && (
+                <div className="mb-3 flex items-center gap-2 p-2.5 rounded-lg bg-purple-500/8 border border-purple-500/20">
+                  <Users className="w-4 h-4 text-purple-400 shrink-0" />
+                  <span className="text-xs text-purple-300">
+                    <strong>Collaborative editing enabled</strong> — click any quantity, item, or spec to edit. Changes save automatically.
+                  </span>
+                </div>
+              )}
               {/* Mobile scroll hint */}
               <p className="sm:hidden text-xs text-gray-600 mb-2 flex items-center gap-1">
                 <span>←</span> Swipe table to see all columns <span>→</span>
               </p>
 
               {/* Grouped materials rendering */}
-              {groupMaterials(effectiveMaterials).map((group) => (
+              {(() => {
+                // Track global index across groups for collaboration editing
+                let globalIdx = -1;
+                return groupMaterials(effectiveMaterials).map((group) => (
                 <div key={group.id} className="mb-6 last:mb-0">
                   {/* Group header */}
                   <div className="flex items-center gap-2 mb-2 pb-1.5 border-b border-[hsl(217,33%,22%)]" data-tour={`group-${group.id}`}>
@@ -737,11 +804,41 @@ export function ResultsPanel({ result, onSave, zip, projectId: externalProjectId
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-[hsl(217,33%,14%)]">
-                        {group.items.map((mat, i) => (
+                        {group.items.map((mat, i) => {
+                          globalIdx++;
+                          const gIdx = globalIdx;
+                          const editedItem = materialEdits[`${gIdx}-item`];
+                          const editedQty = materialEdits[`${gIdx}-quantity`];
+                          const editedSpec = materialEdits[`${gIdx}-spec`];
+                          return (
                           <tr key={i} className="hover:bg-white/2 transition-colors">
-                            <td className="py-2.5 sm:py-2.5 pr-3 sm:pr-4 font-medium text-white whitespace-nowrap text-xs sm:text-sm">{mat.item}</td>
-                            <td className="py-2.5 sm:py-2.5 pr-3 sm:pr-4 text-yellow-400 font-semibold whitespace-nowrap text-xs sm:text-sm">{mat.quantity}</td>
-                            <td className="py-2.5 sm:py-2.5 text-gray-400 leading-relaxed text-xs sm:text-sm">{mat.spec}</td>
+                            <td className="py-2.5 sm:py-2.5 pr-3 sm:pr-4 font-medium text-white whitespace-nowrap text-xs sm:text-sm">
+                              <EditableCell
+                                value={editedItem ?? mat.item}
+                                isEditable={canEditMaterials && !!savedProjectId}
+                                isEdited={!!editedItem}
+                                onSave={(v) => handleMaterialEdit(gIdx, "item", mat.item, v)}
+                                className="font-medium text-white"
+                              />
+                            </td>
+                            <td className="py-2.5 sm:py-2.5 pr-3 sm:pr-4 text-yellow-400 font-semibold whitespace-nowrap text-xs sm:text-sm">
+                              <EditableCell
+                                value={editedQty ?? mat.quantity}
+                                isEditable={canEditMaterials && !!savedProjectId}
+                                isEdited={!!editedQty}
+                                onSave={(v) => handleMaterialEdit(gIdx, "quantity", mat.quantity, v)}
+                                className="text-yellow-400 font-semibold"
+                              />
+                            </td>
+                            <td className="py-2.5 sm:py-2.5 text-gray-400 leading-relaxed text-xs sm:text-sm">
+                              <EditableCell
+                                value={editedSpec ?? mat.spec}
+                                isEditable={canEditMaterials && !!savedProjectId}
+                                isEdited={!!editedSpec}
+                                onSave={(v) => handleMaterialEdit(gIdx, "spec", mat.spec, v)}
+                                className="text-gray-400"
+                              />
+                            </td>
                             {hasPricing && showPricing && (
                               <td className="py-2.5 pr-4 text-right whitespace-nowrap">
                                 {isWireItem(mat.item, mat.spec) ? (
@@ -760,12 +857,13 @@ export function ResultsPanel({ result, onSave, zip, projectId: externalProjectId
                               <ElliottLinks item={mat.item} spec={mat.spec} getUrls={elliottUrls} />
                             </td>
                           </tr>
-                        ))}
+                        );})}
                       </tbody>
                     </table>
                   </div>
                 </div>
-              ))}
+              ));
+              })()}
               {hasPricing && showPricing && (
                 <div className="mt-4 pt-4 border-t border-[hsl(217,33%,18%)]">
                   <div className="flex justify-end items-baseline gap-4 mb-3">

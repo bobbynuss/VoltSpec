@@ -73,8 +73,9 @@ interface GenerateResult {
 
 interface ResultsPanelProps {
   result: GenerateResult;
-  onSave?: (name: string) => void;
+  onSave?: (name: string) => Promise<string | undefined> | void;
   zip?: string;
+  projectId?: string | null;
 }
 
 function ElliottLinks({
@@ -118,7 +119,7 @@ function ElliottLinks({
   );
 }
 
-export function ResultsPanel({ result, onSave, zip }: ResultsPanelProps) {
+export function ResultsPanel({ result, onSave, zip, projectId: externalProjectId }: ResultsPanelProps) {
   const { user } = useAuth();
   const { tier } = useSubscription();
   const { job, jurisdiction, city, generatedAt, disclaimer } = result;
@@ -126,6 +127,11 @@ export function ResultsPanel({ result, onSave, zip }: ResultsPanelProps) {
   const [quoteModalOpen, setQuoteModalOpen] = useState(false);
   const [collaborateOpen, setCollaborateOpen] = useState(false);
   const [savedProjectId, setSavedProjectId] = useState<string | null>(null);
+
+  // Sync external project ID (from loading a saved project)
+  useEffect(() => {
+    if (externalProjectId) setSavedProjectId(externalProjectId);
+  }, [externalProjectId]);
   const utilityName = jurisdictionData?.utility ?? "Austin Energy";
   const necYear = jurisdictionData?.state ? getNecYear(jurisdictionData.state) : 2026;
   const [showOtherSuppliers, setShowOtherSuppliers] = useState(false);
@@ -275,11 +281,12 @@ export function ResultsPanel({ result, onSave, zip }: ResultsPanelProps) {
 
   const defaultSaveName = `${job.label} — ${jurisdiction.split("(")[0].trim()}`;
 
-  const handleSaveClick = () => {
+  const handleSaveClick = async () => {
     if (saveMode) {
       // Commit save
       const name = saveNameInput.trim() || defaultSaveName;
-      onSave?.(name);
+      const projectId = await onSave?.(name);
+      if (projectId) setSavedProjectId(projectId);
       setSaveMode(false);
       setSaveNameInput("");
       setJustSaved(true);

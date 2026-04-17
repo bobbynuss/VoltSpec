@@ -54,6 +54,7 @@ function HomeContent() {
   const { user } = useAuth();
   const { tier } = useSubscription();
   const [result, setResult] = useState<GenerateResult | null>(null);
+  const [activeProjectId, setActiveProjectId] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [projectsOpen, setProjectsOpen] = useState(false);
@@ -119,16 +120,16 @@ function HomeContent() {
     }
   };
 
-  const handleSaveJob = async (name: string) => {
+  const handleSaveJob = async (name: string): Promise<string | undefined> => {
     const state = sidebarRef.current?.getState();
-    if (!state?.jobId) return;
+    if (!state?.jobId) return undefined;
     const jobLabel = JOB_TYPES.find((j) => j.id === state.jobId)?.label ?? state.jobId;
     const cityLabel = JURISDICTIONS.find((j) => j.id === state.city)?.shortLabel ?? state.city;
 
     // Save to cloud if logged in, otherwise localStorage
     if (user) {
       try {
-        await saveCloudProject({
+        const saved = await saveCloudProject({
           name,
           job_id: state.jobId,
           city: state.city,
@@ -139,6 +140,8 @@ function HomeContent() {
             result: result ?? undefined,
           } as Record<string, unknown>,
         });
+        setActiveProjectId(saved.id);
+        return saved.id;
       } catch (err) {
         console.error("Cloud save failed, falling back to local:", err);
         saveProject({ name, city: state.city, zip: state.zip, jobId: state.jobId, jobLabel, cityLabel });
@@ -155,6 +158,8 @@ function HomeContent() {
       zip: project.zip,
       jobId: project.jobId,
     });
+    // Track the project ID for collaboration
+    setActiveProjectId(project.id);
     // Auto-generate
     handleGenerate(project.jobId, project.zip, project.city);
   };
@@ -342,7 +347,7 @@ function HomeContent() {
           ) : quickListMode ? (
             <QuickList onBack={() => setQuickListMode(false)} zip={currentZip} />
           ) : result ? (
-            <ResultsPanel result={result} onSave={handleSaveJob} zip={currentZip} />
+            <ResultsPanel result={result} onSave={handleSaveJob} zip={currentZip} projectId={activeProjectId} />
           ) : (
             <div className="flex flex-col items-center justify-center h-full min-h-[60vh] text-center px-4">
               <Image src={brand.logo} alt={brand.name} width={64} height={64} className="w-16 h-16 mb-4 opacity-20" />

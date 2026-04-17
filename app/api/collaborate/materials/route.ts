@@ -1,5 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getSupabaseAdmin } from "@/lib/supabase-admin";
+import { createClient } from "@supabase/supabase-js";
+
+function getUserClient(token: string) {
+  return createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    { global: { headers: { Authorization: `Bearer ${token}` } } }
+  );
+}
 
 /**
  * PUT /api/collaborate/materials — update material override on a shared project
@@ -13,10 +21,12 @@ export async function PUT(req: NextRequest) {
     }
 
     const token = authHeader.replace("Bearer ", "");
+    const supabase = getUserClient(token);
+
     const {
       data: { user },
       error: authError,
-    } = await getSupabaseAdmin().auth.getUser(token);
+    } = await supabase.auth.getUser();
     if (authError || !user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
@@ -31,7 +41,6 @@ export async function PUT(req: NextRequest) {
       );
     }
 
-    // Validate field
     if (!["item", "spec", "quantity"].includes(field)) {
       return NextResponse.json(
         { error: "Invalid field. Must be item, spec, or quantity" },
@@ -39,36 +48,18 @@ export async function PUT(req: NextRequest) {
       );
     }
 
-    // Verify access — owner or editor collaborator
-    const { data: project, error: projError } = await getSupabaseAdmin()
+    // RLS handles access — owner or accepted collaborator can update
+    const { data: project, error: projError } = await supabase
       .from("projects")
-      .select("user_id, material_overrides")
+      .select("material_overrides")
       .eq("id", projectId)
       .single();
 
     if (projError || !project) {
-      return NextResponse.json({ error: "Project not found" }, { status: 404 });
+      console.error("Project lookup error:", projError);
+      return NextResponse.json({ error: "Project not found or access denied" }, { status: 404 });
     }
 
-    const isOwner = project.user_id === user.id;
-
-    if (!isOwner) {
-      const { data: collab } = await getSupabaseAdmin()
-        .from("project_collaborators")
-        .select("role, accepted_at")
-        .eq("project_id", projectId)
-        .eq("user_id", user.id)
-        .single();
-
-      if (!collab?.accepted_at || collab.role !== "editor") {
-        return NextResponse.json(
-          { error: "Editor access required" },
-          { status: 403 }
-        );
-      }
-    }
-
-    // Update overrides
     const existing = (project.material_overrides ?? []) as Array<{
       index: number;
       field: string;
@@ -87,13 +78,12 @@ export async function PUT(req: NextRequest) {
       updatedAt: new Date().toISOString(),
     };
 
-    // Replace existing override for same index+field, or add new
     const updated = existing.filter(
       (o) => !(o.index === index && o.field === field)
     );
     updated.push(newOverride);
 
-    const { error: updateError } = await getSupabaseAdmin()
+    const { error: updateError } = await supabase
       .from("projects")
       .update({
         material_overrides: updated,
@@ -102,6 +92,7 @@ export async function PUT(req: NextRequest) {
       .eq("id", projectId);
 
     if (updateError) {
+      console.error("Update overrides error:", updateError);
       return NextResponse.json(
         { error: updateError.message },
         { status: 500 }
@@ -109,16 +100,11 @@ export async function PUT(req: NextRequest) {
     }
 
     // Log activity
-    await getSupabaseAdmin().from("project_activity").insert({
+    await supabase.from("project_activity").insert({
       project_id: projectId,
       user_id: user.id,
       action: "material_updated",
-      details: {
-        itemIndex: index,
-        field,
-        oldValue: oldValue ?? "",
-        newValue,
-      },
+      details: { itemIndex: index, field, oldValue: oldValue ?? "", newValue },
     });
 
     return NextResponse.json({ success: true, overrides: updated });
@@ -130,5 +116,3 @@ export async function PUT(req: NextRequest) {
     );
   }
 }
-
-

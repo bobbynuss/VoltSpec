@@ -1,8 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getSupabaseAdmin } from "@/lib/supabase-admin";
+import { createClient } from "@supabase/supabase-js";
 
-
-
+function getUserClient(token: string) {
+  return createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    { global: { headers: { Authorization: `Bearer ${token}` } } }
+  );
+}
 
 /**
  * GET /api/collaborate/activity?projectId=xxx — get project activity log
@@ -15,10 +20,12 @@ export async function GET(req: NextRequest) {
     }
 
     const token = authHeader.replace("Bearer ", "");
+    const supabase = getUserClient(token);
+
     const {
       data: { user },
       error: authError,
-    } = await getSupabaseAdmin().auth.getUser(token);
+    } = await supabase.auth.getUser();
     if (authError || !user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
@@ -31,34 +38,13 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    // Verify access
-    const { data: project } = await getSupabaseAdmin()
-      .from("projects")
-      .select("user_id")
-      .eq("id", projectId)
-      .single();
-
-    const isOwner = project?.user_id === user.id;
-
-    if (!isOwner) {
-      const { data: collab } = await getSupabaseAdmin()
-        .from("project_collaborators")
-        .select("id, accepted_at")
-        .eq("project_id", projectId)
-        .eq("user_id", user.id)
-        .single();
-
-      if (!collab?.accepted_at) {
-        return NextResponse.json({ error: "Access denied" }, { status: 403 });
-      }
-    }
-
     const limit = parseInt(
       req.nextUrl.searchParams.get("limit") ?? "50",
       10
     );
 
-    const { data, error } = await getSupabaseAdmin()
+    // RLS handles access — project_activity policy checks ownership/collaboration
+    const { data, error } = await supabase
       .from("project_activity")
       .select("*")
       .eq("project_id", projectId)
@@ -66,10 +52,11 @@ export async function GET(req: NextRequest) {
       .limit(limit);
 
     if (error) {
+      console.error("Activity query error:", error);
       return NextResponse.json({ error: error.message }, { status: 500 });
     }
 
-    return NextResponse.json({ activity: data });
+    return NextResponse.json({ activity: data ?? [] });
   } catch (err) {
     console.error("Activity GET error:", err);
     return NextResponse.json(
@@ -78,4 +65,3 @@ export async function GET(req: NextRequest) {
     );
   }
 }
-

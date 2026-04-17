@@ -1,12 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getSupabaseAdmin } from "@/lib/supabase-admin";
+import { createClient } from "@supabase/supabase-js";
 
-
-
+function getUserClient(token: string) {
+  return createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    { global: { headers: { Authorization: `Bearer ${token}` } } }
+  );
+}
 
 /**
  * POST /api/collaborate/suggest — submit a master data correction suggestion
- * Body: { projectId, storeId?, jurisdiction?, jobId, itemIndex, itemName, fieldChanged, oldValue, newValue, notes? }
  */
 export async function POST(req: NextRequest) {
   try {
@@ -16,16 +20,18 @@ export async function POST(req: NextRequest) {
     }
 
     const token = authHeader.replace("Bearer ", "");
+    const supabase = getUserClient(token);
+
     const {
       data: { user },
       error: authError,
-    } = await getSupabaseAdmin().auth.getUser(token);
+    } = await supabase.auth.getUser();
     if (authError || !user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // Verify user is a sales_rep or admin
-    const { data: profile } = await getSupabaseAdmin()
+    // Check role
+    const { data: profile } = await supabase
       .from("user_profiles")
       .select("role, elliott_store_id, jurisdiction")
       .eq("id", user.id)
@@ -40,16 +46,8 @@ export async function POST(req: NextRequest) {
 
     const body = await req.json();
     const {
-      projectId,
-      storeId,
-      jurisdiction,
-      jobId,
-      itemIndex,
-      itemName,
-      fieldChanged,
-      oldValue,
-      newValue,
-      notes,
+      projectId, storeId, jurisdiction, jobId,
+      itemIndex, itemName, fieldChanged, oldValue, newValue, notes,
     } = body;
 
     if (!jobId || itemIndex === undefined || !itemName || !fieldChanged || !newValue) {
@@ -59,7 +57,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const { data: suggestion, error: insertError } = await getSupabaseAdmin()
+    const { data: suggestion, error: insertError } = await supabase
       .from("master_data_suggestions")
       .insert({
         suggested_by: user.id,
@@ -78,6 +76,7 @@ export async function POST(req: NextRequest) {
       .single();
 
     if (insertError) {
+      console.error("Insert suggestion error:", insertError);
       return NextResponse.json(
         { error: insertError.message },
         { status: 500 }
@@ -86,7 +85,7 @@ export async function POST(req: NextRequest) {
 
     // Log activity if project context
     if (projectId) {
-      await getSupabaseAdmin().from("project_activity").insert({
+      await supabase.from("project_activity").insert({
         project_id: projectId,
         user_id: user.id,
         action: "suggestion_submitted",
@@ -101,7 +100,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ success: true, suggestion });
   } catch (err) {
-    console.error("Suggest API error:", err);
+    console.error("Suggest POST error:", err);
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }
@@ -110,7 +109,7 @@ export async function POST(req: NextRequest) {
 }
 
 /**
- * GET /api/collaborate/suggest — list suggestions (admin only)
+ * GET /api/collaborate/suggest — list suggestions
  * Query: ?status=pending|approved|rejected
  */
 export async function GET(req: NextRequest) {
@@ -121,50 +120,31 @@ export async function GET(req: NextRequest) {
     }
 
     const token = authHeader.replace("Bearer ", "");
+    const supabase = getUserClient(token);
+
     const {
       data: { user },
       error: authError,
-    } = await getSupabaseAdmin().auth.getUser(token);
+    } = await supabase.auth.getUser();
     if (authError || !user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // Verify admin
-    const { data: profile } = await getSupabaseAdmin()
-      .from("user_profiles")
-      .select("role")
-      .eq("id", user.id)
-      .single();
-
-    if (profile?.role !== "admin") {
-      // Non-admins can only see their own suggestions
-      const status = req.nextUrl.searchParams.get("status") ?? "pending";
-      const { data, error } = await getSupabaseAdmin()
-        .from("master_data_suggestions")
-        .select("*")
-        .eq("suggested_by", user.id)
-        .eq("status", status)
-        .order("created_at", { ascending: false });
-
-      if (error) {
-        return NextResponse.json({ error: error.message }, { status: 500 });
-      }
-      return NextResponse.json({ suggestions: data });
-    }
-
-    // Admins see all
     const status = req.nextUrl.searchParams.get("status") ?? "pending";
-    const { data, error } = await getSupabaseAdmin()
+
+    // RLS handles visibility — users see their own, admins see all
+    const { data, error } = await supabase
       .from("master_data_suggestions")
       .select("*")
       .eq("status", status)
       .order("created_at", { ascending: false });
 
     if (error) {
+      console.error("List suggestions error:", error);
       return NextResponse.json({ error: error.message }, { status: 500 });
     }
 
-    return NextResponse.json({ suggestions: data });
+    return NextResponse.json({ suggestions: data ?? [] });
   } catch (err) {
     console.error("Suggest GET error:", err);
     return NextResponse.json(
@@ -173,4 +153,3 @@ export async function GET(req: NextRequest) {
     );
   }
 }
-

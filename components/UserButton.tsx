@@ -5,7 +5,7 @@ import { useAuth } from "./AuthProvider";
 import { useSubscription } from "./SubscriptionProvider";
 import { AuthModal } from "./AuthModal";
 import { ProfileModal } from "./ProfileModal";
-import { User, LogOut, ChevronDown, Settings, CreditCard, Crown, Shield, Gift, BarChart3 } from "lucide-react";
+import { User, LogOut, ChevronDown, Settings, CreditCard, Crown, Shield, Gift, BarChart3, ArrowUpCircle } from "lucide-react";
 import { ReferralModal } from "./ReferralModal";
 import Link from "next/link";
 
@@ -130,6 +130,14 @@ export function UserButton() {
               >
                 <BarChart3 className="w-3.5 h-3.5" />
                 Analytics
+              </Link>
+              <Link
+                href="/admin/suggestions"
+                onClick={() => setMenuOpen(false)}
+                className="w-full flex items-center gap-2 px-3 py-2 text-sm text-amber-400 hover:text-amber-300 hover:bg-[hsl(217,33%,14%)] transition-colors"
+              >
+                <ArrowUpCircle className="w-3.5 h-3.5" />
+                Master Updates
               </Link>
             </>
           )}

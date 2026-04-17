@@ -10,6 +10,8 @@ import {
   Briefcase,
   Clock,
   ChevronRight,
+  Users,
+  UserCheck,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -26,6 +28,7 @@ import {
   saveCloudProject,
   deleteCloudProject,
 } from "@/lib/core/projects";
+import { listSharedProjects } from "@/lib/collaboration";
 
 const JURISDICTIONS = getTrade().jurisdictions;
 
@@ -49,9 +52,15 @@ export function ProjectsPanel({
 }: ProjectsPanelProps) {
   const { user } = useAuth();
   const [projects, setProjects] = useState<SavedProject[]>([]);
+  const [sharedProjects, setSharedProjects] = useState<Array<{
+    project: { id: string; name: string; job_id: string; city: string; zip: string; job_data: Record<string, unknown>; updated_at: string };
+    collaboration: { role: string };
+    owner_email: string;
+  }>>([]);
   const [saving, setSaving] = useState(false);
   const [saveName, setSaveName] = useState("");
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
+  const [activeSection, setActiveSection] = useState<"mine" | "shared">("mine");
   const nameRef = useRef<HTMLInputElement>(null);
 
   // Load projects — cloud if logged in, localStorage if guest
@@ -75,8 +84,16 @@ export function ProjectsPanel({
         console.error("Failed to load cloud projects:", err);
         setProjects(getProjects());
       }
+      // Also load shared projects
+      try {
+        const shared = await listSharedProjects();
+        setSharedProjects(shared);
+      } catch {
+        setSharedProjects([]);
+      }
     } else {
       setProjects(getProjects());
+      setSharedProjects([]);
     }
   };
 
@@ -256,9 +273,82 @@ export function ProjectsPanel({
           )}
         </div>
 
+        {/* Section tabs — only show if there are shared projects */}
+        {user && sharedProjects.length > 0 && (
+          <div className="flex border-b border-[hsl(217,33%,18%)]">
+            <button
+              onClick={() => setActiveSection("mine")}
+              className={`flex-1 px-4 py-2.5 text-xs font-medium transition-colors cursor-pointer ${
+                activeSection === "mine"
+                  ? "text-yellow-400 border-b-2 border-yellow-400"
+                  : "text-gray-500 hover:text-gray-300"
+              }`}
+            >
+              <FolderOpen className="w-3.5 h-3.5 inline mr-1.5" />
+              My Projects ({projects.length})
+            </button>
+            <button
+              onClick={() => setActiveSection("shared")}
+              className={`flex-1 px-4 py-2.5 text-xs font-medium transition-colors cursor-pointer ${
+                activeSection === "shared"
+                  ? "text-purple-400 border-b-2 border-purple-400"
+                  : "text-gray-500 hover:text-gray-300"
+              }`}
+            >
+              <Users className="w-3.5 h-3.5 inline mr-1.5" />
+              Shared with Me ({sharedProjects.length})
+            </button>
+          </div>
+        )}
+
         {/* Projects list */}
         <div className="flex-1 overflow-y-auto">
-          {projects.length === 0 ? (
+          {activeSection === "shared" && sharedProjects.length > 0 ? (
+            <div className="divide-y divide-[hsl(217,33%,14%)]">
+              {sharedProjects.map((sp) => (
+                <button
+                  key={sp.project.id}
+                  onClick={() => {
+                    onLoad({
+                      id: sp.project.id,
+                      name: sp.project.name,
+                      city: sp.project.city,
+                      zip: sp.project.zip,
+                      jobId: sp.project.job_id,
+                      jobLabel: (sp.project.job_data as Record<string, string>)?.jobLabel ?? sp.project.job_id,
+                      cityLabel: (sp.project.job_data as Record<string, string>)?.cityLabel ?? sp.project.city,
+                      savedAt: sp.project.updated_at,
+                    });
+                    onClose();
+                  }}
+                  className="w-full text-left px-5 py-3.5 hover:bg-white/3 transition-colors cursor-pointer touch-manipulation group"
+                >
+                  <div className="flex items-start gap-3">
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-semibold text-white truncate pr-6">
+                        {sp.project.name}
+                      </p>
+                      <div className="flex flex-wrap items-center gap-x-3 gap-y-0.5 mt-1">
+                        <span className="flex items-center gap-1 text-[11px] text-gray-500">
+                          <Briefcase className="w-3 h-3" />
+                          {(sp.project.job_data as Record<string, string>)?.jobLabel ?? sp.project.job_id}
+                        </span>
+                        <span className="flex items-center gap-1 text-[11px] text-gray-500">
+                          <MapPin className="w-3 h-3" />
+                          {(sp.project.job_data as Record<string, string>)?.cityLabel ?? sp.project.city}
+                        </span>
+                        <span className="inline-flex items-center gap-1 text-[10px] font-medium px-1.5 py-0.5 rounded bg-purple-400/10 text-purple-400">
+                          <UserCheck className="w-2.5 h-2.5" />
+                          {sp.collaboration.role}
+                        </span>
+                      </div>
+                    </div>
+                    <ChevronRight className="w-4 h-4 text-gray-600 group-hover:text-purple-400 shrink-0 mt-1 transition-colors" />
+                  </div>
+                </button>
+              ))}
+            </div>
+          ) : projects.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-full text-center px-6 py-12">
               <FolderOpen className="w-10 h-10 text-gray-700 mb-3" />
               <p className="text-gray-500 text-sm font-medium">

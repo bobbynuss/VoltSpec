@@ -30,6 +30,7 @@ import {
   Send,
   Share2,
   Link as LinkIcon,
+  Users,
 } from "lucide-react";
 import type { Job } from "@/lib/core/types";
 import { useAuth } from "./AuthProvider";
@@ -38,6 +39,7 @@ import { getProfile } from "@/lib/userProfile";
 import type { WhiteLabelOptions } from "@/lib/generatePDF";
 import { trackEvent } from "@/lib/analytics";
 import { QuoteRequestModal } from "./QuoteRequestModal";
+import { CollaborateModal } from "./CollaborateModal";
 import { getTrade, getDistributor } from "@/lib/registry";
 import { getNecYear } from "@/lib/data/jurisdiction-config";
 import { POA_OPTIONS, DEFAULT_POA_ID, isMeterJob } from "@/lib/trades/electrical/poa";
@@ -122,6 +124,8 @@ export function ResultsPanel({ result, onSave, zip }: ResultsPanelProps) {
   const { job, jurisdiction, city, generatedAt, disclaimer } = result;
   const jurisdictionData = JURISDICTIONS.find((j) => j.id === city);
   const [quoteModalOpen, setQuoteModalOpen] = useState(false);
+  const [collaborateOpen, setCollaborateOpen] = useState(false);
+  const [savedProjectId, setSavedProjectId] = useState<string | null>(null);
   const utilityName = jurisdictionData?.utility ?? "Austin Energy";
   const necYear = jurisdictionData?.state ? getNecYear(jurisdictionData.state) : 2026;
   const [showOtherSuppliers, setShowOtherSuppliers] = useState(false);
@@ -467,6 +471,17 @@ export function ResultsPanel({ result, onSave, zip }: ResultsPanelProps) {
                 <><Share2 className="w-4 h-4 sm:mr-1.5" /><span className="hidden sm:inline">Share</span></>
               )}
             </Button>
+            {user && savedProjectId && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setCollaborateOpen(true)}
+                className="border-purple-500/40 text-purple-400 hover:text-purple-300 hover:border-purple-400 active:bg-purple-400/10 transition-colors duration-150 h-11 sm:h-9 text-xs sm:text-sm whitespace-nowrap"
+              >
+                <Users className="w-4 h-4 sm:mr-1.5" />
+                <span className="hidden sm:inline">Collaborate</span>
+              </Button>
+            )}
             {user && (
               <Button
                 variant="outline"
@@ -981,6 +996,16 @@ export function ResultsPanel({ result, onSave, zip }: ResultsPanelProps) {
         city={city ?? ""}
         jurisdiction={jurisdiction}
       />
+
+      {/* Collaborate Modal */}
+      {savedProjectId && (
+        <CollaborateModal
+          open={collaborateOpen}
+          onClose={() => setCollaborateOpen(false)}
+          projectId={savedProjectId}
+          projectName={panelJob.label}
+        />
+      )}
     </div>
   );
 }

@@ -243,10 +243,16 @@ export default function AdminSuggestionsPage() {
                   )}
 
                   {filter === "approved" && (
-                    <CheckCircle className="w-5 h-5 text-green-500 shrink-0" />
+                    <div className="flex flex-col items-center gap-1 shrink-0">
+                      <CheckCircle className="w-5 h-5 text-green-500/50" />
+                      <span className="text-[9px] text-green-500/50">Approved</span>
+                    </div>
                   )}
                   {filter === "rejected" && (
-                    <XCircle className="w-5 h-5 text-red-500 shrink-0" />
+                    <div className="flex flex-col items-center gap-1 shrink-0">
+                      <XCircle className="w-5 h-5 text-red-500/50" />
+                      <span className="text-[9px] text-red-500/50">Rejected</span>
+                    </div>
                   )}
                 </div>
               </div>

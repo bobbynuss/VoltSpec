@@ -159,6 +159,37 @@ export function ResultsPanel({ result, onSave, zip, projectId: externalProjectId
       .catch(() => setCanEditMaterials(false));
   }, [savedProjectId, session?.access_token, user?.id, user?.email]);
 
+  // Submit a master data suggestion
+  const handleSuggestMaster = async (
+    globalIndex: number,
+    field: "item" | "spec" | "quantity",
+    itemName: string,
+    oldValue: string,
+    newValue: string
+  ) => {
+    if (!savedProjectId || !session?.access_token) return;
+    try {
+      await fetch("/api/collaborate/suggest", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${session.access_token}`,
+        },
+        body: JSON.stringify({
+          projectId: savedProjectId,
+          jobId: job.id,
+          itemIndex: globalIndex,
+          itemName,
+          fieldChanged: field,
+          oldValue,
+          newValue,
+        }),
+      });
+    } catch (err) {
+      console.error("Failed to submit suggestion:", err);
+    }
+  };
+
   // Save a material edit to the server
   const handleMaterialEdit = async (
     globalIndex: number,
@@ -815,27 +846,33 @@ export function ResultsPanel({ result, onSave, zip, projectId: externalProjectId
                             <td className="py-2.5 sm:py-2.5 pr-3 sm:pr-4 font-medium text-white whitespace-nowrap text-xs sm:text-sm">
                               <EditableCell
                                 value={editedItem ?? mat.item}
+                                originalValue={mat.item}
                                 isEditable={canEditMaterials && !!savedProjectId}
                                 isEdited={!!editedItem}
                                 onSave={(v) => handleMaterialEdit(gIdx, "item", mat.item, v)}
+                                onSuggestMaster={(old, nw) => handleSuggestMaster(gIdx, "item", mat.item, old, nw)}
                                 className="font-medium text-white"
                               />
                             </td>
                             <td className="py-2.5 sm:py-2.5 pr-3 sm:pr-4 text-yellow-400 font-semibold whitespace-nowrap text-xs sm:text-sm">
                               <EditableCell
                                 value={editedQty ?? mat.quantity}
+                                originalValue={mat.quantity}
                                 isEditable={canEditMaterials && !!savedProjectId}
                                 isEdited={!!editedQty}
                                 onSave={(v) => handleMaterialEdit(gIdx, "quantity", mat.quantity, v)}
+                                onSuggestMaster={(old, nw) => handleSuggestMaster(gIdx, "quantity", mat.item, old, nw)}
                                 className="text-yellow-400 font-semibold"
                               />
                             </td>
                             <td className="py-2.5 sm:py-2.5 text-gray-400 leading-relaxed text-xs sm:text-sm">
                               <EditableCell
                                 value={editedSpec ?? mat.spec}
+                                originalValue={mat.spec}
                                 isEditable={canEditMaterials && !!savedProjectId}
                                 isEdited={!!editedSpec}
                                 onSave={(v) => handleMaterialEdit(gIdx, "spec", mat.spec, v)}
+                                onSuggestMaster={(old, nw) => handleSuggestMaster(gIdx, "spec", mat.item, old, nw)}
                                 className="text-gray-400"
                               />
                             </td>

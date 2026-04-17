@@ -137,12 +137,14 @@ export function ResultsPanel({ result, onSave, zip, projectId: externalProjectId
     if (externalProjectId) setSavedProjectId(externalProjectId);
   }, [externalProjectId]);
 
-  // Check if user can edit materials on this project (collaborator with editor role)
+  // Check if user can edit + load any existing material overrides
   useEffect(() => {
     if (!savedProjectId || !session?.access_token) {
       setCanEditMaterials(false);
       return;
     }
+
+    // Load collaborators to check edit permissions
     fetch(`/api/collaborate?projectId=${savedProjectId}`, {
       headers: { Authorization: `Bearer ${session.access_token}` },
     })
@@ -153,10 +155,25 @@ export function ResultsPanel({ result, onSave, zip, projectId: externalProjectId
           (c: Record<string, unknown>) =>
             c.user_id === user?.id || c.invited_email === user?.email
         );
-        // Editor collaborators can edit; owners can always edit
         setCanEditMaterials(!!myCollab?.role || !!savedProjectId);
       })
       .catch(() => setCanEditMaterials(false));
+
+    // Load existing material overrides from the project
+    fetch(`/api/collaborate/materials?projectId=${savedProjectId}`, {
+      headers: { Authorization: `Bearer ${session.access_token}` },
+    })
+      .then((r) => r.json())
+      .then((data) => {
+        if (data.overrides && Array.isArray(data.overrides)) {
+          const edits: Record<string, string> = {};
+          for (const o of data.overrides) {
+            edits[`${o.index}-${o.field}`] = o.newValue;
+          }
+          setMaterialEdits(edits);
+        }
+      })
+      .catch(() => {});
   }, [savedProjectId, session?.access_token, user?.id, user?.email]);
 
   // Submit a master data suggestion

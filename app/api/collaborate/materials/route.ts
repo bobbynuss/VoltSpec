@@ -10,6 +10,51 @@ function getUserClient(token: string) {
 }
 
 /**
+ * GET /api/collaborate/materials?projectId=xxx — get material overrides
+ */
+export async function GET(req: NextRequest) {
+  try {
+    const authHeader = req.headers.get("authorization");
+    if (!authHeader) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const token = authHeader.replace("Bearer ", "");
+    const supabase = getUserClient(token);
+
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser();
+    if (authError || !user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const projectId = req.nextUrl.searchParams.get("projectId");
+    if (!projectId) {
+      return NextResponse.json({ error: "projectId required" }, { status: 400 });
+    }
+
+    // RLS handles access
+    const { data, error } = await supabase
+      .from("projects")
+      .select("material_overrides")
+      .eq("id", projectId)
+      .single();
+
+    if (error) {
+      console.error("Get overrides error:", error);
+      return NextResponse.json({ overrides: [] });
+    }
+
+    return NextResponse.json({ overrides: data?.material_overrides ?? [] });
+  } catch (err) {
+    console.error("Materials GET error:", err);
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+  }
+}
+
+/**
  * PUT /api/collaborate/materials — update material override on a shared project
  * Body: { projectId, index, field, oldValue, newValue }
  */

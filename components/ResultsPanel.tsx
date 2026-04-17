@@ -15,7 +15,7 @@ import {
   Phone,
   Globe,
   Download,
-  Printer,
+
   ChevronDown,
   ChevronUp,
   Star,
@@ -400,8 +400,6 @@ export function ResultsPanel({ result, onSave, zip, projectId: externalProjectId
     }
   };
 
-  const handlePrint = () => window.print();
-
   const getWhiteLabelOptions = async (): Promise<WhiteLabelOptions | undefined> => {
     if (!whiteLabelEnabled || tier !== "pro") return undefined;
     try {
@@ -525,15 +523,6 @@ export function ResultsPanel({ result, onSave, zip, projectId: externalProjectId
         </div>
         <div className="flex flex-col gap-2 no-print">
           <div className="grid grid-cols-3 sm:flex gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handlePrint}
-              className="border-gray-700 text-gray-300 hover:text-white hover:border-gray-500 active:bg-gray-700 transition-colors duration-150 h-11 sm:h-9 text-xs sm:text-sm"
-            >
-              <Printer className="w-4 h-4 sm:mr-1.5" />
-              <span className="hidden sm:inline">Print</span>
-            </Button>
             <Button
               variant="outline"
               size="sm"

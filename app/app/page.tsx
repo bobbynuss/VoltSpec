@@ -52,7 +52,7 @@ export default function Home() {
 
 function HomeContent() {
   const searchParams = useSearchParams();
-  const { user } = useAuth();
+  const { user, session } = useAuth();
   const { tier } = useSubscription();
   const [result, setResult] = useState<GenerateResult | null>(null);
   const [activeProjectId, setActiveProjectId] = useState<string | null>(null);
@@ -376,19 +376,24 @@ function HomeContent() {
                     });
 
                     // Auto-upload the original plan file to project files
-                    if (planFile) {
-                      const { data: { session } } = await (await import("@/lib/supabase")).supabase.auth.getSession();
-                      if (session?.access_token) {
+                    if (planFile && session?.access_token) {
+                      try {
                         const formData = new FormData();
                         formData.append("projectId", saved.id);
                         formData.append("file", planFile);
                         formData.append("category", "drawing");
                         formData.append("description", "Original electrical plan (uploaded via AI Takeoff)");
-                        fetch("/api/collaborate/files", {
+                        const uploadRes = await fetch("/api/collaborate/files", {
                           method: "POST",
                           headers: { Authorization: `Bearer ${session.access_token}` },
                           body: formData,
-                        }).catch((err) => console.error("Auto-upload plan file failed:", err));
+                        });
+                        if (!uploadRes.ok) {
+                          const errData = await uploadRes.json().catch(() => ({}));
+                          console.error("Auto-upload plan file failed:", uploadRes.status, errData);
+                        }
+                      } catch (err) {
+                        console.error("Auto-upload plan file error:", err);
                       }
                     }
 

@@ -50,15 +50,12 @@ export function PlanTakeoff({ onAddToList, onSaveAndCollaborate, autoCollaborate
   useEffect(() => {
     if (autoCollaborate && results && results.length > 0 && classified && onSaveAndCollaborate && !autoTriggered) {
       setAutoTriggered(true);
-      // Small delay to let React settle
+      // Small delay to let React settle, then call ONLY onSaveAndCollaborate
+      // Do NOT call onAddToList here — it unmounts the component by switching modes
+      // The parent will handle adding quicklist items to localStorage directly
       setTimeout(() => {
-        // Add stock items to Quick List
-        if (classified.quicklist.length > 0) {
-          onAddToList(classified.quicklist);
-        }
-        // Save & Collaborate with full BOM
         onSaveAndCollaborate(results, fileObjRef.current);
-      }, 100);
+      }, 200);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [autoCollaborate, results, classified, autoTriggered]);

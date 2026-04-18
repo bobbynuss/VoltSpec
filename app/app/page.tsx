@@ -412,6 +412,22 @@ function HomeContent() {
                 }}
                 onSaveAndCollaborate={user ? async (items, planFile) => {
                   try {
+                    // If auto-collaborate, also add commodity items to Quick List silently
+                    if (collaborateAfterTakeoff) {
+                      const { classifyTakeoffItems } = await import("@/lib/takeoff-classifier");
+                      const split = classifyTakeoffItems(items);
+                      if (split.quicklist.length > 0) {
+                        const existing = JSON.parse(localStorage.getItem("voltspec-quicklist") ?? "[]");
+                        const newItems = split.quicklist.map((t) => ({
+                          id: crypto.randomUUID(),
+                          item: t.item,
+                          spec: t.spec,
+                          quantity: t.quantity,
+                        }));
+                        localStorage.setItem("voltspec-quicklist", JSON.stringify([...existing, ...newItems]));
+                      }
+                    }
+
                     const projectName = `Plan Takeoff — ${new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}`;
                     const materials = items.map((t) => ({
                       item: t.item,
@@ -488,6 +504,7 @@ function HomeContent() {
                     setTakeoffProjectName(projectName);
                     setTakeoffCollaborateOpen(true);
                     setTakeoffMode(false);
+                    setCollaborateAfterTakeoff(false);
                   } catch (err) {
                     console.error("Save & collaborate failed:", err);
                   }

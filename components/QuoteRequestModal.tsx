@@ -21,7 +21,7 @@ interface QuoteRequestModalProps {
   jurisdiction: string;
 }
 
-/** Extract catalog number from a spec string — uses shared vendor-code module */
+/** Extract catalog number from a spec string - uses shared vendor-code module */
 function extractCatalog(spec: string): string {
   return extractPartNumber(spec) ?? "";
 }
@@ -82,12 +82,12 @@ export function QuoteRequestModal({
   // Auto-generate rep email from name
   const repEmail = repEmailFromName(elliottRep);
 
-  // Build BOM from job materials — with vendor codes for Bulk Entry
+  // Build BOM from job materials - with vendor codes for Bulk Entry
   const bom: BOMItem[] = job.materials.map((mat) => ({
     catalog: extractCatalog(mat.spec),
     vendorCode: getVendorPrefix(mat.spec),
     quantity: mat.quantity,
-    description: `${mat.item} — ${mat.spec.split(" - ").slice(1).join(" - ").trim() || mat.spec}`,
+    description: `${mat.item} - ${(mat.spec ?? "").split(" - ").slice(1).join(" - ").trim() || mat.spec || ""}`,
     estCost: mat.unitPrice != null ? `$${mat.unitPrice.toFixed(2)}` : "Speak to sales",
   }));
 
@@ -126,7 +126,7 @@ export function QuoteRequestModal({
         <div className="flex items-center justify-between px-6 py-4 border-b border-[hsl(217,33%,18%)]">
           <div>
             <h2 className="text-lg font-bold text-white">Send Quote Request to Elliott</h2>
-            <p className="text-xs text-gray-500 mt-0.5">{job.label} — {jurisdiction}</p>
+            <p className="text-xs text-gray-500 mt-0.5">{job.label} - {jurisdiction}</p>
           </div>
           <button onClick={onClose} className="text-gray-500 hover:text-white cursor-pointer">
             <X className="w-5 h-5" />
@@ -195,8 +195,8 @@ export function QuoteRequestModal({
                         className={i % 2 === 0 ? "bg-[hsl(217,33%,11%)]" : "bg-[hsl(217,33%,13%)]"}
                       >
                         <td className="px-3 py-1.5 text-gray-300">{item.quantity}</td>
-                        <td className="px-3 py-1.5 text-indigo-400 font-mono font-bold">{item.vendorCode || "—"}</td>
-                        <td className="px-3 py-1.5 text-cyan-400 font-mono">{item.catalog || "—"}</td>
+                        <td className="px-3 py-1.5 text-indigo-400 font-mono font-bold">{item.vendorCode || "-"}</td>
+                        <td className="px-3 py-1.5 text-cyan-400 font-mono">{item.catalog || "-"}</td>
                         <td className="px-3 py-1.5 text-gray-400 max-w-[200px] truncate">{item.description}</td>
                         <td className="px-3 py-1.5 text-gray-300 text-right">{item.estCost}</td>
                       </tr>

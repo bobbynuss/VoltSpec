@@ -172,12 +172,25 @@ function HomeContent() {
       })
         .then((res) => res.json())
         .then((data) => {
+          console.log("[VoltSpec] Loaded project data:", data);
           if (data.error || !data.project) {
             console.error("Failed to load project:", data.error);
             setLoading(false);
             return;
           }
-          const jobData = data.project.job_data as Record<string, unknown>;
+          // job_data could be a string (if double-serialized) or object
+          let jobData: Record<string, unknown>;
+          if (typeof data.project.job_data === "string") {
+            try {
+              jobData = JSON.parse(data.project.job_data);
+            } catch (e) {
+              console.error("Failed to parse job_data string:", e);
+              setLoading(false);
+              return;
+            }
+          } else {
+            jobData = (data.project.job_data ?? {}) as Record<string, unknown>;
+          }
           // Try nested result first
           const savedResult = jobData?.result as GenerateResult | undefined;
           if (savedResult && savedResult.job) {

@@ -65,6 +65,7 @@ function HomeContent() {
   const [currentZip, setCurrentZip] = useState("78744");
   const [quickListMode, setQuickListMode] = useState(false);
   const [takeoffMode, setTakeoffMode] = useState(false);
+  const [collaborateAfterTakeoff, setCollaborateAfterTakeoff] = useState(false);
   const [takeoffCollaborateOpen, setTakeoffCollaborateOpen] = useState(false);
   const [takeoffProjectId, setTakeoffProjectId] = useState<string | null>(null);
   const [takeoffProjectName, setTakeoffProjectName] = useState("");
@@ -301,7 +302,7 @@ function HomeContent() {
             <span className="hidden sm:inline">Quick List</span>
           </button>
           <button
-            onClick={() => { setTakeoffMode(!takeoffMode); setQuickListMode(false); }}
+            onClick={() => { setTakeoffMode(!takeoffMode); setCollaborateAfterTakeoff(false); setQuickListMode(false); }}
             className={`flex items-center gap-1.5 text-xs font-medium min-h-[44px] px-2 cursor-pointer transition-colors ${
               takeoffMode ? "text-yellow-400" : "text-gray-400 hover:text-yellow-400"
             }`}
@@ -312,7 +313,7 @@ function HomeContent() {
           </button>
           {user && (
             <button
-              onClick={() => { setTakeoffMode(true); setQuickListMode(false); }}
+              onClick={() => { setTakeoffMode(true); setCollaborateAfterTakeoff(true); setQuickListMode(false); }}
               className="flex items-center gap-1.5 text-xs font-semibold min-h-[44px] px-2.5 cursor-pointer transition-colors text-purple-400 hover:text-purple-300"
               title="Upload plans and start a multi-party collaboration project"
             >
@@ -394,6 +395,7 @@ function HomeContent() {
           {takeoffMode ? (
             <div className="max-w-2xl mx-auto">
               <PlanTakeoff
+                autoCollaborate={collaborateAfterTakeoff}
                 onAddToList={(items) => {
                   // Switch to Quick List with the takeoff results
                   setTakeoffMode(false);
@@ -490,7 +492,7 @@ function HomeContent() {
                     console.error("Save & collaborate failed:", err);
                   }
                 } : undefined}
-                onClose={() => setTakeoffMode(false)}
+                onClose={() => { setTakeoffMode(false); setCollaborateAfterTakeoff(false); }}
               />
             </div>
           ) : quickListMode ? (

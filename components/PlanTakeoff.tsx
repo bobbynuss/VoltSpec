@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
 import {
   Upload,
   FileImage,
@@ -27,10 +27,11 @@ interface TakeoffItem {
 interface PlanTakeoffProps {
   onAddToList: (items: TakeoffItem[]) => void;
   onSaveAndCollaborate?: (items: TakeoffItem[], file: File | null) => void;
+  autoCollaborate?: boolean; // Auto-trigger Save & Collaborate when analysis completes
   onClose: () => void;
 }
 
-export function PlanTakeoff({ onAddToList, onSaveAndCollaborate, onClose }: PlanTakeoffProps) {
+export function PlanTakeoff({ onAddToList, onSaveAndCollaborate, autoCollaborate, onClose }: PlanTakeoffProps) {
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
   const [notes, setNotes] = useState("");
@@ -38,7 +39,21 @@ export function PlanTakeoff({ onAddToList, onSaveAndCollaborate, onClose }: Plan
   const [results, setResults] = useState<TakeoffItem[] | null>(null);
   const [classified, setClassified] = useState<{ collaborate: ClassifiedItem[]; quicklist: ClassifiedItem[] } | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [autoTriggered, setAutoTriggered] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
+
+  // Auto-trigger Save & Collaborate when analysis completes (Upload & Collaborate flow)
+  useEffect(() => {
+    if (autoCollaborate && results && classified && onSaveAndCollaborate && !autoTriggered) {
+      setAutoTriggered(true);
+      // Add stock items to Quick List
+      if (classified.quicklist.length > 0) {
+        onAddToList(classified.quicklist);
+      }
+      // Save & Collaborate with full BOM
+      onSaveAndCollaborate(results, file);
+    }
+  }, [autoCollaborate, results, classified, onSaveAndCollaborate, autoTriggered, file, onAddToList]);
 
   const handleFile = useCallback((f: File) => {
     const isImage = f.type.startsWith("image/");

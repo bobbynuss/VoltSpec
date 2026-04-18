@@ -383,12 +383,8 @@ export function PlanTakeoff({ onAddToList, onSaveAndCollaborate, autoCollaborate
             {onSaveAndCollaborate ? (
               <Button
                 onClick={() => {
-                  // Commodity items → Quick List in background
-                  if (classified.quicklist.length > 0) {
-                    onAddToList(classified.quicklist);
-                  }
-                  // Full BOM → project + collaborate modal
-                  // Sales rep sees everything; vendors get filtered by assignment
+                  // Call ONLY onSaveAndCollaborate — it handles quicklist internally
+                  // Do NOT call onAddToList here (it unmounts this component)
                   onSaveAndCollaborate(results, file);
                 }}
                 className="w-full bg-purple-500 hover:bg-purple-400 active:bg-purple-600 text-white font-semibold transition-colors duration-150 h-11"

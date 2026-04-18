@@ -40,12 +40,16 @@ interface TakeoffItem {
 // ── Big Ticket Patterns ────────────────────────────────────────────
 
 const BIG_TICKET_PATTERNS: RegExp[] = [
-  // Panels, loadcenters, switchgear
+  // Panels, loadcenters, switchgear, breakers
   /\b(panel|loadcenter|load\s*center|switchgear|panelboard|distribution\s*board)\b/i,
   /\b(MDP|MCC|SWB|SWBD|switchboard)\b/i,
   /\bpow-r-line\b/i,
   /\bPRL[123]/i,
   /\b(bus\s*duct|busway|bus\s*plug)\b/i,
+  // Breakers — these are part of the panel/gear package, not commodity
+  /\b(breaker|circuit\s*breaker|MCB|MCCB)\b/i,
+  /\b(QBH|BKD|CHF|CHFP|BAB|GHB|HQP)\d/i,
+  /\bmain\s*breaker\b/i,
 
   // Lighting fixtures (named manufacturers or fixture types)
   /\b(lithonia|juno|acuity|hubbell\s*lighting|cree|eaton\s*lighting|rab|kim|cooper|halo|metalux|columbia)\b/i,

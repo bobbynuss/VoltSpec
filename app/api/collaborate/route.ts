@@ -224,8 +224,37 @@ export async function DELETE(req: NextRequest) {
     const body = await req.json();
     const { collaboratorId, projectId } = body;
 
-    // RLS "Owner can manage collaborators" policy handles permission
-    const { error } = await supabase
+    // Use admin client — RLS only allows owner to delete collaborators,
+    // but users should be able to leave (remove their own record) too
+    const adminKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+    const deleteClient = adminKey
+      ? createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, adminKey)
+      : supabase;
+
+    // Verify: user is either the project owner OR removing their own record
+    const { data: collab } = await deleteClient
+      .from("project_collaborators")
+      .select("user_id, invited_email")
+      .eq("id", collaboratorId)
+      .single();
+
+    if (!collab) {
+      return NextResponse.json({ error: "Collaborator not found" }, { status: 404 });
+    }
+
+    const isOwnRecord = collab.user_id === user.id || collab.invited_email === user.email;
+    const { data: project } = await deleteClient
+      .from("projects")
+      .select("user_id")
+      .eq("id", projectId)
+      .single();
+    const isProjectOwner = project?.user_id === user.id;
+
+    if (!isOwnRecord && !isProjectOwner) {
+      return NextResponse.json({ error: "You can only leave a project or remove collaborators you own" }, { status: 403 });
+    }
+
+    const { error } = await deleteClient
       .from("project_collaborators")
       .delete()
       .eq("id", collaboratorId);
@@ -236,10 +265,10 @@ export async function DELETE(req: NextRequest) {
     }
 
     // Log activity
-    await supabase.from("project_activity").insert({
+    await deleteClient.from("project_activity").insert({
       project_id: projectId,
       user_id: user.id,
-      action: "collaborator_removed",
+      action: isOwnRecord ? "collaborator_left" : "collaborator_removed",
       details: { collaboratorId },
     });
 

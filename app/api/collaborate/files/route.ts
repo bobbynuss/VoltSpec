@@ -11,10 +11,13 @@ function getUserClient(token: string) {
 
 /** Admin client for storage operations (bypasses storage RLS) */
 function getAdminClient() {
-  return createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
-  );
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!url || !key) {
+    console.error("MISSING ENV:", { hasUrl: !!url, hasServiceKey: !!key });
+    throw new Error("Server configuration error: missing Supabase service role key");
+  }
+  return createClient(url, key);
 }
 
 /**
@@ -160,10 +163,11 @@ export async function POST(req: NextRequest) {
     });
 
     return NextResponse.json({ success: true, file: fileRecord });
-  } catch (err) {
-    console.error("File upload POST error:", err);
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : String(err);
+    console.error("File upload POST error:", message, err);
     return NextResponse.json(
-      { error: "Internal server error" },
+      { error: message },
       { status: 500 }
     );
   }

@@ -317,27 +317,58 @@ export function CollaborateModal({
     if (!file) return;
     setUploading(true);
     setError(null);
+    setSuccess(null);
 
     try {
-      const formData = new FormData();
-      formData.append("projectId", projectId);
-      formData.append("file", file);
-      formData.append("category", "general");
+      // Upload directly to Supabase Storage from the client
+      const { createClient } = await import("@supabase/supabase-js");
+      const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+      const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+      const sb = createClient(supabaseUrl, supabaseKey, {
+        global: { headers: { Authorization: `Bearer ${session?.access_token}` } },
+      });
 
-      const res = await fetch("/api/collaborate/files", {
+      const storagePath = `${projectId}/${Date.now()}_${file.name.replace(/[^a-zA-Z0-9._-]/g, "_")}`;
+
+      // Step 1: Upload to storage
+      const { error: storageErr } = await sb.storage
+        .from("project-files")
+        .upload(storagePath, file, {
+          contentType: file.type || "application/octet-stream",
+          upsert: false,
+        });
+
+      if (storageErr) {
+        setError(`Storage upload failed: ${storageErr.message}`);
+        return;
+      }
+
+      // Step 2: Record in DB via API
+      const res = await fetch("/api/collaborate/files/record", {
         method: "POST",
-        headers: { Authorization: `Bearer ${session?.access_token}` },
-        body: formData,
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${session?.access_token}`,
+        },
+        body: JSON.stringify({
+          projectId,
+          fileName: file.name,
+          fileType: file.type || null,
+          fileSize: file.size,
+          storagePath,
+          category: "general",
+        }),
       });
       const data = await res.json();
       if (!res.ok) {
-        setError(data.error ?? "Upload failed");
+        setError(data.error ?? "Failed to save file record");
       } else {
         setSuccess(`Uploaded ${file.name}`);
         loadData();
       }
-    } catch {
-      setError("Upload failed");
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : String(err);
+      setError(`Upload error: ${msg}`);
     } finally {
       setUploading(false);
       if (fileInputRef.current) fileInputRef.current.value = "";

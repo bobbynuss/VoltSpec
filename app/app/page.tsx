@@ -385,22 +385,44 @@ function HomeContent() {
                       } as Record<string, unknown>,
                     });
 
-                    // Auto-upload the original plan file to project files
+                    // Auto-upload the original plan file to project files (client-side direct to storage)
                     if (planFile && session?.access_token) {
                       try {
-                        const formData = new FormData();
-                        formData.append("projectId", saved.id);
-                        formData.append("file", planFile);
-                        formData.append("category", "drawing");
-                        formData.append("description", "Original electrical plan (uploaded via AI Takeoff)");
-                        const uploadRes = await fetch("/api/collaborate/files", {
-                          method: "POST",
-                          headers: { Authorization: `Bearer ${session.access_token}` },
-                          body: formData,
-                        });
-                        if (!uploadRes.ok) {
-                          const errData = await uploadRes.json().catch(() => ({}));
-                          console.error("Auto-upload plan file failed:", uploadRes.status, errData);
+                        const { createClient } = await import("@supabase/supabase-js");
+                        const sb = createClient(
+                          process.env.NEXT_PUBLIC_SUPABASE_URL!,
+                          process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+                          { global: { headers: { Authorization: `Bearer ${session.access_token}` } } }
+                        );
+                        const storagePath = `${saved.id}/${Date.now()}_${planFile.name.replace(/[^a-zA-Z0-9._-]/g, "_")}`;
+
+                        const { error: storageErr } = await sb.storage
+                          .from("project-files")
+                          .upload(storagePath, planFile, {
+                            contentType: planFile.type || "application/octet-stream",
+                            upsert: false,
+                          });
+
+                        if (storageErr) {
+                          console.error("Plan file storage upload failed:", storageErr.message);
+                        } else {
+                          // Record in DB
+                          await fetch("/api/collaborate/files/record", {
+                            method: "POST",
+                            headers: {
+                              "Content-Type": "application/json",
+                              Authorization: `Bearer ${session.access_token}`,
+                            },
+                            body: JSON.stringify({
+                              projectId: saved.id,
+                              fileName: planFile.name,
+                              fileType: planFile.type || null,
+                              fileSize: planFile.size,
+                              storagePath,
+                              category: "drawing",
+                              description: "Original electrical plan (uploaded via AI Takeoff)",
+                            }),
+                          });
                         }
                       } catch (err) {
                         console.error("Auto-upload plan file error:", err);

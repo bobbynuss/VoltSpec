@@ -597,6 +597,7 @@ function HomeContent() {
         currentCity={sidebarState.city}
         currentZip={sidebarState.zip}
         currentJobId={sidebarState.jobId}
+        userRole={userRole}
       />
 
       {/* Upgrade celebration toast */}

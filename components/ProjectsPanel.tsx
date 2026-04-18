@@ -39,6 +39,7 @@ interface ProjectsPanelProps {
   currentCity: string;
   currentZip: string;
   currentJobId: string;
+  userRole?: string;
 }
 
 export function ProjectsPanel({
@@ -48,8 +49,10 @@ export function ProjectsPanel({
   currentCity,
   currentZip,
   currentJobId,
+  userRole = "contractor",
 }: ProjectsPanelProps) {
   const { user, session } = useAuth();
+  const isVendor = userRole === "vendor";
   const [projects, setProjects] = useState<SavedProject[]>([]);
   const [sharedProjects, setSharedProjects] = useState<Array<{
     project: { id: string; name: string; job_id: string; city: string; zip: string; job_data: Record<string, unknown>; updated_at: string };
@@ -59,7 +62,7 @@ export function ProjectsPanel({
   const [saving, setSaving] = useState(false);
   const [saveName, setSaveName] = useState("");
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
-  const [activeSection, setActiveSection] = useState<"mine" | "shared">("mine");
+  const [activeSection, setActiveSection] = useState<"mine" | "shared">(isVendor ? "shared" : "mine");
   const nameRef = useRef<HTMLInputElement>(null);
 
   // Load projects — cloud if logged in, localStorage if guest
@@ -225,7 +228,7 @@ export function ProjectsPanel({
         <div className="flex items-center gap-3 px-5 py-4 border-b border-[hsl(217,33%,18%)]">
           <FolderOpen className="w-5 h-5 text-yellow-400" />
           <h2 className="text-base font-bold text-white flex-1">
-            Saved Projects
+            {isVendor ? "Shared Projects" : "Saved Projects"}
           </h2>
           <Button
             variant="ghost"
@@ -237,8 +240,8 @@ export function ProjectsPanel({
           </Button>
         </div>
 
-        {/* Save current */}
-        <div className="px-5 py-3 border-b border-[hsl(217,33%,18%)] bg-[hsl(222,47%,9%)]">
+        {/* Save current — hidden for vendors */}
+        {!isVendor && <div className="px-5 py-3 border-b border-[hsl(217,33%,18%)] bg-[hsl(222,47%,9%)]">
           {saving ? (
             <div className="flex flex-col gap-2">
               <input
@@ -293,10 +296,10 @@ export function ProjectsPanel({
               Select a job type first to save
             </p>
           )}
-        </div>
+        </div>}
 
-        {/* Section tabs — only show if there are shared projects */}
-        {user && sharedProjects.length > 0 && (
+        {/* Section tabs — hide for vendors (they only see shared) */}
+        {!isVendor && user && sharedProjects.length > 0 && (
           <div className="flex border-b border-[hsl(217,33%,18%)]">
             <button
               onClick={() => setActiveSection("mine")}
@@ -424,6 +427,18 @@ export function ProjectsPanel({
                 </div>
               ))}
             </div>
+          ) : (isVendor || activeSection === "shared") && sharedProjects.length === 0 ? (
+            <div className="flex flex-col items-center justify-center h-full text-center px-6 py-12">
+              <Users className="w-10 h-10 text-gray-700 mb-3" />
+              <p className="text-gray-500 text-sm font-medium">
+                No shared projects yet
+              </p>
+              <p className="text-gray-600 text-xs mt-1">
+                {isVendor
+                  ? "You'll see projects here when an Elliott sales rep invites you"
+                  : "Projects shared with you will appear here"}
+              </p>
+            </div>
           ) : projects.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-full text-center px-6 py-12">
               <FolderOpen className="w-10 h-10 text-gray-700 mb-3" />
@@ -514,7 +529,7 @@ export function ProjectsPanel({
         </div>
 
         {/* Footer */}
-        {projects.length > 0 && (
+        {!isVendor && projects.length > 0 && (
           <div className="px-5 py-3 border-t border-[hsl(217,33%,18%)] bg-[hsl(222,47%,9%)]">
             <p className="text-[10px] text-gray-600 text-center">
               {projects.length} saved project{projects.length !== 1 ? "s" : ""} · Stored in your browser

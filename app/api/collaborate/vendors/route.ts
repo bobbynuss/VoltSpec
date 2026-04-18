@@ -38,18 +38,25 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // Check that inviter is a sales_rep
-    const { data: profile } = await supabase
+    // Check that inviter is a sales_rep — use admin client for reliable profile lookup
+    const adminKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+    const profileClient = adminKey
+      ? createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, adminKey)
+      : supabase;
+
+    const { data: profile } = await profileClient
       .from("user_profiles")
       .select("role")
       .eq("id", user.id)
       .single();
 
+    console.log("[VoltSpec] Vendor invite — user role:", profile?.role, "user:", user.id);
+
     const isOwner = await checkIsOwner(supabase, req, user.id);
 
     if (profile?.role !== "sales_rep" && profile?.role !== "admin" && !isOwner) {
       return NextResponse.json(
-        { error: "Only Elliott sales reps or the project owner can invite vendors" },
+        { error: `Only Elliott sales reps or the project owner can invite vendors (your role: ${profile?.role ?? "unknown"})` },
         { status: 403 }
       );
     }

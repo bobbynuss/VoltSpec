@@ -56,13 +56,19 @@ export async function POST(req: NextRequest) {
 
     if (project.user_id !== user.id) {
       // Check if the caller is a sales_rep collaborator (they can invite vendors)
-      const { data: callerProfile } = await supabase
+      // Use admin client for reliable profile + collab lookup
+      const adminKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+      const lookupClient = adminKey
+        ? createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, adminKey)
+        : supabase;
+
+      const { data: callerProfile } = await lookupClient
         .from("user_profiles")
         .select("role")
         .eq("id", user.id)
         .single();
 
-      const { data: callerCollab } = await supabase
+      const { data: callerCollab } = await lookupClient
         .from("project_collaborators")
         .select("accepted_at")
         .eq("project_id", projectId)

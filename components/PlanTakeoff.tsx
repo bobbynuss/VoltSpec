@@ -12,8 +12,11 @@ import {
   Plus,
   CheckCircle,
   Users,
+  ShoppingCart,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { classifyTakeoffItems } from "@/lib/takeoff-classifier";
+import type { ClassifiedItem } from "@/lib/takeoff-classifier";
 
 interface TakeoffItem {
   item: string;
@@ -33,8 +36,8 @@ export function PlanTakeoff({ onAddToList, onSaveAndCollaborate, onClose }: Plan
   const [notes, setNotes] = useState("");
   const [loading, setLoading] = useState(false);
   const [results, setResults] = useState<TakeoffItem[] | null>(null);
+  const [classified, setClassified] = useState<{ collaborate: ClassifiedItem[]; quicklist: ClassifiedItem[] } | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [selected, setSelected] = useState<Set<number>>(new Set());
   const fileRef = useRef<HTMLInputElement>(null);
 
   const handleFile = useCallback((f: File) => {
@@ -155,8 +158,9 @@ export function PlanTakeoff({ onAddToList, onSaveAndCollaborate, onClose }: Plan
 
       if (data.items && Array.isArray(data.items)) {
         setResults(data.items);
-        // Select all by default
-        setSelected(new Set(data.items.map((_: TakeoffItem, i: number) => i)));
+        // Auto-classify into collaborate vs quicklist
+        const split = classifyTakeoffItems(data.items);
+        setClassified(split);
       }
     } catch (err: any) {
       if (err?.name === "AbortError") {
@@ -166,32 +170,6 @@ export function PlanTakeoff({ onAddToList, onSaveAndCollaborate, onClose }: Plan
       }
     } finally {
       setLoading(false);
-    }
-  };
-
-  const toggleItem = (idx: number) => {
-    setSelected((prev) => {
-      const next = new Set(prev);
-      if (next.has(idx)) next.delete(idx);
-      else next.add(idx);
-      return next;
-    });
-  };
-
-  const toggleAll = () => {
-    if (!results) return;
-    if (selected.size === results.length) {
-      setSelected(new Set());
-    } else {
-      setSelected(new Set(results.map((_, i) => i)));
-    }
-  };
-
-  const handleAddSelected = () => {
-    if (!results) return;
-    const items = results.filter((_, i) => selected.has(i));
-    if (items.length > 0) {
-      onAddToList(items);
     }
   };
 
@@ -314,76 +292,117 @@ export function PlanTakeoff({ onAddToList, onSaveAndCollaborate, onClose }: Plan
           </div>
         )}
 
-        {/* Results */}
-        {results && !isUnreadable && (
-          <div className="space-y-3">
+        {/* Results — Split View */}
+        {results && !isUnreadable && classified && (
+          <div className="space-y-4">
             <div className="flex items-center justify-between">
               <p className="text-sm text-white font-semibold">
                 Found {results.length} items
               </p>
-              <div className="flex items-center gap-3">
-                <button onClick={toggleAll} className="text-xs text-gray-400 hover:text-yellow-400 transition-colors">
-                  {selected.size === results.length ? "Deselect all" : "Select all"}
-                </button>
-                <button
-                  onClick={() => { setResults(null); setFile(null); setPreview(null); }}
-                  className="text-xs text-gray-500 hover:text-gray-300 transition-colors"
-                >
-                  New scan
-                </button>
-              </div>
+              <button
+                onClick={() => { setResults(null); setClassified(null); setFile(null); setPreview(null); }}
+                className="text-xs text-gray-500 hover:text-gray-300 transition-colors"
+              >
+                New scan
+              </button>
             </div>
 
-            <div className="max-h-[300px] overflow-y-auto rounded-lg border border-[hsl(217,33%,18%)] divide-y divide-[hsl(217,33%,14%)]">
-              {results.map((item, i) => (
-                <label
-                  key={i}
-                  className={`flex items-center gap-3 px-3 py-2.5 cursor-pointer transition-colors ${
-                    selected.has(i) ? "bg-yellow-400/5" : "hover:bg-white/[0.02]"
-                  }`}
-                >
-                  <input
-                    type="checkbox"
-                    checked={selected.has(i)}
-                    onChange={() => toggleItem(i)}
-                    className="rounded border-gray-600 text-yellow-400 focus:ring-yellow-400 bg-transparent"
-                  />
-                  <div className="flex-1 min-w-0">
-                    <div className="text-sm text-white font-medium truncate">{item.item}</div>
-                    <div className="text-[10px] text-gray-500 truncate">{item.spec}</div>
+            {/* Big Ticket → Collaborate */}
+            {classified.collaborate.length > 0 && onSaveAndCollaborate && (
+              <div className="rounded-xl border border-purple-500/30 overflow-hidden">
+                <div className="flex items-center justify-between px-3 py-2 bg-purple-500/10 border-b border-purple-500/20">
+                  <div className="flex items-center gap-2">
+                    <Users className="w-3.5 h-3.5 text-purple-400" />
+                    <span className="text-xs font-semibold text-purple-300">
+                      Vendor Coordination ({classified.collaborate.length})
+                    </span>
                   </div>
-                  <span className="text-xs text-yellow-400 font-semibold shrink-0">{item.quantity}</span>
-                </label>
-              ))}
-            </div>
+                  <span className="text-[10px] text-purple-400/60">Fixtures · Gear · Panels · Enclosures</span>
+                </div>
+                <div className="max-h-[200px] overflow-y-auto divide-y divide-[hsl(217,33%,14%)]">
+                  {classified.collaborate.map((item, i) => (
+                    <div key={`c-${i}`} className="flex items-center gap-3 px-3 py-2 bg-purple-500/[0.03]">
+                      <div className="flex-1 min-w-0">
+                        <div className="text-sm text-white font-medium truncate">{item.item}</div>
+                        <div className="text-[10px] text-gray-500 truncate">{item.spec}</div>
+                      </div>
+                      <span className="text-xs text-purple-400 font-semibold shrink-0">{item.quantity}</span>
+                    </div>
+                  ))}
+                </div>
+                <div className="px-3 py-2.5 bg-purple-500/[0.05] border-t border-purple-500/20">
+                  <Button
+                    onClick={() => {
+                      onSaveAndCollaborate(classified.collaborate, file);
+                    }}
+                    className="w-full bg-purple-500 hover:bg-purple-400 active:bg-purple-600 text-white font-semibold transition-colors duration-150 h-10"
+                  >
+                    <Users className="w-4 h-4 mr-1.5" />
+                    Save & Collaborate ({classified.collaborate.length} items)
+                  </Button>
+                </div>
+              </div>
+            )}
 
-            <div className={onSaveAndCollaborate ? "flex gap-3" : ""}>
-              {/* Save & Collaborate */}
-              {onSaveAndCollaborate && (
-                <Button
-                  onClick={() => {
-                    if (!results) return;
-                    const items = results.filter((_, i) => selected.has(i));
-                    if (items.length > 0) onSaveAndCollaborate(items, file);
-                  }}
-                  disabled={selected.size === 0}
-                  className="flex-1 bg-purple-500 hover:bg-purple-400 active:bg-purple-600 text-white font-semibold transition-colors duration-150 h-11 disabled:opacity-40"
-                >
-                  <Users className="w-4 h-4 mr-1.5" />
-                  Save & Collaborate
-                </Button>
-              )}
+            {/* Commodity → Quick List */}
+            {classified.quicklist.length > 0 && (
+              <div className="rounded-xl border border-[hsl(217,33%,20%)] overflow-hidden">
+                <div className="flex items-center justify-between px-3 py-2 bg-[hsl(217,33%,11%)] border-b border-[hsl(217,33%,18%)]">
+                  <div className="flex items-center gap-2">
+                    <ShoppingCart className="w-3.5 h-3.5 text-yellow-400" />
+                    <span className="text-xs font-semibold text-gray-300">
+                      Elliott Stock Items ({classified.quicklist.length})
+                    </span>
+                  </div>
+                  <span className="text-[10px] text-gray-600">Wire · Conduit · Fittings · Devices</span>
+                </div>
+                <div className="max-h-[200px] overflow-y-auto divide-y divide-[hsl(217,33%,14%)]">
+                  {classified.quicklist.map((item, i) => (
+                    <div key={`q-${i}`} className="flex items-center gap-3 px-3 py-2">
+                      <div className="flex-1 min-w-0">
+                        <div className="text-sm text-white font-medium truncate">{item.item}</div>
+                        <div className="text-[10px] text-gray-500 truncate">{item.spec}</div>
+                      </div>
+                      <span className="text-xs text-yellow-400 font-semibold shrink-0">{item.quantity}</span>
+                    </div>
+                  ))}
+                </div>
+                <div className="px-3 py-2.5 bg-[hsl(217,33%,10%)] border-t border-[hsl(217,33%,18%)]">
+                  <Button
+                    onClick={() => onAddToList(classified.quicklist)}
+                    className="w-full bg-yellow-400 hover:bg-yellow-300 active:bg-yellow-500 text-gray-900 font-semibold transition-colors duration-150 h-10"
+                  >
+                    <Plus className="w-4 h-4 mr-1.5" />
+                    Add {classified.quicklist.length} items to Quick List
+                  </Button>
+                </div>
+              </div>
+            )}
 
-              {/* Add to Quick List */}
+            {/* Fallback: no collaborate items but user is logged in */}
+            {classified.collaborate.length === 0 && onSaveAndCollaborate && (
+              <div className="px-3 py-2 rounded-lg bg-[hsl(217,33%,10%)] border border-[hsl(217,33%,18%)] text-xs text-gray-500">
+                No big-ticket items detected — all items routed to Quick List. You can still save and collaborate from there.
+              </div>
+            )}
+
+            {/* Fallback: no quicklist items */}
+            {classified.quicklist.length === 0 && (
+              <div className="px-3 py-2 rounded-lg bg-[hsl(217,33%,10%)] border border-[hsl(217,33%,18%)] text-xs text-gray-500">
+                All items classified as vendor coordination items.
+              </div>
+            )}
+
+            {/* Not logged in — show everything as one list */}
+            {!onSaveAndCollaborate && (
               <Button
-                onClick={handleAddSelected}
-                disabled={selected.size === 0}
-                className={`${onSaveAndCollaborate ? "flex-1" : "w-full"} ${onSaveAndCollaborate ? "bg-[hsl(217,33%,18%)] hover:bg-[hsl(217,33%,22%)] text-gray-300" : "bg-yellow-400 hover:bg-yellow-300 active:bg-yellow-500 text-gray-900"} font-semibold transition-colors duration-150 h-11 disabled:opacity-40`}
+                onClick={() => onAddToList(results)}
+                className="w-full bg-yellow-400 hover:bg-yellow-300 active:bg-yellow-500 text-gray-900 font-semibold transition-colors duration-150 h-11"
               >
                 <Plus className="w-4 h-4 mr-1.5" />
-                Add to Quick List
+                Add all {results.length} items to Quick List
               </Button>
-            </div>
+            )}
           </div>
         )}
 
@@ -395,7 +414,7 @@ export function PlanTakeoff({ onAddToList, onSaveAndCollaborate, onClose }: Plan
               <span>{results[0].spec}</span>
             </div>
             <button
-              onClick={() => { setResults(null); setFile(null); setPreview(null); }}
+              onClick={() => { setResults(null); setClassified(null); setFile(null); setPreview(null); }}
               className="text-xs text-gray-400 hover:text-yellow-400 transition-colors"
             >
               ← Try another image

@@ -31,6 +31,7 @@ import { Crown } from "lucide-react";
 import { trackEvent } from "@/lib/analytics";
 import { getTradeBrand } from "@/lib/trade-branding";
 import { saveCloudProject } from "@/lib/core/projects";
+import { CollaborateModal } from "@/components/CollaborateModal";
 
 const JURISDICTIONS = getTrade().jurisdictions;
 
@@ -64,6 +65,9 @@ function HomeContent() {
   const [currentZip, setCurrentZip] = useState("78744");
   const [quickListMode, setQuickListMode] = useState(false);
   const [takeoffMode, setTakeoffMode] = useState(false);
+  const [takeoffCollaborateOpen, setTakeoffCollaborateOpen] = useState(false);
+  const [takeoffProjectId, setTakeoffProjectId] = useState<string | null>(null);
+  const [takeoffProjectName, setTakeoffProjectName] = useState("");
   const [activeTrade, setActiveTrade] = useState("electrical");
   const brand = getTradeBrand(activeTrade);
   const [showUpgradeToast, setShowUpgradeToast] = useState(false);
@@ -341,6 +345,43 @@ function HomeContent() {
                   }));
                   localStorage.setItem("voltspec-quicklist", JSON.stringify([...existing, ...newItems]));
                 }}
+                onSaveAndCollaborate={user ? async (items) => {
+                  try {
+                    const projectName = `Plan Takeoff — ${new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}`;
+                    const materials = items.map((t) => ({
+                      item: t.item,
+                      spec: t.spec,
+                      quantity: t.quantity,
+                    }));
+                    const saved = await saveCloudProject({
+                      name: projectName,
+                      job_id: "plan-takeoff",
+                      city: "",
+                      zip: currentZip,
+                      job_data: {
+                        jobLabel: "AI Plan Takeoff",
+                        cityLabel: "",
+                        result: {
+                          job: {
+                            id: "plan-takeoff",
+                            label: projectName,
+                            requirements: [],
+                            materials,
+                            suppliers: [],
+                            officialDocs: [],
+                          },
+                        },
+                        materials,
+                      } as Record<string, unknown>,
+                    });
+                    setTakeoffProjectId(saved.id);
+                    setTakeoffProjectName(projectName);
+                    setTakeoffCollaborateOpen(true);
+                    setTakeoffMode(false);
+                  } catch (err) {
+                    console.error("Save & collaborate failed:", err);
+                  }
+                } : undefined}
                 onClose={() => setTakeoffMode(false)}
               />
             </div>
@@ -406,6 +447,16 @@ function HomeContent() {
 
       {/* PWA install prompt */}
       <InstallPrompt />
+
+      {/* Takeoff → Collaborate Modal */}
+      {takeoffProjectId && (
+        <CollaborateModal
+          open={takeoffCollaborateOpen}
+          onClose={() => setTakeoffCollaborateOpen(false)}
+          projectId={takeoffProjectId}
+          projectName={takeoffProjectName}
+        />
+      )}
 
       {/* Legal Disclaimers */}
       <LegalDisclaimer className="mt-auto" />

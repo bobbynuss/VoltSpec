@@ -722,7 +722,7 @@ export function CollaborateModal({
               /* ═══ VENDORS TAB ═══ */
               <div className="p-4 space-y-4">
                 {/* Vendor invite — sales reps only */}
-                {isSalesRep && (
+                {!isVendor && (
                   <div className="space-y-2">
                     <label className="text-xs text-gray-400 font-medium">
                       Invite a Vendor / Manufacturer Rep
@@ -829,7 +829,7 @@ export function CollaborateModal({
                               </div>
                             </div>
                             <div className="flex items-center gap-1">
-                              {isSalesRep && (
+                              {!isVendor && (
                                 <button
                                   onClick={() =>
                                     setExpandedVendor(
@@ -859,7 +859,7 @@ export function CollaborateModal({
                           </div>
 
                           {/* Expanded: manufacturer assignment checkboxes */}
-                          {isExpanded && isSalesRep && (
+                          {isExpanded && !isVendor && (
                             <div className="px-3 pb-3 pt-1 border-t border-[hsl(217,33%,16%)]">
                               <p className="text-[10px] text-gray-500 mb-2">
                                 Assign product lines this vendor can see:

@@ -25,10 +25,22 @@ export interface ManufacturerDef {
  */
 export const MANUFACTURERS: ManufacturerDef[] = [
   {
-    key: "eaton",
-    name: "Eaton",
-    vendorCodes: ["ETN", "CHD", "CHS", "EWD", "ETL"],
-    specPatterns: [/\beaten\b/i, /\bpow-r-line\b/i, /\bcutler.hammer\b/i],
+    key: "eaton-power",
+    name: "Eaton Power Distribution (Panels / Breakers / Gear)",
+    vendorCodes: ["ETN", "CHD", "CHS"],
+    specPatterns: [/\bpow-r-line\b/i, /\bcutler.hammer\b/i],
+  },
+  {
+    key: "eaton-wiring",
+    name: "Eaton Wiring Devices (Receptacles / Switches / Dimmers)",
+    vendorCodes: ["EWD"],
+    specPatterns: [],
+  },
+  {
+    key: "eaton-lighting",
+    name: "Eaton Crouse-Hinds Lighting",
+    vendorCodes: ["ETL"],
+    specPatterns: [/\bcrouse.hinds.*light\b/i],
   },
   {
     key: "southwire",
@@ -46,7 +58,7 @@ export const MANUFACTURERS: ManufacturerDef[] = [
     key: "hubbell",
     name: "Hubbell / Bridgeport",
     vendorCodes: ["BRI", "TAM", "CRS"],
-    specPatterns: [/\bhubbell\b/i, /\bbridgeport\b/i, /\btaymac\b/i, /\bcrouse.hinds\b/i],
+    specPatterns: [/\bhubbell\b/i, /\bbridgeport\b/i, /\btaymac\b/i],
   },
   {
     key: "leviton",

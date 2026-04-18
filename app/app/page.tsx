@@ -345,7 +345,7 @@ function HomeContent() {
                   }));
                   localStorage.setItem("voltspec-quicklist", JSON.stringify([...existing, ...newItems]));
                 }}
-                onSaveAndCollaborate={user ? async (items) => {
+                onSaveAndCollaborate={user ? async (items, planFile) => {
                   try {
                     const projectName = `Plan Takeoff — ${new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}`;
                     const materials = items.map((t) => ({
@@ -374,6 +374,24 @@ function HomeContent() {
                         materials,
                       } as Record<string, unknown>,
                     });
+
+                    // Auto-upload the original plan file to project files
+                    if (planFile) {
+                      const { data: { session } } = await (await import("@/lib/supabase")).supabase.auth.getSession();
+                      if (session?.access_token) {
+                        const formData = new FormData();
+                        formData.append("projectId", saved.id);
+                        formData.append("file", planFile);
+                        formData.append("category", "drawing");
+                        formData.append("description", "Original electrical plan (uploaded via AI Takeoff)");
+                        fetch("/api/collaborate/files", {
+                          method: "POST",
+                          headers: { Authorization: `Bearer ${session.access_token}` },
+                          body: formData,
+                        }).catch((err) => console.error("Auto-upload plan file failed:", err));
+                      }
+                    }
+
                     setTakeoffProjectId(saved.id);
                     setTakeoffProjectName(projectName);
                     setTakeoffCollaborateOpen(true);

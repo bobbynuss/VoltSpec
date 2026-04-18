@@ -23,7 +23,7 @@ interface TakeoffItem {
 
 interface PlanTakeoffProps {
   onAddToList: (items: TakeoffItem[]) => void;
-  onSaveAndCollaborate?: (items: TakeoffItem[]) => void;
+  onSaveAndCollaborate?: (items: TakeoffItem[], file: File | null) => void;
   onClose: () => void;
 }
 
@@ -357,33 +357,33 @@ export function PlanTakeoff({ onAddToList, onSaveAndCollaborate, onClose }: Plan
               ))}
             </div>
 
-            {/* Primary: Save & Collaborate */}
-            {onSaveAndCollaborate && (
-              <Button
-                onClick={() => {
-                  if (!results) return;
-                  const items = results.filter((_, i) => selected.has(i));
-                  if (items.length > 0) onSaveAndCollaborate(items);
-                }}
-                disabled={selected.size === 0}
-                className="w-full bg-purple-500 hover:bg-purple-400 active:bg-purple-600 text-white font-semibold transition-colors duration-150 h-11 disabled:opacity-40"
-              >
-                <Users className="w-4 h-4 mr-1.5" />
-                Save Project & Collaborate
-                <ArrowRight className="w-4 h-4 ml-1.5" />
-              </Button>
-            )}
+            <div className={onSaveAndCollaborate ? "flex gap-3" : ""}>
+              {/* Save & Collaborate */}
+              {onSaveAndCollaborate && (
+                <Button
+                  onClick={() => {
+                    if (!results) return;
+                    const items = results.filter((_, i) => selected.has(i));
+                    if (items.length > 0) onSaveAndCollaborate(items, file);
+                  }}
+                  disabled={selected.size === 0}
+                  className="flex-1 bg-purple-500 hover:bg-purple-400 active:bg-purple-600 text-white font-semibold transition-colors duration-150 h-11 disabled:opacity-40"
+                >
+                  <Users className="w-4 h-4 mr-1.5" />
+                  Save & Collaborate
+                </Button>
+              )}
 
-            {/* Secondary: Add to Quick List */}
-            <Button
-              onClick={handleAddSelected}
-              disabled={selected.size === 0}
-              className={`w-full ${onSaveAndCollaborate ? "bg-[hsl(217,33%,18%)] hover:bg-[hsl(217,33%,22%)] text-gray-300" : "bg-yellow-400 hover:bg-yellow-300 active:bg-yellow-500 text-gray-900"} font-semibold transition-colors duration-150 h-11 disabled:opacity-40`}
-            >
-              <Plus className="w-4 h-4 mr-1.5" />
-              Add {selected.size} item{selected.size !== 1 ? "s" : ""} to Quick List
-              <ArrowRight className="w-4 h-4 ml-1.5" />
-            </Button>
+              {/* Add to Quick List */}
+              <Button
+                onClick={handleAddSelected}
+                disabled={selected.size === 0}
+                className={`${onSaveAndCollaborate ? "flex-1" : "w-full"} ${onSaveAndCollaborate ? "bg-[hsl(217,33%,18%)] hover:bg-[hsl(217,33%,22%)] text-gray-300" : "bg-yellow-400 hover:bg-yellow-300 active:bg-yellow-500 text-gray-900"} font-semibold transition-colors duration-150 h-11 disabled:opacity-40`}
+              >
+                <Plus className="w-4 h-4 mr-1.5" />
+                Add to Quick List
+              </Button>
+            </div>
           </div>
         )}
 

@@ -54,7 +54,19 @@ function HomeContent() {
   const searchParams = useSearchParams();
   const { user, session } = useAuth();
   const { tier } = useSubscription();
+  const [userRole, setUserRole] = useState<string>("contractor");
   const [result, setResult] = useState<GenerateResult | null>(null);
+
+  // Fetch user role
+  useEffect(() => {
+    if (!session?.access_token) return;
+    fetch("/api/collaborate/me", {
+      headers: { Authorization: `Bearer ${session.access_token}` },
+    })
+      .then((r) => r.json())
+      .then((data) => { if (data.role) setUserRole(data.role); })
+      .catch(() => {});
+  }, [session?.access_token]);
   const [activeProjectId, setActiveProjectId] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -288,51 +300,59 @@ function HomeContent() {
     <div className="min-h-screen flex flex-col bg-[hsl(222,47%,7%)]">
       {/* Top nav */}
       <header className="no-print sticky top-0 z-40 border-b border-[hsl(217,33%,20%)] bg-[hsl(222,47%,8%)] px-2 sm:px-4 py-2.5 sm:py-3 flex items-center gap-2 sm:gap-3">
-        <Button
-          variant="ghost"
-          size="icon"
-          className="lg:hidden text-yellow-400"
-          onClick={() => setSidebarOpen(!sidebarOpen)}
-        >
-          {sidebarOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-        </Button>
+        {userRole !== "vendor" && (
+          <Button
+            variant="ghost"
+            size="icon"
+            className="lg:hidden text-yellow-400"
+            onClick={() => setSidebarOpen(!sidebarOpen)}
+          >
+            {sidebarOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+          </Button>
+        )}
         <Image src={brand.logo} alt={brand.name} width={24} height={24} className="w-6 h-6" />
         <h1 className="text-xl font-bold text-white tracking-tight">
           {brand.prefix}<span className={brand.accentColor}>{brand.suffix}</span>
         </h1>
-        <span className="hidden sm:inline text-xs text-gray-500 ml-1 mt-0.5">
-          {activeTrade === "plumbing" ? "IPC 2021" : `NEC ${headerNecYear}`} · {result?.jurisdiction ?? "Texas"}
-        </span>
+        {userRole !== "vendor" && (
+          <span className="hidden sm:inline text-xs text-gray-500 ml-1 mt-0.5">
+            {activeTrade === "plumbing" ? "IPC 2021" : `NEC ${headerNecYear}`} · {result?.jurisdiction ?? "Texas"}
+          </span>
+        )}
         <div className="ml-auto flex items-center gap-3 sm:gap-4">
-          <button
-            onClick={() => { setQuickListMode(!quickListMode); setTakeoffMode(false); }}
-            className={`flex items-center gap-1.5 text-xs font-medium min-h-[44px] px-2 cursor-pointer transition-colors ${
-              quickListMode ? "text-yellow-400" : "text-gray-400 hover:text-yellow-400"
-            }`}
-            title="Quick List — custom materials list"
-          >
-            <ShoppingCart className="w-4 h-4 sm:w-3.5 sm:h-3.5" />
-            <span className="hidden sm:inline">Quick List</span>
-          </button>
-          <button
-            onClick={() => { setTakeoffMode(!takeoffMode); setCollaborateAfterTakeoff(false); setQuickListMode(false); }}
-            className={`flex items-center gap-1.5 text-xs font-medium min-h-[44px] px-2 cursor-pointer transition-colors ${
-              takeoffMode ? "text-yellow-400" : "text-gray-400 hover:text-yellow-400"
-            }`}
-            title="AI Plan Takeoff — upload plans, get a BOM"
-          >
-            <FileImage className="w-4 h-4 sm:w-3.5 sm:h-3.5" />
-            <span className="hidden sm:inline">AI Takeoff</span>
-          </button>
-          {user && (
-            <button
-              onClick={() => { setTakeoffMode(true); setCollaborateAfterTakeoff(true); setQuickListMode(false); }}
-              className="flex items-center gap-1.5 text-xs font-semibold min-h-[44px] px-2.5 cursor-pointer transition-colors text-purple-400 hover:text-purple-300"
-              title="Upload plans and start a multi-party collaboration project"
-            >
-              <Users className="w-4 h-4 sm:w-3.5 sm:h-3.5" />
-              <span className="hidden sm:inline">Upload & Collaborate</span>
-            </button>
+          {userRole !== "vendor" && (
+            <>
+              <button
+                onClick={() => { setQuickListMode(!quickListMode); setTakeoffMode(false); }}
+                className={`flex items-center gap-1.5 text-xs font-medium min-h-[44px] px-2 cursor-pointer transition-colors ${
+                  quickListMode ? "text-yellow-400" : "text-gray-400 hover:text-yellow-400"
+                }`}
+                title="Quick List — custom materials list"
+              >
+                <ShoppingCart className="w-4 h-4 sm:w-3.5 sm:h-3.5" />
+                <span className="hidden sm:inline">Quick List</span>
+              </button>
+              <button
+                onClick={() => { setTakeoffMode(!takeoffMode); setCollaborateAfterTakeoff(false); setQuickListMode(false); }}
+                className={`flex items-center gap-1.5 text-xs font-medium min-h-[44px] px-2 cursor-pointer transition-colors ${
+                  takeoffMode ? "text-yellow-400" : "text-gray-400 hover:text-yellow-400"
+                }`}
+                title="AI Plan Takeoff — upload plans, get a BOM"
+              >
+                <FileImage className="w-4 h-4 sm:w-3.5 sm:h-3.5" />
+                <span className="hidden sm:inline">AI Takeoff</span>
+              </button>
+              {user && (
+                <button
+                  onClick={() => { setTakeoffMode(true); setCollaborateAfterTakeoff(true); setQuickListMode(false); }}
+                  className="flex items-center gap-1.5 text-xs font-semibold min-h-[44px] px-2.5 cursor-pointer transition-colors text-purple-400 hover:text-purple-300"
+                  title="Upload plans and start a multi-party collaboration project"
+                >
+                  <Users className="w-4 h-4 sm:w-3.5 sm:h-3.5" />
+                  <span className="hidden sm:inline">Upload & Collaborate</span>
+                </button>
+              )}
+            </>
           )}
           <button
             onClick={() => setProjectsOpen(true)}
@@ -342,29 +362,33 @@ function HomeContent() {
             <FolderOpen className="w-4 h-4 sm:w-3.5 sm:h-3.5" />
             <span className="hidden sm:inline">Projects</span>
           </button>
-          <Link
-            href="/load-calc"
-            className="flex items-center gap-1.5 text-xs text-gray-400 hover:text-yellow-400 transition-colors font-medium min-h-[44px] px-2"
-          >
-            <Calculator className="w-4 h-4 sm:w-3.5 sm:h-3.5" />
-            <span className="hidden sm:inline">Load Calculator</span>
-            <span className="sm:hidden">Calc</span>
-          </Link>
-          <Link
-            href="/help"
-            className="flex items-center gap-1.5 text-xs text-gray-400 hover:text-yellow-400 transition-colors font-medium min-h-[44px] px-2"
-          >
-            <HelpCircle className="w-4 h-4 sm:w-3.5 sm:h-3.5" />
-            <span className="hidden sm:inline">Help</span>
-          </Link>
-          {tier === "free" && (
-            <Link
-              href="/pricing"
-              className="flex items-center gap-1 text-xs font-semibold text-gray-900 bg-yellow-400 hover:bg-yellow-300 px-3 py-1.5 rounded-md transition-colors"
-            >
-              <Crown className="w-3 h-3" />
-              <span className="hidden sm:inline">Upgrade</span>
-            </Link>
+          {userRole !== "vendor" && (
+            <>
+              <Link
+                href="/load-calc"
+                className="flex items-center gap-1.5 text-xs text-gray-400 hover:text-yellow-400 transition-colors font-medium min-h-[44px] px-2"
+              >
+                <Calculator className="w-4 h-4 sm:w-3.5 sm:h-3.5" />
+                <span className="hidden sm:inline">Load Calculator</span>
+                <span className="sm:hidden">Calc</span>
+              </Link>
+              <Link
+                href="/help"
+                className="flex items-center gap-1.5 text-xs text-gray-400 hover:text-yellow-400 transition-colors font-medium min-h-[44px] px-2"
+              >
+                <HelpCircle className="w-4 h-4 sm:w-3.5 sm:h-3.5" />
+                <span className="hidden sm:inline">Help</span>
+              </Link>
+              {tier === "free" && (
+                <Link
+                  href="/pricing"
+                  className="flex items-center gap-1 text-xs font-semibold text-gray-900 bg-yellow-400 hover:bg-yellow-300 px-3 py-1.5 rounded-md transition-colors"
+                >
+                  <Crown className="w-3 h-3" />
+                  <span className="hidden sm:inline">Upgrade</span>
+                </Link>
+              )}
+            </>
           )}
           <UserButton />
         </div>
@@ -373,35 +397,39 @@ function HomeContent() {
       <DisclaimerBanner className="no-print" />
 
       <div className="flex flex-1 overflow-hidden">
-        {/* Sidebar overlay on mobile */}
-        {sidebarOpen && (
-          <div
-            className="fixed inset-0 z-30 bg-black/60 lg:hidden"
-            onClick={() => setSidebarOpen(false)}
-          />
-        )}
+        {userRole !== "vendor" && (
+          <>
+            {/* Sidebar overlay on mobile */}
+            {sidebarOpen && (
+              <div
+                className="fixed inset-0 z-30 bg-black/60 lg:hidden"
+                onClick={() => setSidebarOpen(false)}
+              />
+            )}
 
-        {/* Sidebar */}
-        <aside
-          className={`
-            fixed lg:static inset-y-0 left-0 z-40 w-[min(22rem,85vw)]
-            transform transition-transform duration-200 ease-in-out
-            lg:transform-none lg:w-[22rem]
-            ${sidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}
-            bg-[hsl(222,47%,8%)] border-r border-[hsl(217,33%,18%)]
-            overflow-y-auto pt-14 lg:pt-0
-          `}
-        >
-          <Sidebar
-            ref={sidebarRef}
-            onGenerate={handleGenerate}
-            onOpenProjects={() => setProjectsOpen(true)}
-            onZipChange={setCurrentZip}
-            onTradeChange={setActiveTrade}
-            loading={loading}
-            jobContext={result?.job?.label}
-          />
-        </aside>
+            {/* Sidebar */}
+            <aside
+              className={`
+                fixed lg:static inset-y-0 left-0 z-40 w-[min(22rem,85vw)]
+                transform transition-transform duration-200 ease-in-out
+                lg:transform-none lg:w-[22rem]
+                ${sidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}
+                bg-[hsl(222,47%,8%)] border-r border-[hsl(217,33%,18%)]
+                overflow-y-auto pt-14 lg:pt-0
+              `}
+            >
+              <Sidebar
+                ref={sidebarRef}
+                onGenerate={handleGenerate}
+                onOpenProjects={() => setProjectsOpen(true)}
+                onZipChange={setCurrentZip}
+                onTradeChange={setActiveTrade}
+                loading={loading}
+                jobContext={result?.job?.label}
+              />
+            </aside>
+          </>
+        )}
 
         {/* Main */}
         <main className="flex-1 overflow-y-auto p-2 sm:p-4 lg:p-6">
@@ -534,16 +562,28 @@ function HomeContent() {
           ) : (
             <div className="flex flex-col items-center justify-center h-full min-h-[60vh] text-center px-4">
               <Image src={brand.logo} alt={brand.name} width={64} height={64} className="w-16 h-16 mb-4 opacity-20" />
-              <h2 className="text-2xl font-bold text-white mb-2">Ready to Generate</h2>
-              <p className="text-gray-400 max-w-md">
-                Select a job type and ZIP code in the sidebar, then click{" "}
-                <span className="text-yellow-400 font-semibold">Generate Full Package</span> to get
-                NEC requirements, materials list, supplier info, and official docs.
-              </p>
-              <p className="text-gray-600 text-xs mt-6 max-w-sm">
-                ⚠️ VoltSpec is a reference tool only. Always verify requirements with your local
-                Authority Having Jurisdiction (AHJ) before any installation.
-              </p>
+              {userRole === "vendor" ? (
+                <>
+                  <h2 className="text-2xl font-bold text-white mb-2">Welcome to VoltSpec</h2>
+                  <p className="text-gray-400 max-w-md">
+                    Open your <button onClick={() => setProjectsOpen(true)} className="text-purple-400 hover:text-purple-300 font-semibold underline underline-offset-2 cursor-pointer">Shared Projects</button> to view
+                    the materials assigned to your company and upload cut sheets, submittals, or alternates.
+                  </p>
+                </>
+              ) : (
+                <>
+                  <h2 className="text-2xl font-bold text-white mb-2">Ready to Generate</h2>
+                  <p className="text-gray-400 max-w-md">
+                    Select a job type and ZIP code in the sidebar, then click{" "}
+                    <span className="text-yellow-400 font-semibold">Generate Full Package</span> to get
+                    NEC requirements, materials list, supplier info, and official docs.
+                  </p>
+                  <p className="text-gray-600 text-xs mt-6 max-w-sm">
+                    ⚠️ VoltSpec is a reference tool only. Always verify requirements with your local
+                    Authority Having Jurisdiction (AHJ) before any installation.
+                  </p>
+                </>
+              )}
             </div>
           )}
         </main>

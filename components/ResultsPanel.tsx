@@ -123,8 +123,16 @@ function ElliottLinks({
 export function ResultsPanel({ result, onSave, zip, projectId: externalProjectId }: ResultsPanelProps) {
   const { user, session } = useAuth();
   const { tier } = useSubscription();
-  const { job, jurisdiction, city, generatedAt, disclaimer } = result;
-  const jurisdictionData = JURISDICTIONS.find((j) => j.id === city);
+  const { job, jurisdiction, generatedAt, disclaimer } = result;
+  const city = (result as unknown as Record<string, unknown>).city as string | undefined;
+  const jurisdictionData = city ? JURISDICTIONS.find((j) => j.id === city) : undefined;
+  
+  // Safety: ensure job has all required arrays
+  if (!job) return null;
+  if (!job.materials) job.materials = [];
+  if (!job.suppliers) job.suppliers = [];
+  if (!job.officialDocs) job.officialDocs = [];
+  if (!job.requirements) job.requirements = [];
   const [quoteModalOpen, setQuoteModalOpen] = useState(false);
   const [collaborateOpen, setCollaborateOpen] = useState(false);
   const [savedProjectId, setSavedProjectId] = useState<string | null>(null);

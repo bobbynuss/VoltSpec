@@ -10,7 +10,7 @@ import { ProjectsPanel } from "@/components/ProjectsPanel";
 import { QuickList } from "@/components/QuickList";
 import { PlanTakeoff } from "@/components/PlanTakeoff";
 import Image from "next/image";
-import { Menu, X, Calculator, FolderOpen, HelpCircle, ShoppingCart, FileImage } from "lucide-react";
+import { Menu, X, Calculator, FolderOpen, HelpCircle, ShoppingCart, FileImage, Users } from "lucide-react";
 import { DisclaimerBanner } from "@/components/DisclaimerBanner";
 import { LegalDisclaimer } from "@/components/LegalDisclaimer";
 import { InstallPrompt } from "@/components/InstallPrompt";
@@ -257,6 +257,16 @@ function HomeContent() {
             <FileImage className="w-4 h-4 sm:w-3.5 sm:h-3.5" />
             <span className="hidden sm:inline">AI Takeoff</span>
           </button>
+          {user && (
+            <button
+              onClick={() => { setTakeoffMode(true); setQuickListMode(false); }}
+              className="flex items-center gap-1.5 text-xs font-semibold min-h-[44px] px-2.5 cursor-pointer transition-colors text-purple-400 hover:text-purple-300"
+              title="Upload plans and start a multi-party collaboration project"
+            >
+              <Users className="w-4 h-4 sm:w-3.5 sm:h-3.5" />
+              <span className="hidden sm:inline">Upload & Collaborate</span>
+            </button>
+          )}
           <button
             onClick={() => setProjectsOpen(true)}
             className="flex items-center gap-1.5 text-xs text-gray-400 hover:text-yellow-400 transition-colors font-medium min-h-[44px] px-2 cursor-pointer"

@@ -14,10 +14,27 @@ function getAdminClient() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
   if (!url || !key) {
-    console.error("MISSING ENV:", { hasUrl: !!url, hasServiceKey: !!key });
-    throw new Error("Server configuration error: missing Supabase service role key");
+    console.error("MISSING ENV — falling back to anon client for storage:", {
+      hasUrl: !!url,
+      hasServiceKey: !!key,
+      keyPrefix: key ? key.substring(0, 10) + "..." : "MISSING",
+    });
+    // Fall back to anon key — will rely on storage RLS policies
+    return createClient(
+      url || process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    );
   }
   return createClient(url, key);
+}
+
+/** Admin client for DB operations that need to bypass RLS */
+function getAdminDbClient() {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (url && key) return createClient(url, key);
+  // No service key — return null, caller must use user client
+  return null;
 }
 
 /**
@@ -103,30 +120,45 @@ export async function POST(req: NextRequest) {
       vendorCompany = profile.company_name ?? null;
     }
 
-    // Use admin client for storage (bypasses storage RLS; our API handles access control)
+    // Try admin client first (service role), fall back to user client
     const admin = getAdminClient();
+    const storageClient = admin; // admin falls back to anon if no service key
+    const dbClient = getAdminDbClient() || supabase; // use user client for DB if no service key
 
     // Upload to Supabase Storage
     const storagePath = `${projectId}/${Date.now()}_${file.name.replace(/[^a-zA-Z0-9._-]/g, "_")}`;
 
     const fileBuffer = await file.arrayBuffer();
-    const { error: uploadError } = await admin.storage
+
+    // Try admin upload first
+    let uploadError: { message: string } | null = null;
+    const { error: err1 } = await storageClient.storage
       .from("project-files")
       .upload(storagePath, fileBuffer, {
         contentType: file.type || "application/octet-stream",
         upsert: false,
       });
 
-    if (uploadError) {
-      console.error("Storage upload error:", uploadError);
-      return NextResponse.json(
-        { error: "Failed to upload file: " + uploadError.message },
-        { status: 500 }
-      );
+    if (err1) {
+      console.error("Storage upload attempt 1 (admin/anon) failed:", err1.message);
+      // Try with user's own JWT as last resort
+      const { error: err2 } = await supabase.storage
+        .from("project-files")
+        .upload(storagePath, fileBuffer, {
+          contentType: file.type || "application/octet-stream",
+          upsert: false,
+        });
+      if (err2) {
+        console.error("Storage upload attempt 2 (user JWT) also failed:", err2.message);
+        return NextResponse.json(
+          { error: "Failed to upload file: " + err2.message + " (also tried: " + err1.message + ")" },
+          { status: 500 }
+        );
+      }
     }
 
-    // Record in project_files table (admin so RLS doesn't block owner inserts)
-    const { data: fileRecord, error: insertError } = await admin
+    // Record in project_files table
+    const { data: fileRecord, error: insertError } = await dbClient
       .from("project_files")
       .insert({
         project_id: projectId,
@@ -145,8 +177,8 @@ export async function POST(req: NextRequest) {
     if (insertError) {
       console.error("Insert file record error:", insertError);
       // Clean up storage on failure
-      await admin.storage.from("project-files").remove([storagePath]);
-      return NextResponse.json({ error: insertError.message }, { status: 500 });
+      await storageClient.storage.from("project-files").remove([storagePath]);
+      return NextResponse.json({ error: "DB insert failed: " + insertError.message }, { status: 500 });
     }
 
     // Log activity
@@ -209,7 +241,7 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: error.message }, { status: 500 });
     }
 
-    // Generate signed URLs for each file (admin client for storage access)
+    // Generate signed URLs for each file
     const admin = getAdminClient();
     const filesWithUrls = await Promise.all(
       (files ?? []).map(async (f: Record<string, unknown>) => {
@@ -288,9 +320,9 @@ export async function DELETE(req: NextRequest) {
       );
     }
 
-    // Delete from storage (admin client)
-    const admin = getAdminClient();
-    await admin.storage
+    // Delete from storage
+    const storageClient = getAdminClient();
+    await storageClient.storage
       .from("project-files")
       .remove([fileRecord.storage_path]);
 

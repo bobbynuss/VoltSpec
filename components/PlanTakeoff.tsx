@@ -307,8 +307,8 @@ export function PlanTakeoff({ onAddToList, onSaveAndCollaborate, onClose }: Plan
               </button>
             </div>
 
-            {/* Big Ticket → Collaborate */}
-            {classified.collaborate.length > 0 && onSaveAndCollaborate && (
+            {/* Big Ticket → Vendor Coordination */}
+            {classified.collaborate.length > 0 && (
               <div className="rounded-xl border border-purple-500/30 overflow-hidden">
                 <div className="flex items-center justify-between px-3 py-2 bg-purple-500/10 border-b border-purple-500/20">
                   <div className="flex items-center gap-2">
@@ -319,7 +319,7 @@ export function PlanTakeoff({ onAddToList, onSaveAndCollaborate, onClose }: Plan
                   </div>
                   <span className="text-[10px] text-purple-400/60">Fixtures · Gear · Panels · Enclosures</span>
                 </div>
-                <div className="max-h-[200px] overflow-y-auto divide-y divide-[hsl(217,33%,14%)]">
+                <div className="max-h-[180px] overflow-y-auto divide-y divide-[hsl(217,33%,14%)]">
                   {classified.collaborate.map((item, i) => (
                     <div key={`c-${i}`} className="flex items-center gap-3 px-3 py-2 bg-purple-500/[0.03]">
                       <div className="flex-1 min-w-0">
@@ -330,21 +330,10 @@ export function PlanTakeoff({ onAddToList, onSaveAndCollaborate, onClose }: Plan
                     </div>
                   ))}
                 </div>
-                <div className="px-3 py-2.5 bg-purple-500/[0.05] border-t border-purple-500/20">
-                  <Button
-                    onClick={() => {
-                      onSaveAndCollaborate(classified.collaborate, file);
-                    }}
-                    className="w-full bg-purple-500 hover:bg-purple-400 active:bg-purple-600 text-white font-semibold transition-colors duration-150 h-10"
-                  >
-                    <Users className="w-4 h-4 mr-1.5" />
-                    Save & Collaborate ({classified.collaborate.length} items)
-                  </Button>
-                </div>
               </div>
             )}
 
-            {/* Commodity → Quick List */}
+            {/* Commodity → Elliott Stock */}
             {classified.quicklist.length > 0 && (
               <div className="rounded-xl border border-[hsl(217,33%,20%)] overflow-hidden">
                 <div className="flex items-center justify-between px-3 py-2 bg-[hsl(217,33%,11%)] border-b border-[hsl(217,33%,18%)]">
@@ -356,7 +345,7 @@ export function PlanTakeoff({ onAddToList, onSaveAndCollaborate, onClose }: Plan
                   </div>
                   <span className="text-[10px] text-gray-600">Wire · Conduit · Fittings · Devices</span>
                 </div>
-                <div className="max-h-[200px] overflow-y-auto divide-y divide-[hsl(217,33%,14%)]">
+                <div className="max-h-[180px] overflow-y-auto divide-y divide-[hsl(217,33%,14%)]">
                   {classified.quicklist.map((item, i) => (
                     <div key={`q-${i}`} className="flex items-center gap-3 px-3 py-2">
                       <div className="flex-1 min-w-0">
@@ -367,34 +356,27 @@ export function PlanTakeoff({ onAddToList, onSaveAndCollaborate, onClose }: Plan
                     </div>
                   ))}
                 </div>
-                <div className="px-3 py-2.5 bg-[hsl(217,33%,10%)] border-t border-[hsl(217,33%,18%)]">
-                  <Button
-                    onClick={() => onAddToList(classified.quicklist)}
-                    className="w-full bg-yellow-400 hover:bg-yellow-300 active:bg-yellow-500 text-gray-900 font-semibold transition-colors duration-150 h-10"
-                  >
-                    <Plus className="w-4 h-4 mr-1.5" />
-                    Add {classified.quicklist.length} items to Quick List
-                  </Button>
-                </div>
               </div>
             )}
 
-            {/* Fallback: no collaborate items but user is logged in */}
-            {classified.collaborate.length === 0 && onSaveAndCollaborate && (
-              <div className="px-3 py-2 rounded-lg bg-[hsl(217,33%,10%)] border border-[hsl(217,33%,18%)] text-xs text-gray-500">
-                No big-ticket items detected — all items routed to Quick List. You can still save and collaborate from there.
-              </div>
-            )}
-
-            {/* Fallback: no quicklist items */}
-            {classified.quicklist.length === 0 && (
-              <div className="px-3 py-2 rounded-lg bg-[hsl(217,33%,10%)] border border-[hsl(217,33%,18%)] text-xs text-gray-500">
-                All items classified as vendor coordination items.
-              </div>
-            )}
-
-            {/* Not logged in — show everything as one list */}
-            {!onSaveAndCollaborate && (
+            {/* Single action button — does everything at once */}
+            {onSaveAndCollaborate ? (
+              <Button
+                onClick={() => {
+                  // Commodity items → Quick List in background
+                  if (classified.quicklist.length > 0) {
+                    onAddToList(classified.quicklist);
+                  }
+                  // Full BOM → project + collaborate modal
+                  // Sales rep sees everything; vendors get filtered by assignment
+                  onSaveAndCollaborate(results, file);
+                }}
+                className="w-full bg-purple-500 hover:bg-purple-400 active:bg-purple-600 text-white font-semibold transition-colors duration-150 h-11"
+              >
+                <Zap className="w-4 h-4 mr-1.5 fill-white" />
+                Save Project & Start Collaboration
+              </Button>
+            ) : (
               <Button
                 onClick={() => onAddToList(results)}
                 className="w-full bg-yellow-400 hover:bg-yellow-300 active:bg-yellow-500 text-gray-900 font-semibold transition-colors duration-150 h-11"
@@ -402,6 +384,17 @@ export function PlanTakeoff({ onAddToList, onSaveAndCollaborate, onClose }: Plan
                 <Plus className="w-4 h-4 mr-1.5" />
                 Add all {results.length} items to Quick List
               </Button>
+            )}
+
+            {onSaveAndCollaborate && (
+              <p className="text-[10px] text-gray-600 text-center leading-relaxed">
+                {classified.collaborate.length > 0 && classified.quicklist.length > 0
+                  ? `${classified.collaborate.length} vendor items → project for collaboration · ${classified.quicklist.length} stock items → Quick List · Elliott rep sees full BOM`
+                  : classified.collaborate.length > 0
+                    ? `All ${classified.collaborate.length} items saved to project for vendor collaboration`
+                    : `All ${classified.quicklist.length} items added to Quick List — save & collaborate to coordinate with Elliott`
+                }
+              </p>
             )}
           </div>
         )}

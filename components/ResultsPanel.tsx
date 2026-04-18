@@ -143,14 +143,63 @@ export function ResultsPanel({ result, onSave, zip, projectId: externalProjectId
   const [canEditMaterials, setCanEditMaterials] = useState(false);
   const [materialEdits, setMaterialEdits] = useState<Record<string, string>>({});
   const [userRole, setUserRole] = useState<string>("contractor");
+  const [vendorFilteredMaterials, setVendorFilteredMaterials] = useState<typeof job.materials | null>(null);
 
   // Fetch user role on mount
   useEffect(() => {
-    if (!user?.id) return;
-    getProfile().then((profile) => {
-      if (profile?.role) setUserRole(profile.role);
-    }).catch(() => {});
-  }, [user?.id]);
+    if (!session?.access_token) return;
+    fetch("/api/collaborate/me", {
+      headers: { Authorization: `Bearer ${session.access_token}` },
+    })
+      .then((r) => r.json())
+      .then((data) => { if (data.role) setUserRole(data.role); })
+      .catch(() => {});
+  }, [session?.access_token]);
+
+  // For vendors: fetch their assignments and filter materials
+  useEffect(() => {
+    if (userRole !== "vendor" || !savedProjectId || !session?.access_token) {
+      setVendorFilteredMaterials(null);
+      return;
+    }
+    // Get this vendor's assigned vendor codes
+    fetch(`/api/collaborate/vendors?projectId=${savedProjectId}`, {
+      headers: { Authorization: `Bearer ${session.access_token}` },
+    })
+      .then((r) => r.json())
+      .then(async (data) => {
+        const vendors = data.vendors ?? [];
+        // Find this user's vendor record
+        const meRes = await fetch("/api/collaborate/me", {
+          headers: { Authorization: `Bearer ${session.access_token}` },
+        });
+        const meData = await meRes.json();
+        const myCompany = meData.companyName;
+
+        // Find vendor assignments for my company
+        const myVendor = vendors.find((v: Record<string, unknown>) => v.vendor_company === myCompany);
+        if (myVendor?.assignments && myVendor.assignments.length > 0) {
+          const assignedCodes: string[] = [];
+          for (const a of myVendor.assignments) {
+            assignedCodes.push(...(a.vendor_codes ?? []));
+          }
+          if (assignedCodes.length > 0) {
+            const { filterMaterialsForVendor } = await import("@/lib/vendor-grouping");
+            const filtered = filterMaterialsForVendor(job.materials, assignedCodes);
+            setVendorFilteredMaterials(filtered.map((m) => ({
+              item: m.item,
+              quantity: m.quantity,
+              spec: m.spec,
+              unitPrice: m.unitPrice,
+            })));
+            return;
+          }
+        }
+        // No assignments yet — show all (vendor hasn't been assigned product lines)
+        setVendorFilteredMaterials(null);
+      })
+      .catch(() => setVendorFilteredMaterials(null));
+  }, [userRole, savedProjectId, session?.access_token, job.materials]);
 
   // Sync external project ID (from loading a saved project)
   useEffect(() => {
@@ -308,9 +357,11 @@ export function ResultsPanel({ result, onSave, zip, projectId: externalProjectId
     : job;
 
   // Build effective materials / blueprintNotes / svgDiagram with POA injected
-  const effectiveMaterials = showPOA
+  const baseMaterials = vendorFilteredMaterials ?? (showPOA
     ? [...panelJob.materials, ...poaOption.materials]
-    : panelJob.materials;
+    : panelJob.materials);
+  const effectiveMaterials = baseMaterials;
+  const isVendorView = userRole === "vendor";
 
   const effectiveBlueprintNotes = showPOA && panelJob.blueprintNotes
     ? [...panelJob.blueprintNotes, poaOption.blueprintNote]
@@ -376,7 +427,7 @@ export function ResultsPanel({ result, onSave, zip, projectId: externalProjectId
     return sum + mat.unitPrice * parseQtyNum(mat.quantity);
   }, 0);
 
-  const hasPricing = effectiveMaterials.some((m) => m.unitPrice != null);
+  const hasPricing = !isVendorView && effectiveMaterials.some((m) => m.unitPrice != null);
 
   const handleCopyMaterials = () => {
     const rows = effectiveMaterials.map((m) =>
@@ -821,8 +872,17 @@ export function ResultsPanel({ result, onSave, zip, projectId: externalProjectId
               )}
             </CardHeader>
             <CardContent>
+              {/* Vendor filtered view banner */}
+              {isVendorView && vendorFilteredMaterials && (
+                <div className="mb-3 flex items-center gap-2 p-2.5 rounded-lg bg-purple-500/8 border border-purple-500/20">
+                  <Users className="w-4 h-4 text-purple-400 shrink-0" />
+                  <span className="text-xs text-purple-300">
+                    Showing <strong>{vendorFilteredMaterials.length} items</strong> assigned to your company. Upload cut sheets or submittals in the Collaborate tab.
+                  </span>
+                </div>
+              )}
               {/* Collaboration editing banner */}
-              {savedProjectId && canEditMaterials && (
+              {!isVendorView && savedProjectId && canEditMaterials && (
                 <div className="mb-3 flex items-center gap-2 p-2.5 rounded-lg bg-purple-500/8 border border-purple-500/20">
                   <Users className="w-4 h-4 text-purple-400 shrink-0" />
                   <span className="text-xs text-purple-300">

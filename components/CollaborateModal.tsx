@@ -161,6 +161,11 @@ export function CollaborateModal({
   const isSalesRep = resolvedRole === "sales_rep" || resolvedRole === "admin";
   const isVendor = resolvedRole === "vendor";
 
+  // Default sales reps to the Vendors tab
+  useEffect(() => {
+    if (isSalesRep && open) setActiveTab("vendors");
+  }, [isSalesRep, open]);
+
   // Keep nameInput in sync if projectName prop changes
   useEffect(() => { setNameInput(projectName); }, [projectName]);
 
@@ -623,8 +628,8 @@ export function CollaborateModal({
             ) : activeTab === "collaborators" ? (
               /* ═══ PEOPLE TAB ═══ */
               <div className="p-4 space-y-4">
-                {/* Invite form — only owner can invite non-vendors */}
-                {!isVendor && (
+                {/* Invite form — only owner (contractor/admin) can invite via People tab */}
+                {!isVendor && !isSalesRep && (
                   <div className="space-y-2">
                     <label className="text-xs text-gray-400 font-medium">
                       Invite by email

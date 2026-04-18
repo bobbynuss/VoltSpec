@@ -154,6 +154,10 @@ export function ProjectsPanel({
   };
 
   const handleDelete = async (id: string) => {
+    // Optimistic UI — remove immediately
+    setProjects((prev) => prev.filter((p) => p.id !== id));
+    setDeleteConfirm(null);
+
     if (user) {
       try {
         await deleteCloudProject(id);
@@ -164,8 +168,8 @@ export function ProjectsPanel({
     } else {
       deleteProject(id);
     }
+    // Refresh to sync with server
     await loadProjects();
-    setDeleteConfirm(null);
   };
 
   const handleLoad = (project: SavedProject) => {

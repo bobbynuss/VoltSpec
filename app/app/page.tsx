@@ -155,16 +155,47 @@ function HomeContent() {
     }
   };
 
-  const handleLoadProject = (project: SavedProject) => {
-    // Set sidebar state
+  const handleLoadProject = async (project: SavedProject) => {
+    // Track the project ID for collaboration
+    setActiveProjectId(project.id);
+
+    // For plan-takeoff projects, load job_data directly from cloud instead of re-generating
+    if (project.jobId === "plan-takeoff" && user && session?.access_token) {
+      try {
+        const { createClient } = await import("@supabase/supabase-js");
+        const sb = createClient(
+          process.env.NEXT_PUBLIC_SUPABASE_URL!,
+          process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+          { global: { headers: { Authorization: `Bearer ${session.access_token}` } } }
+        );
+        const { data: proj } = await sb
+          .from("projects")
+          .select("job_data")
+          .eq("id", project.id)
+          .single();
+
+        if (proj?.job_data) {
+          const jobData = proj.job_data as Record<string, unknown>;
+          const savedResult = jobData.result as GenerateResult | undefined;
+          if (savedResult && savedResult.job) {
+            setResult(savedResult);
+            setSidebarOpen(false);
+            return;
+          }
+        }
+      } catch (err) {
+        console.error("Failed to load plan-takeoff project:", err);
+      }
+      // Fallback: just open with no result
+      return;
+    }
+
+    // Standard job — set sidebar state and re-generate
     sidebarRef.current?.setState({
       city: project.city,
       zip: project.zip,
       jobId: project.jobId,
     });
-    // Track the project ID for collaboration
-    setActiveProjectId(project.id);
-    // Auto-generate
     handleGenerate(project.jobId, project.zip, project.city);
   };
 

@@ -53,7 +53,7 @@ export function ProjectsPanel({
   const [projects, setProjects] = useState<SavedProject[]>([]);
   const [sharedProjects, setSharedProjects] = useState<Array<{
     project: { id: string; name: string; job_id: string; city: string; zip: string; job_data: Record<string, unknown>; updated_at: string };
-    collaboration: { role: string };
+    collaboration: { id: string; role: string };
     owner_email: string;
   }>>([]);
   const [saving, setSaving] = useState(false);
@@ -90,7 +90,11 @@ export function ProjectsPanel({
             headers: { Authorization: `Bearer ${session.access_token}` },
           });
           const data = await res.json();
-          setSharedProjects(data.shared ?? []);
+          // Filter out orphaned shares (project was deleted but collab record survived)
+          const valid = (data.shared ?? []).filter(
+            (s: Record<string, unknown>) => s.project && (s.project as Record<string, unknown>).id
+          );
+          setSharedProjects(valid);
         } catch {
           setSharedProjects([]);
         }
@@ -324,46 +328,100 @@ export function ProjectsPanel({
           {activeSection === "shared" && sharedProjects.length > 0 ? (
             <div className="divide-y divide-[hsl(217,33%,14%)]">
               {sharedProjects.map((sp) => (
-                <button
-                  key={sp.project.id}
-                  onClick={() => {
-                    onLoad({
-                      id: sp.project.id,
-                      name: sp.project.name,
-                      city: sp.project.city,
-                      zip: sp.project.zip,
-                      jobId: sp.project.job_id,
-                      jobLabel: (sp.project.job_data as Record<string, string>)?.jobLabel ?? sp.project.job_id,
-                      cityLabel: (sp.project.job_data as Record<string, string>)?.cityLabel ?? sp.project.city,
-                      savedAt: sp.project.updated_at,
-                    });
-                    onClose();
-                  }}
-                  className="w-full text-left px-5 py-3.5 hover:bg-white/3 transition-colors cursor-pointer touch-manipulation group"
-                >
-                  <div className="flex items-start gap-3">
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-semibold text-white truncate pr-6">
-                        {sp.project.name}
-                      </p>
-                      <div className="flex flex-wrap items-center gap-x-3 gap-y-0.5 mt-1">
-                        <span className="flex items-center gap-1 text-[11px] text-gray-500">
-                          <Briefcase className="w-3 h-3" />
-                          {(sp.project.job_data as Record<string, string>)?.jobLabel ?? sp.project.job_id}
-                        </span>
-                        <span className="flex items-center gap-1 text-[11px] text-gray-500">
-                          <MapPin className="w-3 h-3" />
-                          {(sp.project.job_data as Record<string, string>)?.cityLabel ?? sp.project.city}
-                        </span>
-                        <span className="inline-flex items-center gap-1 text-[10px] font-medium px-1.5 py-0.5 rounded bg-purple-400/10 text-purple-400">
-                          <UserCheck className="w-2.5 h-2.5" />
-                          {sp.collaboration.role}
-                        </span>
-                      </div>
+                <div key={sp.project.id} className="group relative">
+                  {deleteConfirm === `shared-${sp.project.id}` ? (
+                    <div className="px-5 py-3 bg-red-950/30 flex items-center gap-3">
+                      <span className="text-xs text-red-300 flex-1">
+                        Leave &ldquo;{sp.project.name}&rdquo;?
+                      </span>
+                      <Button
+                        size="sm"
+                        onClick={async () => {
+                          if (session?.access_token) {
+                            try {
+                              await fetch("/api/collaborate", {
+                                method: "DELETE",
+                                headers: {
+                                  "Content-Type": "application/json",
+                                  Authorization: `Bearer ${session.access_token}`,
+                                },
+                                body: JSON.stringify({
+                                  collaboratorId: sp.collaboration.id,
+                                  projectId: sp.project.id,
+                                }),
+                              });
+                            } catch {}
+                          }
+                          setSharedProjects((prev) => prev.filter((s) => s.project.id !== sp.project.id));
+                          setDeleteConfirm(null);
+                        }}
+                        className="bg-red-600 hover:bg-red-500 text-white text-xs h-7 px-3"
+                      >
+                        Leave
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => setDeleteConfirm(null)}
+                        className="text-gray-400 text-xs h-7 px-2"
+                      >
+                        Cancel
+                      </Button>
                     </div>
-                    <ChevronRight className="w-4 h-4 text-gray-600 group-hover:text-purple-400 shrink-0 mt-1 transition-colors" />
-                  </div>
-                </button>
+                  ) : (
+                    <button
+                      onClick={() => {
+                        onLoad({
+                          id: sp.project.id,
+                          name: sp.project.name,
+                          city: sp.project.city,
+                          zip: sp.project.zip,
+                          jobId: sp.project.job_id,
+                          jobLabel: (sp.project.job_data as Record<string, string>)?.jobLabel ?? sp.project.job_id,
+                          cityLabel: (sp.project.job_data as Record<string, string>)?.cityLabel ?? sp.project.city,
+                          savedAt: sp.project.updated_at,
+                        });
+                        onClose();
+                      }}
+                      className="w-full text-left px-5 py-3.5 hover:bg-white/3 transition-colors cursor-pointer touch-manipulation"
+                    >
+                      <div className="flex items-start gap-3">
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-semibold text-white truncate pr-6">
+                            {sp.project.name}
+                          </p>
+                          <div className="flex flex-wrap items-center gap-x-3 gap-y-0.5 mt-1">
+                            <span className="flex items-center gap-1 text-[11px] text-gray-500">
+                              <Briefcase className="w-3 h-3" />
+                              {(sp.project.job_data as Record<string, string>)?.jobLabel ?? sp.project.job_id}
+                            </span>
+                            <span className="flex items-center gap-1 text-[11px] text-gray-500">
+                              <MapPin className="w-3 h-3" />
+                              {(sp.project.job_data as Record<string, string>)?.cityLabel ?? sp.project.city}
+                            </span>
+                            <span className="inline-flex items-center gap-1 text-[10px] font-medium px-1.5 py-0.5 rounded bg-purple-400/10 text-purple-400">
+                              <UserCheck className="w-2.5 h-2.5" />
+                              {sp.collaboration.role}
+                            </span>
+                          </div>
+                        </div>
+                        <ChevronRight className="w-4 h-4 text-gray-600 group-hover:text-purple-400 shrink-0 mt-1 transition-colors" />
+                      </div>
+                    </button>
+                  )}
+                  {deleteConfirm !== `shared-${sp.project.id}` && (
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setDeleteConfirm(`shared-${sp.project.id}`);
+                      }}
+                      className="absolute top-3 right-10 p-1.5 rounded-md text-gray-700 hover:text-red-400 hover:bg-red-400/10 opacity-0 group-hover:opacity-100 transition-all"
+                      title="Leave project"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                  )}
+                </div>
               ))}
             </div>
           ) : projects.length === 0 ? (

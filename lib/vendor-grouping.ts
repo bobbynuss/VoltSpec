@@ -37,10 +37,16 @@ export const MANUFACTURERS: ManufacturerDef[] = [
     specPatterns: [],
   },
   {
-    key: "eaton-lighting",
-    name: "Eaton Crouse-Hinds Lighting",
+    key: "cooper-lighting",
+    name: "Cooper Lighting (Eaton Lighting Division)",
     vendorCodes: ["ETL"],
-    specPatterns: [/\bcrouse.hinds.*light\b/i],
+    specPatterns: [/\bcooper\s*lighting\b/i],
+  },
+  {
+    key: "crouse-hinds",
+    name: "Eaton Crouse-Hinds (Boxes / Fittings / Condulets)",
+    vendorCodes: ["CRS"],
+    specPatterns: [/\bcrouse.hinds\b/i],
   },
   {
     key: "southwire",
@@ -57,7 +63,7 @@ export const MANUFACTURERS: ManufacturerDef[] = [
   {
     key: "hubbell",
     name: "Hubbell / Bridgeport",
-    vendorCodes: ["BRI", "TAM", "CRS"],
+    vendorCodes: ["BRI", "TAM"],
     specPatterns: [/\bhubbell\b/i, /\bbridgeport\b/i, /\btaymac\b/i],
   },
   {

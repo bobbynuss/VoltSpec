@@ -100,7 +100,14 @@ If the document contains multiple pages (PDF), analyze ALL pages. Look for:
 - One-line diagrams showing normal/emergency power paths
 
 Extract quantities from ALL electrical sheets — not just the first page.
-CRITICAL: Do NOT skip fixture schedules, panel schedules, or equipment schedules. These are the most important parts of the takeoff. If the plan has 30+ fixtures in a schedule, list every single one.
+CRITICAL RULES:
+1. Do NOT skip fixture schedules, panel schedules, or equipment schedules. These are the MOST IMPORTANT parts of the takeoff.
+2. If the plan has 30+ fixtures in a schedule, list EVERY SINGLE ONE with the catalog number from the schedule.
+3. For fixture schedules: use the Type/Mark letter (A, B, C, etc.), manufacturer, and catalog number exactly as shown.
+4. For panel schedules: list each panel as a separate line item with amp rating, phase, voltage, and enclosure type.
+5. For lighting: if a fixture schedule exists, use those exact entries. Do NOT substitute with generic fixtures.
+6. The BOM should have AT MINIMUM: all panels, all fixture types, all disconnects, all transformers, THEN devices/wire/conduit.
+7. A commercial project with 7 pages should generate 40-100+ line items. If you only have 10-20 items, you missed things — go back and look harder.
 
 If the file is truly NOT an electrical plan (e.g. a photo of a cat), respond with:
 [{"item": "Unable to analyze", "spec": "This file does not appear to contain electrical plans. Please upload an electrical floor plan, panel schedule, or permit set.", "quantity": "0"}]
@@ -168,7 +175,7 @@ export async function POST(req: NextRequest) {
 
     const response = await anthropic.messages.create({
       model: "claude-sonnet-4-20250514",
-      max_tokens: 8192,
+      max_tokens: 16384,
       system: SYSTEM_PROMPT,
       messages: [
         {

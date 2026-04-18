@@ -41,19 +41,27 @@ export function PlanTakeoff({ onAddToList, onSaveAndCollaborate, autoCollaborate
   const [error, setError] = useState<string | null>(null);
   const [autoTriggered, setAutoTriggered] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
+  const fileObjRef = useRef<File | null>(null);
+
+  // Keep file ref in sync
+  useEffect(() => { fileObjRef.current = file; }, [file]);
 
   // Auto-trigger Save & Collaborate when analysis completes (Upload & Collaborate flow)
   useEffect(() => {
-    if (autoCollaborate && results && classified && onSaveAndCollaborate && !autoTriggered) {
+    if (autoCollaborate && results && results.length > 0 && classified && onSaveAndCollaborate && !autoTriggered) {
       setAutoTriggered(true);
-      // Add stock items to Quick List
-      if (classified.quicklist.length > 0) {
-        onAddToList(classified.quicklist);
-      }
-      // Save & Collaborate with full BOM
-      onSaveAndCollaborate(results, file);
+      // Small delay to let React settle
+      setTimeout(() => {
+        // Add stock items to Quick List
+        if (classified.quicklist.length > 0) {
+          onAddToList(classified.quicklist);
+        }
+        // Save & Collaborate with full BOM
+        onSaveAndCollaborate(results, fileObjRef.current);
+      }, 100);
     }
-  }, [autoCollaborate, results, classified, onSaveAndCollaborate, autoTriggered, file, onAddToList]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [autoCollaborate, results, classified, autoTriggered]);
 
   const handleFile = useCallback((f: File) => {
     const isImage = f.type.startsWith("image/");

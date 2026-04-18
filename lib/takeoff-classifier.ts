@@ -48,12 +48,16 @@ const BIG_TICKET_PATTERNS: RegExp[] = [
   /\b(bus\s*duct|busway|bus\s*plug)\b/i,
 
   // Lighting fixtures (named manufacturers or fixture types)
-  /\b(lithonia|juno|acuity|hubbell\s*lighting|cree|eaton\s*lighting|rab|kim)\b/i,
+  /\b(lithonia|juno|acuity|hubbell\s*lighting|cree|eaton\s*lighting|rab|kim|cooper|halo|metalux|columbia)\b/i,
   /\b(fixture|luminaire|troffer|high[\s-]?bay|low[\s-]?bay|wall\s*pack|flood\s*light)\b/i,
   /\b(downlight|pendant|strip\s*light|vapor[\s-]?tight|wrap\s*light)\b/i,
   /\b(pole\s*light|area\s*light|bollard|sconce|exit\s*sign|emergency\s*light)\b/i,
   /\b(LED\s*flat\s*panel|LED\s*panel|recessed\s*light|can\s*light)\b/i,
   /\b(parking\s*(garage|lot)\s*light)\b/i,
+  // Fixture schedule items often labeled as "Type A", "Type B", etc.
+  /\btype\s*[A-Z]\b.*\b(light|fixture|luminaire|LED|troffer|2x[24]|1x4|4ft|2ft)\b/i,
+  /\b(2x4|2x2|1x4|4ft|2ft|8ft)\s*(LED|fluorescent|troffer|fixture|strip|wrap)\b/i,
+  /\bfixture\s*(type|schedule|mark)\b/i,
 
   // Generators, ATS, UPS, battery
   /\b(generator|genset|ATS|automatic\s*transfer|UPS|battery\s*(system|cabinet|rack))\b/i,

@@ -9,6 +9,14 @@ function getUserClient(token: string) {
   );
 }
 
+/** Admin client for storage operations (bypasses storage RLS) */
+function getAdminClient() {
+  return createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+  );
+}
+
 /**
  * POST /api/collaborate/files — Upload a file to a project
  * Body: FormData with fields: projectId, file, category?, description?
@@ -92,12 +100,14 @@ export async function POST(req: NextRequest) {
       vendorCompany = profile.company_name ?? null;
     }
 
+    // Use admin client for storage (bypasses storage RLS; our API handles access control)
+    const admin = getAdminClient();
+
     // Upload to Supabase Storage
-    const ext = file.name.split(".").pop() ?? "bin";
     const storagePath = `${projectId}/${Date.now()}_${file.name.replace(/[^a-zA-Z0-9._-]/g, "_")}`;
 
     const fileBuffer = await file.arrayBuffer();
-    const { error: uploadError } = await supabase.storage
+    const { error: uploadError } = await admin.storage
       .from("project-files")
       .upload(storagePath, fileBuffer, {
         contentType: file.type || "application/octet-stream",
@@ -112,8 +122,8 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Record in project_files table
-    const { data: fileRecord, error: insertError } = await supabase
+    // Record in project_files table (admin so RLS doesn't block owner inserts)
+    const { data: fileRecord, error: insertError } = await admin
       .from("project_files")
       .insert({
         project_id: projectId,
@@ -132,7 +142,7 @@ export async function POST(req: NextRequest) {
     if (insertError) {
       console.error("Insert file record error:", insertError);
       // Clean up storage on failure
-      await supabase.storage.from("project-files").remove([storagePath]);
+      await admin.storage.from("project-files").remove([storagePath]);
       return NextResponse.json({ error: insertError.message }, { status: 500 });
     }
 
@@ -195,10 +205,11 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: error.message }, { status: 500 });
     }
 
-    // Generate signed URLs for each file
+    // Generate signed URLs for each file (admin client for storage access)
+    const admin = getAdminClient();
     const filesWithUrls = await Promise.all(
       (files ?? []).map(async (f: Record<string, unknown>) => {
-        const { data: urlData } = await supabase.storage
+        const { data: urlData } = await admin.storage
           .from("project-files")
           .createSignedUrl(f.storage_path as string, 3600); // 1 hour
 
@@ -273,8 +284,9 @@ export async function DELETE(req: NextRequest) {
       );
     }
 
-    // Delete from storage
-    await supabase.storage
+    // Delete from storage (admin client)
+    const admin = getAdminClient();
+    await admin.storage
       .from("project-files")
       .remove([fileRecord.storage_path]);
 

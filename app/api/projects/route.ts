@@ -112,8 +112,14 @@ export async function DELETE(req: NextRequest) {
       return NextResponse.json({ error: "projectId required" }, { status: 400 });
     }
 
-    // Verify ownership first
-    const { data: project } = await supabase
+    // Use admin client for all operations (RLS unreliable for some users)
+    const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+    const adminClient = serviceKey
+      ? createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, serviceKey)
+      : supabase;
+
+    // Verify ownership
+    const { data: project } = await adminClient
       .from("projects")
       .select("user_id")
       .eq("id", projectId)
@@ -127,11 +133,7 @@ export async function DELETE(req: NextRequest) {
       return NextResponse.json({ error: "Only the owner can delete" }, { status: 403 });
     }
 
-    // Use service role for the actual delete to bypass any RLS issues
-    const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-    const deleteClient = serviceKey
-      ? createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, serviceKey)
-      : supabase;
+    const deleteClient = adminClient;
 
     const { error: deleteError } = await deleteClient
       .from("projects")

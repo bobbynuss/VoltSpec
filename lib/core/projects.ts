@@ -57,8 +57,20 @@ export async function saveCloudProject(project: {
 
 /** Delete a project */
 export async function deleteCloudProject(id: string): Promise<void> {
-  const { error } = await supabase.from("projects").delete().eq("id", id);
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) throw new Error("Not logged in");
+  
+  // Only delete projects owned by the current user
+  const { error, count } = await supabase
+    .from("projects")
+    .delete({ count: "exact" })
+    .eq("id", id)
+    .eq("user_id", user.id);
+  
   if (error) throw new Error(error.message);
+  if (count === 0) {
+    console.warn("Delete returned 0 rows — project may not exist or user is not owner");
+  }
 }
 
 /** Update a project name */

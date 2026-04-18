@@ -155,38 +155,73 @@ function HomeContent() {
     }
   };
 
-  const handleLoadProject = async (project: SavedProject) => {
+  const handleLoadProject = (project: SavedProject) => {
     // Track the project ID for collaboration
     setActiveProjectId(project.id);
 
-    // For plan-takeoff projects, load job_data directly from cloud instead of re-generating
-    if (project.jobId === "plan-takeoff" && user && session?.access_token) {
-      try {
-        const { createClient } = await import("@supabase/supabase-js");
-        const sb = createClient(
-          process.env.NEXT_PUBLIC_SUPABASE_URL!,
-          process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-          { global: { headers: { Authorization: `Bearer ${session.access_token}` } } }
-        );
-        const { data: proj } = await sb
-          .from("projects")
-          .select("job_data")
-          .eq("id", project.id)
-          .single();
+    // For plan-takeoff projects (or empty city/jobId), load job_data from cloud
+    if (
+      (project.jobId === "plan-takeoff" || !project.city || !project.jobId) &&
+      user &&
+      session?.access_token
+    ) {
+      // Load async but don't block
+      (async () => {
+        try {
+          const res = await fetch(
+            `/api/collaborate/materials?projectId=${project.id}`,
+            { headers: { Authorization: `Bearer ${session.access_token}` } }
+          );
 
-        if (proj?.job_data) {
-          const jobData = proj.job_data as Record<string, unknown>;
-          const savedResult = jobData.result as GenerateResult | undefined;
-          if (savedResult && savedResult.job) {
-            setResult(savedResult);
-            setSidebarOpen(false);
+          // Load the full project data via API
+          const { createClient } = await import("@supabase/supabase-js");
+          const sb = createClient(
+            process.env.NEXT_PUBLIC_SUPABASE_URL!,
+            process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+            { global: { headers: { Authorization: `Bearer ${session.access_token}` } } }
+          );
+          const { data: proj, error } = await sb
+            .from("projects")
+            .select("job_data")
+            .eq("id", project.id)
+            .single();
+
+          if (error) {
+            console.error("Failed to load project data:", error.message);
             return;
           }
+
+          if (proj?.job_data) {
+            const jobData = proj.job_data as Record<string, unknown>;
+            const savedResult = jobData.result as GenerateResult | undefined;
+            if (savedResult && savedResult.job) {
+              setResult(savedResult);
+              setSidebarOpen(false);
+              return;
+            }
+            // If result not nested, try building from materials
+            const materials = jobData.materials as Array<{item: string; quantity: string; spec: string}> | undefined;
+            if (materials && materials.length > 0) {
+              setResult({
+                job: {
+                  id: project.jobId || "plan-takeoff",
+                  label: project.name,
+                  requirements: [],
+                  materials,
+                  suppliers: [],
+                  officialDocs: [],
+                },
+                jurisdiction: project.city || "",
+                generatedAt: project.savedAt || new Date().toISOString(),
+                disclaimer: "AI-generated takeoff — verify all quantities against actual plans.",
+              });
+              setSidebarOpen(false);
+            }
+          }
+        } catch (err) {
+          console.error("Failed to load plan-takeoff project:", err);
         }
-      } catch (err) {
-        console.error("Failed to load plan-takeoff project:", err);
-      }
-      // Fallback: just open with no result
+      })();
       return;
     }
 

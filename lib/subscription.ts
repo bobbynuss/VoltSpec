@@ -25,13 +25,14 @@ const FREE_STATUS: SubscriptionStatus = {
 export async function getSubscription(
   userId: string
 ): Promise<SubscriptionStatus> {
-  const { data, error } = await supabase
-    .from("subscriptions")
-    .select("*")
-    .eq("user_id", userId)
-    .single();
+  try {
+    const { data, error } = await supabase
+      .from("subscriptions")
+      .select("*")
+      .eq("user_id", userId)
+      .maybeSingle();
 
-  if (error || !data) return FREE_STATUS;
+    if (error || !data) return FREE_STATUS;
 
   const isActive =
     data.status === "active" || data.status === "trialing";
@@ -49,6 +50,9 @@ export async function getSubscription(
   }
 
   return FREE_STATUS;
+  } catch {
+    return FREE_STATUS;
+  }
 }
 
 // ── Feature gating constants ────────────────────────────────────────

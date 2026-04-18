@@ -147,8 +147,11 @@ export function CollaborateModal({
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
   const [expandedVendor, setExpandedVendor] = useState<string | null>(null);
+  const [editingName, setEditingName] = useState(false);
+  const [nameInput, setNameInput] = useState(projectName);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const nameInputRef = useRef<HTMLInputElement>(null);
 
   const authHeaders = {
     "Content-Type": "application/json",
@@ -157,6 +160,37 @@ export function CollaborateModal({
 
   const isSalesRep = resolvedRole === "sales_rep" || resolvedRole === "admin";
   const isVendor = resolvedRole === "vendor";
+
+  // Keep nameInput in sync if projectName prop changes
+  useEffect(() => { setNameInput(projectName); }, [projectName]);
+
+  const handleRename = async () => {
+    const trimmed = nameInput.trim();
+    if (!trimmed || trimmed === projectName) {
+      setEditingName(false);
+      setNameInput(projectName);
+      return;
+    }
+    try {
+      const res = await fetch("/api/projects/rename", {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${session?.access_token}`,
+        },
+        body: JSON.stringify({ projectId, name: trimmed }),
+      });
+      if (res.ok) {
+        setSuccess("Project renamed");
+        setEditingName(false);
+      } else {
+        const data = await res.json().catch(() => ({}));
+        setError(data.error ?? "Rename failed");
+      }
+    } catch {
+      setError("Rename failed");
+    }
+  };
 
   // ── Data Loading ─────────────────────────────────────────────────
 
@@ -497,10 +531,37 @@ export function CollaborateModal({
           <div className="flex items-center gap-3 px-5 py-4 border-b border-[hsl(217,33%,18%)]">
             <Users className="w-5 h-5 text-yellow-400" />
             <div className="flex-1 min-w-0">
-              <h2 className="text-base font-bold text-white">
-                Project Workspace
-              </h2>
-              <p className="text-xs text-gray-500 truncate">{projectName}</p>
+              {editingName ? (
+                <input
+                  ref={nameInputRef}
+                  value={nameInput}
+                  onChange={(e) => setNameInput(e.target.value)}
+                  onBlur={handleRename}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") handleRename();
+                    if (e.key === "Escape") { setEditingName(false); setNameInput(projectName); }
+                  }}
+                  autoFocus
+                  className="w-full text-base font-bold text-white bg-transparent border-b border-yellow-400 focus:outline-none px-0 py-0"
+                />
+              ) : (
+                <button
+                  onClick={() => {
+                    if (isVendor) return; // Vendors can't rename
+                    setEditingName(true);
+                    setTimeout(() => nameInputRef.current?.select(), 50);
+                  }}
+                  className={`text-left w-full group ${isVendor ? "" : "cursor-pointer"}`}
+                  title={isVendor ? undefined : "Click to rename project"}
+                >
+                  <h2 className="text-base font-bold text-white truncate group-hover:text-yellow-400 transition-colors">
+                    {nameInput || projectName}
+                  </h2>
+                  {!isVendor && (
+                    <p className="text-[10px] text-gray-600 mt-0.5">click to rename</p>
+                  )}
+                </button>
+              )}
             </div>
             <Button
               variant="ghost"

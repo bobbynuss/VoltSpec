@@ -42,8 +42,14 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Verify user owns the project
-    const { data: project, error: projError } = await supabase
+    // Use admin client for all permission lookups (RLS blocks sales rep from reading projects/profiles)
+    const adminKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+    const lookupClient = adminKey
+      ? createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, adminKey)
+      : supabase;
+
+    // Verify user owns the project or is a collaborator
+    const { data: project, error: projError } = await lookupClient
       .from("projects")
       .select("user_id")
       .eq("id", projectId)
@@ -55,32 +61,36 @@ export async function POST(req: NextRequest) {
     }
 
     if (project.user_id !== user.id) {
-      // Check if the caller is a sales_rep collaborator (they can invite vendors)
-      // Use admin client for reliable profile + collab lookup
-      const adminKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-      const lookupClient = adminKey
-        ? createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, adminKey)
-        : supabase;
-
       const { data: callerProfile } = await lookupClient
         .from("user_profiles")
         .select("role")
         .eq("id", user.id)
         .single();
 
+      // Check if they're a collaborator (accepted OR email matches)
       const { data: callerCollab } = await lookupClient
         .from("project_collaborators")
-        .select("accepted_at")
+        .select("accepted_at, invited_email, user_id")
         .eq("project_id", projectId)
-        .eq("user_id", user.id)
+        .or(`user_id.eq.${user.id},invited_email.eq.${user.email}`)
+        .limit(1)
         .single();
 
-      const isSalesRepOnProject =
-        callerProfile?.role === "sales_rep" && !!callerCollab?.accepted_at;
+      const isCollaborator = !!callerCollab;
+      const isSalesRep = callerProfile?.role === "sales_rep";
 
-      if (!isSalesRepOnProject || role !== "vendor") {
+      console.log("[VoltSpec] Collaborate POST permission check:", {
+        userId: user.id,
+        email: user.email,
+        role: callerProfile?.role,
+        isCollaborator,
+        isSalesRep,
+        requestedRole: role,
+      });
+
+      if (!(isSalesRep && isCollaborator)) {
         return NextResponse.json(
-          { error: "Only the project owner can invite collaborators (sales reps can invite vendors)" },
+          { error: "Only the project owner or an Elliott sales rep on this project can invite collaborators" },
           { status: 403 }
         );
       }
@@ -94,8 +104,8 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Insert collaboration record
-    const { data: collab, error: insertError } = await supabase
+    // Insert collaboration record (use admin client to bypass RLS for sales rep inserts)
+    const { data: collab, error: insertError } = await lookupClient
       .from("project_collaborators")
       .insert({
         project_id: projectId,
@@ -121,7 +131,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Log activity
-    await supabase.from("project_activity").insert({
+    await lookupClient.from("project_activity").insert({
       project_id: projectId,
       user_id: user.id,
       action: "collaborator_added",

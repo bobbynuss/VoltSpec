@@ -249,6 +249,7 @@ export function CollaborateModal({
     setSuccess(null);
 
     try {
+      console.log("[VoltSpec] handleInvite called — posting to /api/collaborate");
       const res = await fetch("/api/collaborate", {
         method: "POST",
         headers: authHeaders,
@@ -276,6 +277,7 @@ export function CollaborateModal({
     setSuccess(null);
 
     try {
+      console.log("[VoltSpec] handleVendorInvite called — posting to /api/collaborate/vendors");
       const res = await fetch("/api/collaborate/vendors", {
         method: "POST",
         headers: authHeaders,

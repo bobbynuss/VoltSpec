@@ -131,6 +131,15 @@ export function ResultsPanel({ result, onSave, zip, projectId: externalProjectId
 
   const [canEditMaterials, setCanEditMaterials] = useState(false);
   const [materialEdits, setMaterialEdits] = useState<Record<string, string>>({});
+  const [userRole, setUserRole] = useState<string>("contractor");
+
+  // Fetch user role on mount
+  useEffect(() => {
+    if (!user?.id) return;
+    getProfile().then((profile) => {
+      if (profile?.role) setUserRole(profile.role);
+    }).catch(() => {});
+  }, [user?.id]);
 
   // Sync external project ID (from loading a saved project)
   useEffect(() => {
@@ -1152,6 +1161,7 @@ export function ResultsPanel({ result, onSave, zip, projectId: externalProjectId
           onClose={() => setCollaborateOpen(false)}
           projectId={savedProjectId}
           projectName={panelJob.label}
+          userRole={userRole}
         />
       )}
     </div>

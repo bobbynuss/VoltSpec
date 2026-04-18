@@ -7,17 +7,19 @@ import { supabase } from "./supabase";
 
 // ── Types ──────────────────────────────────────────────────────────
 
-export type UserRole = "contractor" | "sales_rep" | "homeowner" | "admin";
+export type UserRole = "contractor" | "sales_rep" | "homeowner" | "admin" | "vendor";
 
 export interface Collaborator {
   id: string;
   project_id: string;
   user_id: string | null;
   invited_email: string | null;
-  role: "editor" | "viewer";
+  role: "editor" | "viewer" | "vendor";
   invited_by: string;
+  invited_by_role?: string;
   invited_at: string;
   accepted_at: string | null;
+  vendor_company?: string;
   // Joined fields
   user_name?: string;
   user_email?: string;

@@ -55,10 +55,29 @@ export async function POST(req: NextRequest) {
     }
 
     if (project.user_id !== user.id) {
-      return NextResponse.json(
-        { error: "Only the project owner can invite collaborators" },
-        { status: 403 }
-      );
+      // Check if the caller is a sales_rep collaborator (they can invite vendors)
+      const { data: callerProfile } = await supabase
+        .from("user_profiles")
+        .select("role")
+        .eq("id", user.id)
+        .single();
+
+      const { data: callerCollab } = await supabase
+        .from("project_collaborators")
+        .select("accepted_at")
+        .eq("project_id", projectId)
+        .eq("user_id", user.id)
+        .single();
+
+      const isSalesRepOnProject =
+        callerProfile?.role === "sales_rep" && !!callerCollab?.accepted_at;
+
+      if (!isSalesRepOnProject || role !== "vendor") {
+        return NextResponse.json(
+          { error: "Only the project owner can invite collaborators (sales reps can invite vendors)" },
+          { status: 403 }
+        );
+      }
     }
 
     // Can't invite yourself

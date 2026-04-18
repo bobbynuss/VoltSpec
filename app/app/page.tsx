@@ -411,6 +411,7 @@ function HomeContent() {
                   localStorage.setItem("voltspec-quicklist", JSON.stringify([...existing, ...newItems]));
                 }}
                 onSaveAndCollaborate={user ? async (items, planFile) => {
+                  console.log("[VoltSpec] onSaveAndCollaborate handler called", { items: items.length, hasFile: !!planFile, hasSession: !!session?.access_token });
                   try {
                     // Always add commodity items to Quick List silently
                     const { classifyTakeoffItems } = await import("@/lib/takeoff-classifier");
@@ -498,13 +499,16 @@ function HomeContent() {
                       }
                     }
 
+                    console.log("[VoltSpec] Project saved:", saved.id, "Opening collaborate modal...");
                     setTakeoffProjectId(saved.id);
                     setTakeoffProjectName(projectName);
                     setTakeoffCollaborateOpen(true);
                     setTakeoffMode(false);
                     setCollaborateAfterTakeoff(false);
-                  } catch (err) {
-                    console.error("Save & collaborate failed:", err);
+                  } catch (err: unknown) {
+                    const msg = err instanceof Error ? err.message : String(err);
+                    console.error("[VoltSpec] Save & collaborate FAILED:", msg, err);
+                    throw err; // Re-throw so PlanTakeoff can show the error
                   }
                 } : undefined}
                 onClose={() => { setTakeoffMode(false); setCollaborateAfterTakeoff(false); }}

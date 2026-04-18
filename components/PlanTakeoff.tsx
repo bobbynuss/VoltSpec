@@ -39,6 +39,7 @@ export function PlanTakeoff({ onAddToList, onSaveAndCollaborate, autoCollaborate
   const [results, setResults] = useState<TakeoffItem[] | null>(null);
   const [classified, setClassified] = useState<{ collaborate: ClassifiedItem[]; quicklist: ClassifiedItem[] } | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [saving, setSaving] = useState(false);
   const [autoTriggered, setAutoTriggered] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
   const fileObjRef = useRef<File | null>(null);
@@ -382,15 +383,34 @@ export function PlanTakeoff({ onAddToList, onSaveAndCollaborate, autoCollaborate
             {/* Single action button — does everything at once */}
             {onSaveAndCollaborate ? (
               <Button
-                onClick={() => {
-                  // Call ONLY onSaveAndCollaborate — it handles quicklist internally
-                  // Do NOT call onAddToList here (it unmounts this component)
-                  onSaveAndCollaborate(results, file);
+                disabled={saving}
+                onClick={async () => {
+                  console.log("[VoltSpec] Save & Collaborate clicked", { itemCount: results.length, hasFile: !!file });
+                  setSaving(true);
+                  setError(null);
+                  try {
+                    await onSaveAndCollaborate(results, file);
+                    console.log("[VoltSpec] Save & Collaborate completed successfully");
+                  } catch (err: unknown) {
+                    const msg = err instanceof Error ? err.message : String(err);
+                    console.error("[VoltSpec] Save & Collaborate FAILED:", msg, err);
+                    setError(`Save failed: ${msg}`);
+                    setSaving(false);
+                  }
                 }}
-                className="w-full bg-purple-500 hover:bg-purple-400 active:bg-purple-600 text-white font-semibold transition-colors duration-150 h-11"
+                className="w-full bg-purple-500 hover:bg-purple-400 active:bg-purple-600 text-white font-semibold transition-colors duration-150 h-11 disabled:opacity-60"
               >
-                <Zap className="w-4 h-4 mr-1.5 fill-white" />
-                Save Project & Start Collaboration
+                {saving ? (
+                  <span className="flex items-center gap-2">
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    Saving project…
+                  </span>
+                ) : (
+                  <>
+                    <Zap className="w-4 h-4 mr-1.5 fill-white" />
+                    Save Project & Start Collaboration
+                  </>
+                )}
               </Button>
             ) : (
               <Button

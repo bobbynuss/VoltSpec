@@ -158,12 +158,22 @@ export function ProjectsPanel({
     setProjects((prev) => prev.filter((p) => p.id !== id));
     setDeleteConfirm(null);
 
-    if (user) {
+    if (user && session?.access_token) {
       try {
-        await deleteCloudProject(id);
+        const res = await fetch("/api/projects", {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${session.access_token}`,
+          },
+          body: JSON.stringify({ projectId: id }),
+        });
+        if (!res.ok) {
+          const data = await res.json().catch(() => ({}));
+          console.error("Cloud delete failed:", data.error);
+        }
       } catch (err) {
-        console.error("Cloud delete failed:", err);
-        deleteProject(id);
+        console.error("Cloud delete error:", err);
       }
     } else {
       deleteProject(id);

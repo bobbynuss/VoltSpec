@@ -159,69 +159,56 @@ function HomeContent() {
     // Track the project ID for collaboration
     setActiveProjectId(project.id);
 
-    // For plan-takeoff projects (or empty city/jobId), load job_data from cloud
+    // For plan-takeoff projects (or empty city/jobId), load job_data via API
     if (
       (project.jobId === "plan-takeoff" || !project.city || !project.jobId) &&
       user &&
       session?.access_token
     ) {
-      // Load async but don't block
-      (async () => {
-        try {
-          const res = await fetch(
-            `/api/collaborate/materials?projectId=${project.id}`,
-            { headers: { Authorization: `Bearer ${session.access_token}` } }
-          );
-
-          // Load the full project data via API
-          const { createClient } = await import("@supabase/supabase-js");
-          const sb = createClient(
-            process.env.NEXT_PUBLIC_SUPABASE_URL!,
-            process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-            { global: { headers: { Authorization: `Bearer ${session.access_token}` } } }
-          );
-          const { data: proj, error } = await sb
-            .from("projects")
-            .select("job_data")
-            .eq("id", project.id)
-            .single();
-
-          if (error) {
-            console.error("Failed to load project data:", error.message);
+      setLoading(true);
+      fetch(`/api/projects?id=${project.id}`, {
+        headers: { Authorization: `Bearer ${session.access_token}` },
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.error || !data.project) {
+            console.error("Failed to load project:", data.error);
+            setLoading(false);
             return;
           }
-
-          if (proj?.job_data) {
-            const jobData = proj.job_data as Record<string, unknown>;
-            const savedResult = jobData.result as GenerateResult | undefined;
-            if (savedResult && savedResult.job) {
-              setResult(savedResult);
-              setSidebarOpen(false);
-              return;
-            }
-            // If result not nested, try building from materials
-            const materials = jobData.materials as Array<{item: string; quantity: string; spec: string}> | undefined;
-            if (materials && materials.length > 0) {
-              setResult({
-                job: {
-                  id: project.jobId || "plan-takeoff",
-                  label: project.name,
-                  requirements: [],
-                  materials,
-                  suppliers: [],
-                  officialDocs: [],
-                },
-                jurisdiction: project.city || "",
-                generatedAt: project.savedAt || new Date().toISOString(),
-                disclaimer: "AI-generated takeoff — verify all quantities against actual plans.",
-              });
-              setSidebarOpen(false);
-            }
+          const jobData = data.project.job_data as Record<string, unknown>;
+          // Try nested result first
+          const savedResult = jobData?.result as GenerateResult | undefined;
+          if (savedResult && savedResult.job) {
+            setResult(savedResult);
+            setSidebarOpen(false);
+            setLoading(false);
+            return;
           }
-        } catch (err) {
-          console.error("Failed to load plan-takeoff project:", err);
-        }
-      })();
+          // Fall back to building from materials
+          const materials = (jobData?.materials ?? []) as Array<{item: string; quantity: string; spec: string}>;
+          if (materials.length > 0) {
+            setResult({
+              job: {
+                id: project.jobId || "plan-takeoff",
+                label: project.name || data.project.name,
+                requirements: [],
+                materials,
+                suppliers: [],
+                officialDocs: [],
+              },
+              jurisdiction: project.city || "",
+              generatedAt: data.project.updated_at || new Date().toISOString(),
+              disclaimer: "AI-generated takeoff — verify all quantities against actual plans.",
+            });
+            setSidebarOpen(false);
+          }
+          setLoading(false);
+        })
+        .catch((err) => {
+          console.error("Failed to load project:", err);
+          setLoading(false);
+        });
       return;
     }
 

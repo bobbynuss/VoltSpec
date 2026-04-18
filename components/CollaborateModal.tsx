@@ -96,14 +96,42 @@ export function CollaborateModal({
   onClose,
   projectId,
   projectName,
-  userRole = "contractor",
+  userRole: userRoleProp = "contractor",
 }: CollaborateModalProps) {
-  const { session } = useAuth();
+  const { session, user } = useAuth();
   const [collaborators, setCollaborators] = useState<Collaborator[]>([]);
   const [vendors, setVendors] = useState<Collaborator[]>([]);
   const [activity, setActivity] = useState<ActivityEntry[]>([]);
   const [files, setFiles] = useState<ProjectFile[]>([]);
   const [manufacturerGroups, setManufacturerGroups] = useState<ManufacturerGroup[]>([]);
+  const [resolvedRole, setResolvedRole] = useState<string>(userRoleProp);
+
+  // Fetch the user's actual role from their profile (don't rely solely on prop)
+  useEffect(() => {
+    if (!session?.access_token || !open) return;
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+    if (!supabaseUrl || !supabaseKey) return;
+
+    fetch(`${supabaseUrl}/rest/v1/user_profiles?select=role,company_name&id=eq.${user?.id}`, {
+      headers: {
+        Authorization: `Bearer ${session.access_token}`,
+        apikey: supabaseKey,
+      },
+    })
+      .then((r) => r.json())
+      .then((data) => {
+        if (Array.isArray(data) && data.length > 0 && data[0].role) {
+          setResolvedRole(data[0].role);
+        }
+      })
+      .catch(() => {});
+  }, [session?.access_token, user?.id, open]);
+
+  // Also update if prop changes
+  useEffect(() => {
+    if (userRoleProp !== "contractor") setResolvedRole(userRoleProp);
+  }, [userRoleProp]);
 
   // Invite form
   const [email, setEmail] = useState("");
@@ -127,8 +155,8 @@ export function CollaborateModal({
     Authorization: `Bearer ${session?.access_token}`,
   };
 
-  const isSalesRep = userRole === "sales_rep" || userRole === "admin";
-  const isVendor = userRole === "vendor";
+  const isSalesRep = resolvedRole === "sales_rep" || resolvedRole === "admin";
+  const isVendor = resolvedRole === "vendor";
 
   // ── Data Loading ─────────────────────────────────────────────────
 

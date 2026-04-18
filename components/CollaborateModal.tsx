@@ -106,27 +106,22 @@ export function CollaborateModal({
   const [manufacturerGroups, setManufacturerGroups] = useState<ManufacturerGroup[]>([]);
   const [resolvedRole, setResolvedRole] = useState<string>(userRoleProp);
 
-  // Fetch the user's actual role from their profile (don't rely solely on prop)
+  // Fetch the user's actual role via API (direct Supabase REST blocked by RLS)
   useEffect(() => {
     if (!session?.access_token || !open) return;
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-    const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-    if (!supabaseUrl || !supabaseKey) return;
 
-    fetch(`${supabaseUrl}/rest/v1/user_profiles?select=role,company_name&id=eq.${user?.id}`, {
-      headers: {
-        Authorization: `Bearer ${session.access_token}`,
-        apikey: supabaseKey,
-      },
+    fetch(`/api/collaborate/me`, {
+      headers: { Authorization: `Bearer ${session.access_token}` },
     })
       .then((r) => r.json())
       .then((data) => {
-        if (Array.isArray(data) && data.length > 0 && data[0].role) {
-          setResolvedRole(data[0].role);
+        if (data.role) {
+          console.log("[VoltSpec] User role resolved:", data.role);
+          setResolvedRole(data.role);
         }
       })
       .catch(() => {});
-  }, [session?.access_token, user?.id, open]);
+  }, [session?.access_token, open]);
 
   // Also update if prop changes
   useEffect(() => {

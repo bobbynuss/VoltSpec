@@ -44,8 +44,14 @@ export async function PUT(req: NextRequest) {
       );
     }
 
-    // Verify caller is owner or sales_rep on this project
-    const { data: project } = await supabase
+    // Use admin client for all operations (RLS blocks non-owner reads)
+    const adminKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+    const admin = adminKey
+      ? createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, adminKey)
+      : supabase;
+
+    // Verify caller is owner or collaborator on this project
+    const { data: project } = await admin
       .from("projects")
       .select("user_id")
       .eq("id", projectId)
@@ -56,35 +62,25 @@ export async function PUT(req: NextRequest) {
     }
 
     const isOwner = project.user_id === user.id;
-    let isSalesRep = false;
-
     if (!isOwner) {
-      const { data: profile } = await supabase
-        .from("user_profiles")
-        .select("role")
-        .eq("id", user.id)
-        .single();
-
-      const { data: collab } = await supabase
+      const { data: collab } = await admin
         .from("project_collaborators")
-        .select("accepted_at")
+        .select("user_id, invited_email")
         .eq("project_id", projectId)
-        .eq("user_id", user.id)
+        .or(`user_id.eq.${user.id},invited_email.eq.${user.email}`)
+        .limit(1)
         .single();
 
-      isSalesRep =
-        profile?.role === "sales_rep" && !!collab?.accepted_at;
-    }
-
-    if (!isOwner && !isSalesRep) {
-      return NextResponse.json(
-        { error: "Only the project owner or an Elliott sales rep can manage vendor assignments" },
-        { status: 403 }
-      );
+      if (!collab) {
+        return NextResponse.json(
+          { error: "Only the project owner or a collaborator can manage vendor assignments" },
+          { status: 403 }
+        );
+      }
     }
 
     // Delete existing assignments for this collaborator on this project
-    const { error: deleteError } = await supabase
+    const { error: deleteError } = await admin
       .from("vendor_assignments")
       .delete()
       .eq("project_id", projectId)
@@ -112,7 +108,7 @@ export async function PUT(req: NextRequest) {
       .filter(Boolean);
 
     if (insertRows.length > 0) {
-      const { error: insertError } = await supabase
+      const { error: insertError } = await admin
         .from("vendor_assignments")
         .insert(insertRows);
 
@@ -123,7 +119,7 @@ export async function PUT(req: NextRequest) {
     }
 
     // Log activity
-    await supabase.from("project_activity").insert({
+    await admin.from("project_activity").insert({
       project_id: projectId,
       user_id: user.id,
       action: "vendor_assignments_updated",
@@ -170,8 +166,13 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: "projectId required" }, { status: 400 });
     }
 
-    // Fetch project job_data to get materials
-    const { data: project, error: projError } = await supabase
+    // Fetch project job_data — use admin to bypass RLS
+    const adminKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+    const admin = adminKey
+      ? createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, adminKey)
+      : supabase;
+
+    const { data: project, error: projError } = await admin
       .from("projects")
       .select("job_data")
       .eq("id", projectId)

@@ -35,16 +35,41 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: "id required" }, { status: 400 });
     }
 
-    // RLS allows owner or accepted collaborator to SELECT
-    const { data: project, error } = await supabase
+    // Check if user is owner or collaborator
+    // Try with user client first (RLS), fall back to admin
+    let project: Record<string, unknown> | null = null;
+
+    const { data: p1, error: e1 } = await supabase
       .from("projects")
       .select("*")
       .eq("id", projectId)
       .single();
 
-    if (error) {
-      console.error("Load project error:", error);
-      return NextResponse.json({ error: error.message }, { status: 500 });
+    if (p1) {
+      project = p1;
+    } else {
+      // User RLS failed — check if they're a collaborator and use admin
+      const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+      if (serviceKey) {
+        const admin = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, serviceKey);
+        // Verify they're actually a collaborator
+        const { data: collab } = await admin
+          .from("project_collaborators")
+          .select("accepted_at")
+          .eq("project_id", projectId)
+          .eq("user_id", user.id)
+          .not("accepted_at", "is", null)
+          .single();
+
+        if (collab) {
+          const { data: p2 } = await admin
+            .from("projects")
+            .select("*")
+            .eq("id", projectId)
+            .single();
+          project = p2;
+        }
+      }
     }
 
     if (!project) {

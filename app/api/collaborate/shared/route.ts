@@ -9,6 +9,13 @@ function getUserClient(token: string) {
   );
 }
 
+/** Admin client — bypasses RLS for accepting invites */
+function getAdminClient() {
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!key) return null;
+  return createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, key);
+}
+
 /**
  * GET /api/collaborate/shared — list projects shared with current user
  * Handles auto-accepting pending invites and returns shared projects.
@@ -36,8 +43,13 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ shared: [] });
     }
 
+    // Use admin client for accepting invites (bypasses RLS that blocks self-update)
+    const admin = getAdminClient();
+
     // Step 1: Find pending invites for this email and auto-accept them
-    const { data: pendingInvites, error: pendingError } = await supabase
+    // Use admin client to find and accept since user may not have access yet
+    const searchClient = admin || supabase;
+    const { data: pendingInvites, error: pendingError } = await searchClient
       .from("project_collaborators")
       .select("id")
       .eq("invited_email", userEmail)
@@ -48,8 +60,9 @@ export async function GET(req: NextRequest) {
     }
 
     if (pendingInvites && pendingInvites.length > 0) {
+      const acceptClient = admin || supabase;
       for (const invite of pendingInvites) {
-        const { error: acceptError } = await supabase
+        const { error: acceptError } = await acceptClient
           .from("project_collaborators")
           .update({
             user_id: user.id,
@@ -64,8 +77,10 @@ export async function GET(req: NextRequest) {
     }
 
     // Step 2: Fetch all collaborations where user_id matches (accepted)
-    // OR where invited_email matches (in case accept failed but we still want to show)
-    const { data: collabs, error: collabError } = await supabase
+    // OR where invited_email matches
+    // Use admin client to ensure we see all relevant records
+    const fetchClient = admin || supabase;
+    const { data: collabs, error: collabError } = await fetchClient
       .from("project_collaborators")
       .select("*")
       .or(`user_id.eq.${user.id},invited_email.eq.${userEmail}`);
@@ -82,7 +97,9 @@ export async function GET(req: NextRequest) {
     // Step 3: Fetch the associated projects
     const projectIds = [...new Set(collabs.map((c: Record<string, unknown>) => c.project_id as string))];
 
-    const { data: projects, error: projError } = await supabase
+    // Use admin client to fetch projects (user may not have direct RLS access yet)
+    const projClient = admin || supabase;
+    const { data: projects, error: projError } = await projClient
       .from("projects")
       .select("id, name, job_id, city, zip, job_data, updated_at, material_overrides")
       .in("id", projectIds);

@@ -594,53 +594,57 @@ export function ResultsPanel({ result, onSave, zip, projectId: externalProjectId
         </div>
         <div className="flex flex-col gap-2 no-print">
           <div className="grid grid-cols-3 sm:flex gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handleDownloadJobSheet}
-              data-tour="jobsheet-btn"
-              className="border-yellow-400/40 text-yellow-400 hover:text-yellow-300 hover:border-yellow-400 active:bg-yellow-400/10 transition-colors duration-150 font-semibold h-11 sm:h-9 text-xs sm:text-sm whitespace-nowrap"
-            >
-              <FileText className="w-4 h-4 sm:mr-1.5" />
-              <span className="sm:hidden ml-1">Sheet</span>
-              <span className="hidden sm:inline">Job Sheet</span>
-            </Button>
-            <Button
-              size="sm"
-              onClick={handleDownloadPDF}
-              data-tour="pdf-btn"
-              className="bg-yellow-400 text-gray-900 hover:bg-yellow-300 active:bg-yellow-500 font-semibold transition-colors duration-150 h-11 sm:h-9 text-xs sm:text-sm whitespace-nowrap"
-            >
-              <Download className="w-4 h-4 sm:mr-1.5" />
-              <span className="sm:hidden ml-1">PDF</span>
-              <span className="hidden sm:inline">PDF Package</span>
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handleEmailPackage}
-              disabled={emailing}
-              className="border-orange-500/40 text-orange-400 hover:text-orange-300 hover:border-orange-400 active:bg-orange-400/10 transition-colors duration-150 h-11 sm:h-9 text-xs sm:text-sm whitespace-nowrap"
-            >
-              {emailing ? (
-                <><span className="w-4 h-4 border-2 border-orange-400 border-t-transparent rounded-full animate-spin sm:mr-1.5" /><span className="hidden sm:inline">Sending...</span></>
-              ) : (
-                <><Mail className="w-4 h-4 sm:mr-1.5" /><span className="hidden sm:inline">Email</span></>
-              )}
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handleShare}
-              disabled={sharing}
-              className="border-blue-500/40 text-blue-400 hover:text-blue-300 hover:border-blue-400 active:bg-blue-400/10 transition-colors duration-150 h-11 sm:h-9 text-xs sm:text-sm whitespace-nowrap"
-            >
-              {sharing ? (
-                <><span className="w-4 h-4 border-2 border-blue-400 border-t-transparent rounded-full animate-spin sm:mr-1.5" /><span className="hidden sm:inline">Sharing...</span></>
-              ) : (
-                <><Share2 className="w-4 h-4 sm:mr-1.5" /><span className="hidden sm:inline">Share</span></>
-              )}
-            </Button>
+            {!isVendorView && (
+              <>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleDownloadJobSheet}
+                  data-tour="jobsheet-btn"
+                  className="border-yellow-400/40 text-yellow-400 hover:text-yellow-300 hover:border-yellow-400 active:bg-yellow-400/10 transition-colors duration-150 font-semibold h-11 sm:h-9 text-xs sm:text-sm whitespace-nowrap"
+                >
+                  <FileText className="w-4 h-4 sm:mr-1.5" />
+                  <span className="sm:hidden ml-1">Sheet</span>
+                  <span className="hidden sm:inline">Job Sheet</span>
+                </Button>
+                <Button
+                  size="sm"
+                  onClick={handleDownloadPDF}
+                  data-tour="pdf-btn"
+                  className="bg-yellow-400 text-gray-900 hover:bg-yellow-300 active:bg-yellow-500 font-semibold transition-colors duration-150 h-11 sm:h-9 text-xs sm:text-sm whitespace-nowrap"
+                >
+                  <Download className="w-4 h-4 sm:mr-1.5" />
+                  <span className="sm:hidden ml-1">PDF</span>
+                  <span className="hidden sm:inline">PDF Package</span>
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleEmailPackage}
+                  disabled={emailing}
+                  className="border-orange-500/40 text-orange-400 hover:text-orange-300 hover:border-orange-400 active:bg-orange-400/10 transition-colors duration-150 h-11 sm:h-9 text-xs sm:text-sm whitespace-nowrap"
+                >
+                  {emailing ? (
+                    <><span className="w-4 h-4 border-2 border-orange-400 border-t-transparent rounded-full animate-spin sm:mr-1.5" /><span className="hidden sm:inline">Sending...</span></>
+                  ) : (
+                    <><Mail className="w-4 h-4 sm:mr-1.5" /><span className="hidden sm:inline">Email</span></>
+                  )}
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleShare}
+                  disabled={sharing}
+                  className="border-blue-500/40 text-blue-400 hover:text-blue-300 hover:border-blue-400 active:bg-blue-400/10 transition-colors duration-150 h-11 sm:h-9 text-xs sm:text-sm whitespace-nowrap"
+                >
+                  {sharing ? (
+                    <><span className="w-4 h-4 border-2 border-blue-400 border-t-transparent rounded-full animate-spin sm:mr-1.5" /><span className="hidden sm:inline">Sharing...</span></>
+                  ) : (
+                    <><Share2 className="w-4 h-4 sm:mr-1.5" /><span className="hidden sm:inline">Share</span></>
+                  )}
+                </Button>
+              </>
+            )}
             {user && savedProjectId && (
               <Button
                 variant="outline"
@@ -652,7 +656,7 @@ export function ResultsPanel({ result, onSave, zip, projectId: externalProjectId
                 <span className="hidden sm:inline">Collaborate</span>
               </Button>
             )}
-            {user && (
+            {!isVendorView && user && (
               <Button
                 variant="outline"
                 size="sm"
@@ -664,7 +668,7 @@ export function ResultsPanel({ result, onSave, zip, projectId: externalProjectId
                 <span className="hidden sm:inline">Quote Request</span>
               </Button>
             )}
-            {onSave && (
+            {!isVendorView && onSave && (
               <Button
                 variant="outline"
                 size="sm"
@@ -689,7 +693,7 @@ export function ResultsPanel({ result, onSave, zip, projectId: externalProjectId
             )}
           </div>
           {/* Inline save name input */}
-          {saveMode && onSave && (
+          {!isVendorView && saveMode && onSave && (
             <div className="flex gap-2 items-center animate-in fade-in slide-in-from-top-1 duration-150">
               <input
                 ref={saveInputRef}
@@ -714,8 +718,8 @@ export function ResultsPanel({ result, onSave, zip, projectId: externalProjectId
         </div>
       </div>
 
-      {/* White-label toggle (Pro only) */}
-      {tier === "pro" && (
+      {/* White-label toggle (Pro only, not for vendors) */}
+      {!isVendorView && tier === "pro" && (
         <div className="flex items-center gap-3 px-3 py-2 rounded-lg bg-[hsl(222,47%,10%)] border border-[hsl(217,33%,20%)]">
           <label className="flex items-center gap-2 cursor-pointer flex-1">
             <input

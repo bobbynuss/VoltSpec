@@ -51,7 +51,7 @@ export async function GET(req: NextRequest) {
     const searchClient = admin || supabase;
     const { data: pendingInvites, error: pendingError } = await searchClient
       .from("project_collaborators")
-      .select("id")
+      .select("id, role, vendor_company")
       .eq("invited_email", userEmail)
       .is("accepted_at", null);
 
@@ -61,6 +61,9 @@ export async function GET(req: NextRequest) {
 
     if (pendingInvites && pendingInvites.length > 0) {
       const acceptClient = admin || supabase;
+      let hasVendorInvite = false;
+      let vendorCompanyName: string | null = null;
+
       for (const invite of pendingInvites) {
         const { error: acceptError } = await acceptClient
           .from("project_collaborators")
@@ -72,6 +75,37 @@ export async function GET(req: NextRequest) {
 
         if (acceptError) {
           console.error(`Accept invite ${invite.id} error:`, acceptError);
+        }
+
+        // Track if any invite is a vendor role
+        if ((invite as Record<string, unknown>).role === "vendor") {
+          hasVendorInvite = true;
+          vendorCompanyName = (invite as Record<string, unknown>).vendor_company as string ?? vendorCompanyName;
+        }
+      }
+
+      // Auto-set user profile to vendor if they have a vendor invite
+      // and their current role is still the default 'contractor'
+      if (hasVendorInvite && acceptClient) {
+        const { data: profile } = await acceptClient
+          .from("user_profiles")
+          .select("id, role")
+          .eq("id", user.id)
+          .single();
+
+        if (!profile) {
+          // Profile doesn't exist — create it as vendor
+          await acceptClient.from("user_profiles").insert({
+            id: user.id,
+            role: "vendor",
+            company_name: vendorCompanyName,
+          });
+        } else if (profile.role === "contractor" || !profile.role) {
+          // Profile exists but is default — upgrade to vendor
+          await acceptClient.from("user_profiles").update({
+            role: "vendor",
+            company_name: vendorCompanyName,
+          }).eq("id", user.id);
         }
       }
     }

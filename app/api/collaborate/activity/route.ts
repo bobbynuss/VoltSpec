@@ -43,8 +43,13 @@ export async function GET(req: NextRequest) {
       10
     );
 
-    // RLS handles access — project_activity policy checks ownership/collaboration
-    const { data, error } = await supabase
+    // Use admin for reliable reads
+    const adminKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+    const readClient = adminKey
+      ? createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, adminKey)
+      : supabase;
+
+    const { data, error } = await readClient
       .from("project_activity")
       .select("*")
       .eq("project_id", projectId)

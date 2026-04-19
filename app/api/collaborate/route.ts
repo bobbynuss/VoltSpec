@@ -177,8 +177,13 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    // RLS handles access control — owner or collaborator can query
-    const { data, error } = await supabase
+    // Use admin client for reliable reads
+    const adminKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+    const readClient = adminKey
+      ? createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, adminKey)
+      : supabase;
+
+    const { data, error } = await readClient
       .from("project_collaborators")
       .select("*")
       .eq("project_id", projectId)

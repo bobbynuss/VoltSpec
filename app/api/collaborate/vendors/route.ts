@@ -187,8 +187,14 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: "projectId required" }, { status: 400 });
     }
 
+    // Use admin client for reliable reads (RLS blocks non-owner queries)
+    const adminKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+    const readClient = adminKey
+      ? createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, adminKey)
+      : supabase;
+
     // Get vendor collaborators
-    const { data: vendors, error: vError } = await supabase
+    const { data: vendors, error: vError } = await readClient
       .from("project_collaborators")
       .select("*")
       .eq("project_id", projectId)
@@ -200,7 +206,7 @@ export async function GET(req: NextRequest) {
     }
 
     // Get vendor assignments
-    const { data: assignments, error: aError } = await supabase
+    const { data: assignments, error: aError } = await readClient
       .from("vendor_assignments")
       .select("*")
       .eq("project_id", projectId);

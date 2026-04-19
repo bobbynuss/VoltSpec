@@ -133,6 +133,7 @@ export function CollaborateModal({
   const [role, setRole] = useState<"editor" | "viewer">("editor");
   const [vendorEmail, setVendorEmail] = useState("");
   const [vendorCompany, setVendorCompany] = useState("");
+  const [selectedMfrKey, setSelectedMfrKey] = useState("");
 
   // State
   const [inviting, setInviting] = useState(false);
@@ -271,10 +272,14 @@ export function CollaborateModal({
   };
 
   const handleVendorInvite = async () => {
-    if (!vendorEmail.trim() || !vendorCompany.trim()) return;
+    if (!vendorEmail.trim() || !selectedMfrKey) return;
     setInviting(true);
     setError(null);
     setSuccess(null);
+
+    // Get the display name from manufacturer groups
+    const mfrGroup = manufacturerGroups.find((g) => g.key === selectedMfrKey);
+    const companyName = vendorCompany.trim() || mfrGroup?.name || selectedMfrKey;
 
     try {
       console.log("[VoltSpec] handleVendorInvite called — posting to /api/collaborate/vendors");
@@ -284,16 +289,18 @@ export function CollaborateModal({
         body: JSON.stringify({
           projectId,
           email: vendorEmail.trim(),
-          vendorCompany: vendorCompany.trim(),
+          vendorCompany: companyName,
+          manufacturerKeys: [selectedMfrKey],
         }),
       });
       const data = await res.json();
       if (!res.ok) {
         setError(data.error ?? "Failed to invite vendor");
       } else {
-        setSuccess(`Invited ${vendorEmail.trim()} (${vendorCompany.trim()}) as vendor`);
+        setSuccess(`Invited ${vendorEmail.trim()} for ${mfrGroup?.name ?? selectedMfrKey}`);
         setVendorEmail("");
         setVendorCompany("");
+        setSelectedMfrKey("");
         loadData();
       }
     } catch {
@@ -738,22 +745,30 @@ export function CollaborateModal({
                           className="w-full pl-9 pr-3 py-2 rounded-md text-sm bg-[hsl(217,33%,13%)] border border-[hsl(217,33%,22%)] text-white placeholder-gray-600 focus:outline-none focus:ring-1 focus:ring-yellow-400"
                         />
                       </div>
-                      <div className="relative">
-                        <Building2 className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-600" />
-                        <input
-                          type="text"
-                          value={vendorCompany}
-                          onChange={(e) => setVendorCompany(e.target.value)}
-                          placeholder="Eaton"
-                          className="w-32 pl-9 pr-3 py-2 rounded-md text-sm bg-[hsl(217,33%,13%)] border border-[hsl(217,33%,22%)] text-white placeholder-gray-600 focus:outline-none focus:ring-1 focus:ring-yellow-400"
-                        />
-                      </div>
+                      <select
+                        value={selectedMfrKey}
+                        onChange={(e) => {
+                          setSelectedMfrKey(e.target.value);
+                          const g = manufacturerGroups.find((g) => g.key === e.target.value);
+                          if (g) setVendorCompany(g.name);
+                        }}
+                        className="w-48 px-2 py-2 rounded-md text-xs bg-[hsl(217,33%,13%)] border border-[hsl(217,33%,22%)] text-gray-300 cursor-pointer focus:outline-none focus:ring-1 focus:ring-yellow-400"
+                      >
+                        <option value="">Select product line…</option>
+                        {manufacturerGroups
+                          .filter((g) => g.key !== "__unassigned__")
+                          .map((g) => (
+                            <option key={g.key} value={g.key}>
+                              {g.name} ({g.itemCount}) — {g.vendorCodes.join(", ")}
+                            </option>
+                          ))}
+                      </select>
                       <Button
                         size="sm"
                         onClick={handleVendorInvite}
                         disabled={
                           !vendorEmail.trim() ||
-                          !vendorCompany.trim() ||
+                          !selectedMfrKey ||
                           inviting
                         }
                         className="bg-yellow-400 hover:bg-yellow-300 text-gray-900 font-semibold text-xs h-[38px] px-3"

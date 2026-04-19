@@ -804,11 +804,13 @@ export function ResultsPanel({ result, onSave, zip, projectId: externalProjectId
         </div>
       )}
 
-      {/* Disclaimer Banner */}
-      <div className="flex gap-2 p-3 rounded-lg bg-amber-900/20 border border-amber-700/40 text-amber-300 text-xs">
-        <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" />
-        <span>{disclaimer}</span>
-      </div>
+      {/* Disclaimer Banner — hidden for vendors */}
+      {!isVendorView && disclaimer && (
+        <div className="flex gap-2 p-3 rounded-lg bg-amber-900/20 border border-amber-700/40 text-amber-300 text-xs">
+          <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" />
+          <span>{disclaimer}</span>
+        </div>
+      )}
 
       {/* Tabs */}
       <Tabs defaultValue="requirements" className="!flex-col space-y-4 [&_[data-slot=tabs-content]]:min-h-[400px]">

@@ -394,7 +394,7 @@ function HomeContent() {
         </div>
       </header>
 
-      <DisclaimerBanner className="no-print" />
+      {userRole !== "vendor" && <DisclaimerBanner className="no-print" />}
 
       <div className="flex flex-1 overflow-hidden">
         {userRole !== "vendor" && (

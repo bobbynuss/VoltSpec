@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -144,6 +144,70 @@ export function ResultsPanel({ result, onSave, zip, projectId: externalProjectId
   const [materialEdits, setMaterialEdits] = useState<Record<string, string>>({});
   const [userRole, setUserRole] = useState<string>("contractor");
   const [vendorFilteredMaterials, setVendorFilteredMaterials] = useState<typeof job.materials | null>(null);
+  const [vendorNotes, setVendorNotes] = useState<Record<number, Array<{ id: string; comment: string; vendor_company: string | null; comment_type: string; created_at: string }>>>({});
+  const [noteInput, setNoteInput] = useState<Record<number, string>>({});
+  const [leadTimeInput, setLeadTimeInput] = useState<Record<number, string>>({});
+  const [freightInput, setFreightInput] = useState<Record<number, string>>({});
+  const [addingNote, setAddingNote] = useState<number | null>(null);
+  const [submittingNote, setSubmittingNote] = useState(false);
+
+  // Load vendor notes/comments for the project
+  useEffect(() => {
+    if (!savedProjectId || !session?.access_token) return;
+    fetch(`/api/collaborate/comments?projectId=${savedProjectId}`, {
+      headers: { Authorization: `Bearer ${session.access_token}` },
+    })
+      .then((r) => r.json())
+      .then((data) => {
+        const comments = data.comments ?? [];
+        const grouped: typeof vendorNotes = {};
+        for (const c of comments) {
+          if (!grouped[c.item_index]) grouped[c.item_index] = [];
+          grouped[c.item_index].push(c);
+        }
+        setVendorNotes(grouped);
+      })
+      .catch(() => {});
+  }, [savedProjectId, session?.access_token]);
+
+  const handleAddNote = async (itemIndex: number) => {
+    const note = noteInput[itemIndex]?.trim();
+    if (!note || !savedProjectId || !session?.access_token) return;
+    setSubmittingNote(true);
+    try {
+      const res = await fetch("/api/collaborate/comments", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${session.access_token}` },
+        body: JSON.stringify({
+          projectId: savedProjectId,
+          itemIndex,
+          comment: note,
+          commentType: "note",
+          leadTime: leadTimeInput[itemIndex]?.trim() || undefined,
+          freight: freightInput[itemIndex]?.trim() || undefined,
+        }),
+      });
+      if (res.ok) {
+        // Refresh notes
+        const notesRes = await fetch(`/api/collaborate/comments?projectId=${savedProjectId}`, {
+          headers: { Authorization: `Bearer ${session.access_token}` },
+        });
+        const data = await notesRes.json();
+        const comments = data.comments ?? [];
+        const grouped: typeof vendorNotes = {};
+        for (const c of comments) {
+          if (!grouped[c.item_index]) grouped[c.item_index] = [];
+          grouped[c.item_index].push(c);
+        }
+        setVendorNotes(grouped);
+        setNoteInput((p) => ({ ...p, [itemIndex]: "" }));
+        setLeadTimeInput((p) => ({ ...p, [itemIndex]: "" }));
+        setFreightInput((p) => ({ ...p, [itemIndex]: "" }));
+        setAddingNote(null);
+      }
+    } catch {}
+    setSubmittingNote(false);
+  };
 
   // Fetch user role on mount
   useEffect(() => {
@@ -930,7 +994,7 @@ export function ResultsPanel({ result, onSave, zip, projectId: externalProjectId
                           {hasPricing && showPricing && (
                             <th className="pb-1.5 text-gray-600 font-medium text-[10px] uppercase tracking-wider text-right pr-4 whitespace-nowrap">Est. Cost</th>
                           )}
-                          <th className="pb-1.5 text-gray-600 font-medium text-[10px] uppercase tracking-wider text-right no-print">EES</th>
+                          {!isVendorView && <th className="pb-1.5 text-gray-600 font-medium text-[10px] uppercase tracking-wider text-right no-print">EES</th>}
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-[hsl(217,33%,14%)]">
@@ -941,7 +1005,8 @@ export function ResultsPanel({ result, onSave, zip, projectId: externalProjectId
                           const editedQty = materialEdits[`${gIdx}-quantity`];
                           const editedSpec = materialEdits[`${gIdx}-spec`];
                           return (
-                          <tr key={i} className="hover:bg-white/2 transition-colors">
+                          <React.Fragment key={i}>
+                          <tr className="hover:bg-white/2 transition-colors">
                             <td className="py-2.5 sm:py-2.5 pr-3 sm:pr-4 font-medium text-white whitespace-nowrap text-xs sm:text-sm">
                               <EditableCell
                                 value={editedItem ?? mat.item}
@@ -989,10 +1054,73 @@ export function ResultsPanel({ result, onSave, zip, projectId: externalProjectId
                                 )}
                               </td>
                             )}
-                            <td className="py-2.5 text-right no-print">
-                              <ElliottLinks item={mat.item} spec={mat.spec} getUrls={elliottUrls} />
-                            </td>
+                            {!isVendorView && (
+                              <td className="py-2.5 text-right no-print">
+                                <ElliottLinks item={mat.item} spec={mat.spec} getUrls={elliottUrls} />
+                              </td>
+                            )}
                           </tr>
+                          {/* Vendor notes for this item */}
+                          {savedProjectId && (vendorNotes[gIdx]?.length > 0 || addingNote === gIdx || isVendorView) && (
+                            <tr className="bg-purple-500/[0.03]">
+                              <td colSpan={hasPricing && showPricing ? 5 : 4} className="px-2 py-1.5">
+                                {/* Existing notes */}
+                                {vendorNotes[gIdx]?.map((n) => (
+                                  <div key={n.id} className="flex items-start gap-2 py-1 text-xs">
+                                    <span className="text-purple-400 font-medium shrink-0">{n.vendor_company ?? "Note"}:</span>
+                                    <span className="text-gray-400 whitespace-pre-line">{n.comment}</span>
+                                    <span className="text-gray-600 text-[10px] shrink-0 ml-auto">{new Date(n.created_at).toLocaleDateString("en-US", { month: "short", day: "numeric" })}</span>
+                                  </div>
+                                ))}
+                                {/* Add note — visible for vendors or when explicitly adding */}
+                                {(isVendorView || addingNote === gIdx) && (
+                                  <div className="flex flex-col gap-1.5 pt-1">
+                                    <div className="flex gap-2">
+                                      <input
+                                        type="text"
+                                        value={noteInput[gIdx] ?? ""}
+                                        onChange={(e) => setNoteInput((p) => ({ ...p, [gIdx]: e.target.value }))}
+                                        placeholder="Add a note (availability, alternates, etc.)"
+                                        className="flex-1 px-2 py-1 rounded text-xs bg-[hsl(217,33%,13%)] border border-[hsl(217,33%,22%)] text-white placeholder-gray-600 focus:outline-none focus:ring-1 focus:ring-purple-400"
+                                        onKeyDown={(e) => e.key === "Enter" && handleAddNote(gIdx)}
+                                      />
+                                      <input
+                                        type="text"
+                                        value={leadTimeInput[gIdx] ?? ""}
+                                        onChange={(e) => setLeadTimeInput((p) => ({ ...p, [gIdx]: e.target.value }))}
+                                        placeholder="Lead time"
+                                        className="w-24 px-2 py-1 rounded text-xs bg-[hsl(217,33%,13%)] border border-[hsl(217,33%,22%)] text-white placeholder-gray-600 focus:outline-none focus:ring-1 focus:ring-purple-400"
+                                      />
+                                      <input
+                                        type="text"
+                                        value={freightInput[gIdx] ?? ""}
+                                        onChange={(e) => setFreightInput((p) => ({ ...p, [gIdx]: e.target.value }))}
+                                        placeholder="Freight"
+                                        className="w-20 px-2 py-1 rounded text-xs bg-[hsl(217,33%,13%)] border border-[hsl(217,33%,22%)] text-white placeholder-gray-600 focus:outline-none focus:ring-1 focus:ring-purple-400"
+                                      />
+                                      <button
+                                        onClick={() => handleAddNote(gIdx)}
+                                        disabled={submittingNote || !noteInput[gIdx]?.trim()}
+                                        className="px-2 py-1 rounded text-xs bg-purple-500 hover:bg-purple-400 text-white font-medium disabled:opacity-40 cursor-pointer"
+                                      >
+                                        {submittingNote ? "…" : "Add"}
+                                      </button>
+                                    </div>
+                                  </div>
+                                )}
+                                {/* Add note button for non-vendors */}
+                                {!isVendorView && addingNote !== gIdx && (
+                                  <button
+                                    onClick={() => setAddingNote(gIdx)}
+                                    className="text-[10px] text-purple-400 hover:text-purple-300 mt-1 cursor-pointer"
+                                  >
+                                    + Add note
+                                  </button>
+                                )}
+                              </td>
+                            </tr>
+                          )}
+                          </React.Fragment>
                         );})}
                       </tbody>
                     </table>

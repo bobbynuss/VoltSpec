@@ -647,13 +647,16 @@ export function ResultsPanel({ result, onSave, zip, projectId: externalProjectId
             )}
             {user && savedProjectId && (
               <Button
-                variant="outline"
-                size="sm"
+                variant={isVendorView ? "default" : "outline"}
+                size={isVendorView ? "lg" : "sm"}
                 onClick={() => setCollaborateOpen(true)}
-                className="border-purple-500/40 text-purple-400 hover:text-purple-300 hover:border-purple-400 active:bg-purple-400/10 transition-colors duration-150 h-11 sm:h-9 text-xs sm:text-sm whitespace-nowrap"
+                className={isVendorView
+                  ? "bg-purple-500 hover:bg-purple-400 text-white font-semibold transition-colors duration-150 h-12 text-sm px-6"
+                  : "border-purple-500/40 text-purple-400 hover:text-purple-300 hover:border-purple-400 active:bg-purple-400/10 transition-colors duration-150 h-11 sm:h-9 text-xs sm:text-sm whitespace-nowrap"
+                }
               >
-                <Users className="w-4 h-4 sm:mr-1.5" />
-                <span className="hidden sm:inline">Collaborate</span>
+                <Users className="w-4 h-4 mr-2" />
+                {isVendorView ? "Open Project Workspace" : "Collaborate"}
               </Button>
             )}
             {!isVendorView && user && (
@@ -752,8 +755,10 @@ export function ResultsPanel({ result, onSave, zip, projectId: externalProjectId
             { value: "requirements", label: "Requirements", shortLabel: "Reqs", Icon: CheckCircle },
             { value: "materials", label: "Materials", shortLabel: "Parts", Icon: Package },
             { value: "blueprint", label: "Blueprint", shortLabel: "Print", Icon: PenTool },
-            { value: "suppliers", label: "Suppliers", shortLabel: "Supply", Icon: Store },
-            { value: "docs", label: "Official Docs", shortLabel: "Docs", Icon: FileText },
+            ...(isVendorView ? [] : [
+              { value: "suppliers", label: "Suppliers", shortLabel: "Supply", Icon: Store },
+              { value: "docs", label: "Official Docs", shortLabel: "Docs", Icon: FileText },
+            ]),
           ].map(({ value, label, shortLabel, Icon }) => (
             <TabsTrigger
               key={value}
@@ -799,11 +804,13 @@ export function ResultsPanel({ result, onSave, zip, projectId: externalProjectId
                   <Package className="w-4 h-4 text-yellow-400" />
                   Materials List
                 </CardTitle>
-                <Button size="sm" onClick={handleCopyMaterials} className="bg-yellow-400 hover:bg-yellow-300 active:bg-yellow-500 text-gray-900 font-semibold text-xs transition-colors duration-150 no-print">
-                  {copied
-                    ? <><ClipboardCheck className="w-3.5 h-3.5 mr-1.5" />Copied!</>
-                    : <><ClipboardCopy className="w-3.5 h-3.5 mr-1.5" />Copy Bulk Entry</>}
-                </Button>
+                {!isVendorView && (
+                  <Button size="sm" onClick={handleCopyMaterials} className="bg-yellow-400 hover:bg-yellow-300 active:bg-yellow-500 text-gray-900 font-semibold text-xs transition-colors duration-150 no-print">
+                    {copied
+                      ? <><ClipboardCheck className="w-3.5 h-3.5 mr-1.5" />Copied!</>
+                      : <><ClipboardCopy className="w-3.5 h-3.5 mr-1.5" />Copy Bulk Entry</>}
+                  </Button>
+                )}
               </div>
               {hasPricing && (
                 <div className="mt-2 flex items-center gap-2 no-print">
@@ -818,13 +825,15 @@ export function ResultsPanel({ result, onSave, zip, projectId: externalProjectId
                   <span className="text-xs text-gray-400">{showPricing ? "Hide Pricing" : "Show Pricing"}</span>
                 </div>
               )}
-              <div className="mt-2 flex items-center gap-2 sm:gap-3 p-2 sm:p-2.5 rounded-lg bg-yellow-400/8 border border-yellow-400/20">
-                <ClipboardCopy className="w-4 h-4 text-yellow-400 shrink-0" />
-                <span className="text-[11px] sm:text-xs text-gray-400 flex-1 leading-snug">
-                  <span className="hidden sm:inline">Click <span className="text-yellow-400 font-semibold">Copy Bulk Entry</span> to copy the materials list. Use <span className="text-yellow-400 font-semibold">Send Quote Request</span> to email your BOM directly to your Elliott sales rep.</span>
-                  <span className="sm:hidden"><span className="text-yellow-400 font-semibold">Copy Bulk Entry</span> copies the list. <span className="text-yellow-400 font-semibold">Quote Request</span> emails your rep.</span>
-                </span>
-              </div>
+              {!isVendorView && (
+                <div className="mt-2 flex items-center gap-2 sm:gap-3 p-2 sm:p-2.5 rounded-lg bg-yellow-400/8 border border-yellow-400/20">
+                  <ClipboardCopy className="w-4 h-4 text-yellow-400 shrink-0" />
+                  <span className="text-[11px] sm:text-xs text-gray-400 flex-1 leading-snug">
+                    <span className="hidden sm:inline">Click <span className="text-yellow-400 font-semibold">Copy Bulk Entry</span> to copy the materials list. Use <span className="text-yellow-400 font-semibold">Send Quote Request</span> to email your BOM directly to your Elliott sales rep.</span>
+                    <span className="sm:hidden"><span className="text-yellow-400 font-semibold">Copy Bulk Entry</span> copies the list. <span className="text-yellow-400 font-semibold">Quote Request</span> emails your rep.</span>
+                  </span>
+                </div>
+              )}
               {/* Panel Type selector - inside Materials tab for panel-eligible jobs */}
               {showPanelSelector && (
                 <div className="mt-3 flex flex-col sm:flex-row sm:items-center gap-2 p-3 rounded-lg bg-cyan-500/8 border border-cyan-500/25 no-print">
@@ -1003,22 +1012,24 @@ export function ResultsPanel({ result, onSave, zip, projectId: externalProjectId
                   </p>
                 </div>
               )}
-              <div className="mt-4 pt-4 border-t border-[hsl(217,33%,18%)] flex flex-col sm:flex-row items-start sm:items-center gap-3 no-print">
-                <p className="flex-1 text-xs text-gray-500 leading-snug">
-                  <span className="text-yellow-400 font-semibold">Copy Bulk Entry</span> copies the full materials list to your clipboard.
-                </p>
-                <div className="flex gap-2 shrink-0">
-                  <Button
-                    size="sm"
-                    onClick={handleCopyMaterials}
-                    className="bg-yellow-400 hover:bg-yellow-300 active:bg-yellow-500 text-gray-900 font-semibold text-xs transition-colors duration-150"
-                  >
-                    {copied
-                      ? <><ClipboardCheck className="w-3.5 h-3.5 mr-1.5" />Copied!</>
-                      : <><ClipboardCopy className="w-3.5 h-3.5 mr-1.5" />Copy Bulk Entry</>}
-                  </Button>
+              {!isVendorView && (
+                <div className="mt-4 pt-4 border-t border-[hsl(217,33%,18%)] flex flex-col sm:flex-row items-start sm:items-center gap-3 no-print">
+                  <p className="flex-1 text-xs text-gray-500 leading-snug">
+                    <span className="text-yellow-400 font-semibold">Copy Bulk Entry</span> copies the full materials list to your clipboard.
+                  </p>
+                  <div className="flex gap-2 shrink-0">
+                    <Button
+                      size="sm"
+                      onClick={handleCopyMaterials}
+                      className="bg-yellow-400 hover:bg-yellow-300 active:bg-yellow-500 text-gray-900 font-semibold text-xs transition-colors duration-150"
+                    >
+                      {copied
+                        ? <><ClipboardCheck className="w-3.5 h-3.5 mr-1.5" />Copied!</>
+                        : <><ClipboardCopy className="w-3.5 h-3.5 mr-1.5" />Copy Bulk Entry</>}
+                    </Button>
+                  </div>
                 </div>
-              </div>
+              )}
             </CardContent>
           </Card>
         </TabsContent>

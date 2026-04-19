@@ -255,8 +255,26 @@ export async function DELETE(req: NextRequest) {
       .single();
     const isProjectOwner = project?.user_id === user.id;
 
+    // Sales reps on the project can remove vendor collaborators
+    let isSalesRepOnProject = false;
     if (!isOwnRecord && !isProjectOwner) {
-      return NextResponse.json({ error: "You can only leave a project or remove collaborators you own" }, { status: 403 });
+      const { data: profile } = await deleteClient
+        .from("user_profiles")
+        .select("role")
+        .eq("id", user.id)
+        .single();
+      const { data: myCollab } = await deleteClient
+        .from("project_collaborators")
+        .select("id")
+        .eq("project_id", projectId)
+        .or(`user_id.eq.${user.id},invited_email.eq.${user.email}`)
+        .limit(1)
+        .single();
+      isSalesRepOnProject = profile?.role === "sales_rep" && !!myCollab;
+    }
+
+    if (!isOwnRecord && !isProjectOwner && !isSalesRepOnProject) {
+      return NextResponse.json({ error: "You don't have permission to remove this collaborator" }, { status: 403 });
     }
 
     const { error } = await deleteClient

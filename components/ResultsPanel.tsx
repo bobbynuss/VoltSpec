@@ -233,15 +233,13 @@ export function ResultsPanel({ result, onSave, zip, projectId: externalProjectId
       .then((r) => r.json())
       .then(async (data) => {
         const vendors = data.vendors ?? [];
-        // Find this user's vendor record
-        const meRes = await fetch("/api/collaborate/me", {
-          headers: { Authorization: `Bearer ${session.access_token}` },
-        });
-        const meData = await meRes.json();
-        const myCompany = meData.companyName;
+        // Find this user's vendor record by user_id or invited_email
+        const myEmail = user?.email?.toLowerCase();
+        const myId = user?.id;
 
-        // Find vendor assignments for my company
-        const myVendor = vendors.find((v: Record<string, unknown>) => v.vendor_company === myCompany);
+        const myVendor = vendors.find((v: Record<string, unknown>) =>
+          v.user_id === myId || (v.invited_email as string)?.toLowerCase() === myEmail
+        );
         if (myVendor?.assignments && myVendor.assignments.length > 0) {
           const assignedCodes: string[] = [];
           for (const a of myVendor.assignments) {
